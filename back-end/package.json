@@ -1,0 +1,27 @@
+{
+  "name": "back-end",
+  "version": "0.0.0",
+  "description": "server side for climate-shift web-app",
+  "main": "index.js",
+  "scripts": {
+    "start:dev": "nodemon index.js",
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "climate",
+    "web-app",
+    "nodejs",
+    "react",
+    "api"
+  ],
+  "author": "Bohdan Nyshchyi",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "nodemon": "^3.1.9"
+  }
+}
