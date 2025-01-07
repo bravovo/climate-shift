@@ -1,7 +1,7 @@
 const { Router } = require("express");
 const axios = require("axios");
 
-const { getCoords } = require('./middleware/climateRouteMiddleware');
+const { getCoords } = require('../middleware/climateRouteMiddleware');
 
 const BASE_URL = "https://power.larc.nasa.gov/api/temporal";
 
