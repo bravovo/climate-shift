@@ -6,8 +6,10 @@ const climateRouter = require('./routes/climateRouter');
 
 const app = express();
 
+const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
+
 app.use(express.json());
-app.use(cors({ credentials: true, origin: 'http://localhost:5173', withCredentials: true }));
+app.use(cors({ credentials: true, origin: CLIENT_ORIGIN, withCredentials: true }));
 
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
 const PORT = process.env.PORT || 5000;
