@@ -37,10 +37,10 @@ const ClimateReport = () => {
                 console.log(response.data);
                 const {
                     properties: {
-                        parameter: { PRECTOTCORR, T2M, T2M_MAX, T2M_MIN, WS2M, RH2M, PS, CLOUD_AMT, TS, FROST_DAYS },
+                        parameter: { PRECTOTCORR, T2M, T2M_MAX, T2M_MIN, WS2M, RH2M, PS, TS, FROST_DAYS },
                     },
                 } = response.data;
-                setClimateData({ PRECTOTCORR, T2M, T2M_MAX, T2M_MIN, WS2M, RH2M, PS, CLOUD_AMT, TS, FROST_DAYS });
+                setClimateData({ PRECTOTCORR, T2M, T2M_MAX, T2M_MIN, WS2M, RH2M, PS, TS, FROST_DAYS });
                 setError("");
             } else {
                 console.log(response.status, response.data.message);
