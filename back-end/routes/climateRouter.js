@@ -2,27 +2,16 @@ const { Router } = require("express");
 const axios = require("axios");
 
 const { getCoords } = require("../middleware/climateRouteMiddleware");
+const { requestPendingTime, convertPressure } = require('../utils/utils');
 
 const BASE_URL = "https://power.larc.nasa.gov/api/temporal";
+const PARAMETERS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,WS2M,RH2M,PS,TS,FROST_DAYS";
 
 const router = Router();
 
-const CONVERTION = 7.50063755419211;
-
-router.get("/daily/point", getCoords, async (request, response) => {
+router.get("/daily", getCoords, async (request, response) => {
     const { lat, lng } = request.decodedPlace.geometry;
     const { startTime } = request.startTime;
-
-    // T2M_RANGE --- Різниця між мінімальною та максимальною погодинною температурою повітря (за сухим термометром)
-    // на висоті 2 метри над поверхнею землі в період, що цікавить. (C)
-
-    // SNODP --- Глибина снігу на поверхні землі. (см)
-
-    // CLRSKY_DAYS --- Кількість днів з ясним небом, якщо денна хмарність становить менше 10 відсотків. (день)
-
-    // PRECSNO --- The snow precipitation at the surface of the earth. (мм/день)
-
-    const PARAMETERS = "T2M,T2M_MAX,T2M_MIN,PRECTOT,WS2M,RH2M,PS,TS,FROST_DAYS";
 
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
@@ -55,14 +44,16 @@ router.get("/daily/point", getCoords, async (request, response) => {
         });
 
         if (!result.data) {
+            const pendingTime = requestPendingTime(startTime);
+
             return response
                 .status(204)
-                .send({ message: "No data for request found" });
+                .send({ message: "No data for request found", time: { type: "seconds", value: pendingTime } });
         }
 
         console.log("Climate Data ------------------------ \n", result.data);
 
-        const {
+        let {
             properties: { parameter },
         } = result.data;
 
@@ -74,7 +65,7 @@ router.get("/daily/point", getCoords, async (request, response) => {
         let minTempMin = { date: "", value: Infinity };
         let minSurfaceTemp = { date: "", value: Infinity };
 
-        let convertedPressure = {};
+        // let convertedPressure = {};
 
         let frostDays = 0;
 
@@ -83,6 +74,10 @@ router.get("/daily/point", getCoords, async (request, response) => {
         let ws2mSum = 0;
         let psSum = 0;
         let rh2mSum = 0;
+
+        const convertedPressure = convertPressure(parameter.PS);
+
+        parameter = { ...parameter, PS: convertedPressure };
 
         for (const [paramName, paramData] of Object.entries(parameter)) {
             for (const [date, value] of Object.entries(paramData)) {
@@ -125,8 +120,7 @@ router.get("/daily/point", getCoords, async (request, response) => {
                         frostDays = frostDays + value;
                         break;
                     case "PS":
-                        convertedPressure[date] = value * CONVERTION;
-                        psSum = psSum + value * CONVERTION;
+                        psSum = psSum + value;
                         break;
                     case "RH2M":
                         rh2mSum = rh2mSum + value;
@@ -141,7 +135,7 @@ router.get("/daily/point", getCoords, async (request, response) => {
         const averagePS = psSum / Object.keys(parameter.PS).length;
         const averageRH2M = rh2mSum / Object.keys(parameter.RH2M).length;
 
-        result.data.properties.parameter.PS = convertedPressure;
+        result.data.properties.parameter.PS = parameter.PS;
 
         result.data.properties.parameter.MAX = {
             PRECTOTCORR: maxPrec,
@@ -166,25 +160,104 @@ router.get("/daily/point", getCoords, async (request, response) => {
         };
 
         if (result.data) {
-            const endTime = Date.now();
-            console.log("Start", startTime);
-            console.log("End", endTime);
-            const time = (endTime - startTime) / 1000;
-            console.log(
-                `Request duration: ${time} seconds`
-            );
-            
-            return response.status(200).send({ ...result.data, time: { type: 'seconds', value: time } });
+            const pendingTime = requestPendingTime(startTime);
+
+            return response.status(200).send({
+                ...result.data,
+                time: { type: "seconds", value: pendingTime },
+            });
         }
     } catch (error) {
         console.error("Error fetching climate data:", error.message);
 
-        const endTime = performance.now();
-        console.log(`Request duration: ${(endTime - startTime) / 1000 } seconds`);
+        const pendingTime = requestPendingTime(startTime);
 
         return response
             .status(500)
-            .send({ message: "Error getting climate data" });
+            .send({ message: "Error getting climate data", time: { type: "seconds", value: pendingTime } });
+    }
+});
+
+router.get("/years", getCoords, async (request, response) => {
+    const { lat, lng } = request.decodedPlace.geometry;
+    const { startTime } = request.startTime;
+
+    // Кліматичні дані доступні лише до 31 грудня 2023 року станом на 10.01.2025
+    // const today = new Date();
+    // const currentYear = new Date(today.getFullYear(), today.getMonth());
+
+    // const startYear = new Date(currentYear.getFullYear() - 7, currentYear.getMonth());
+    // const endYear = new Date(currentYear.getFullYear() - 2, currentYear.getMonth());
+
+    // const start = startYear.toISOString().split('-')[0];
+    // const end = endYear.toISOString().split('-')[0];
+
+    try {
+        const monthlyResult = await axios.get(`${BASE_URL}/monthly/point`, {
+            params: {
+                start: 2014,
+                end: 2023,
+                latitude: lat,
+                longitude: lng,
+                parameters: PARAMETERS,
+                community: "AG",
+                format: "JSON",
+            },
+        });
+
+        if (!monthlyResult.data) {
+            const pendingTime = requestPendingTime(startTime);
+
+            return response
+                .status(204)
+                .send({ message: "No data for request found", time: { type: "seconds", value: pendingTime } });
+        }
+
+        // Кліматологічні дані, де наведені середні значення за певну кількість років (5 у цьому випадку)
+        // const climatologyResult = await axios.get(`${BASE_URL}/climatology/point`, {
+        //     params: {
+        //         start: 2018,
+        //         end: 2023,
+        //         latitude: lat,
+        //         longitude: lng,
+        //         parameters: PARAMETERS,
+        //         community: "AG",
+        //         format: "JSON",
+        //     },
+        // });
+
+        const { properties: { parameter } } = monthlyResult.data;
+
+        let averages = {};
+
+        for (const [paramName, paramData] of Object.entries(parameter)) {
+            for (const [date, value] of Object.entries(paramData)) {
+                if (date.toString().substring(3).includes('13')) {
+                    averages[paramName] = { ...averages[paramName], [date]: value };
+                }
+            }
+        }
+
+        const convertedPressure = convertPressure(averages.PS);
+
+        averages = { ...averages, PS: convertedPressure };
+        console.log("AVERAGES ---", averages);
+
+        monthlyResult.data.properties.parameter.AVERAGES = { ...averages };
+
+        if (monthlyResult.data) {
+            const pendingTime = requestPendingTime(startTime);
+
+            return response.status(200).send({ ...monthlyResult.data, time: { type: "seconds", value: pendingTime } });
+        }
+    } catch (error) {
+        console.error("Error fetching climate data:", error.message);
+
+        const pendingTime = requestPendingTime(startTime);
+
+        return response
+            .status(500)
+            .send({ message: "Error getting climate data", time: { type: "seconds", value: pendingTime } });
     }
 });
 
