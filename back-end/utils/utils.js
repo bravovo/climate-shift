@@ -16,7 +16,7 @@ const convertPressure = (pressureObject) => {
     const convertedPressureObj = {};
 
     for (const [date, value] of Object.entries(pressureObject)) {
-        convertedPressureObj[date] = value * PRESSURE_CONVERTION;
+        convertedPressureObj[date] = parseFloat((value * PRESSURE_CONVERTION).toFixed(2));
     }
 
     return convertedPressureObj;

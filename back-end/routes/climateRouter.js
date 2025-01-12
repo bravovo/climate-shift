@@ -2,12 +2,81 @@ const { Router } = require("express");
 const axios = require("axios");
 
 const { getCoords } = require("../middleware/climateRouteMiddleware");
-const { requestPendingTime, convertPressure } = require('../utils/utils');
+const { requestPendingTime, convertPressure } = require("../utils/utils");
 
 const BASE_URL = "https://power.larc.nasa.gov/api/temporal";
 const PARAMETERS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,WS2M,RH2M,PS,TS,FROST_DAYS";
 
 const router = Router();
+
+const climate = {
+    parameters: {
+        ukr: {
+            "temp": {
+                "units": "°C",
+                "longname": "Температура повітря"
+            },
+            "surfaceTemp": {
+                "units": "°C",
+                "longname": "Температура поверхні Землі"
+            },
+            "surfaceTemp": {
+                "units": "°C",
+                "longname": "Температура поверхні Землі"
+            },
+            "precipitation": {
+                "units": "мм/день",
+                "longname": "Кількість опадів"
+            },
+            "windSpeed": {
+                "units": "м/с",
+                "longname": "Швидкість вітру"
+            },
+            "humidity": {
+                "units": "%",
+                "longname": "Вологість"
+            },
+            "pressure": {
+                "units": "мм. рт. ст.",
+                "longname": "Атмосферний тиск на поверхні"
+            },
+            "frostDays": {
+                "units": "дні",
+                "longname": "Морозні дні"
+            }
+        },
+        eng: {
+            "temp": {
+                "units": "°C",
+                "longname": "Temperature"
+            },
+            "surfaceTemp": {
+                "units": "°C",
+                "longname": "Surface temperature"
+            },
+            "precipitation": {
+                "units": "mm/day",
+                "longname": "Precipitation"
+            },
+            "windSpeed": {
+                "units": "m/s",
+                "longname": "Wind speed"
+            },
+            "humidity": {
+                "units": "%",
+                "longname": "Humidity"
+            },
+            "pressure": {
+                "units": "mm of mercury",
+                "longname": "Surface Pressure"
+            },
+            "frostDays": {
+                "units": "days",
+                "longname": "Frost Days"
+            }
+        },
+    },
+};
 
 router.get("/daily", getCoords, async (request, response) => {
     const { lat, lng } = request.decodedPlace.geometry;
@@ -48,7 +117,10 @@ router.get("/daily", getCoords, async (request, response) => {
 
             return response
                 .status(204)
-                .send({ message: "No data for request found", time: { type: "seconds", value: pendingTime } });
+                .send({
+                    message: "No data for request found",
+                    time: { type: "seconds", value: pendingTime },
+                });
         }
 
         console.log("Climate Data ------------------------ \n", result.data);
@@ -64,8 +136,6 @@ router.get("/daily", getCoords, async (request, response) => {
 
         let minTempMin = { date: "", value: Infinity };
         let minSurfaceTemp = { date: "", value: Infinity };
-
-        // let convertedPressure = {};
 
         let frostDays = 0;
 
@@ -135,35 +205,35 @@ router.get("/daily", getCoords, async (request, response) => {
         const averagePS = psSum / Object.keys(parameter.PS).length;
         const averageRH2M = rh2mSum / Object.keys(parameter.RH2M).length;
 
-        result.data.properties.parameter.PS = parameter.PS;
-
-        result.data.properties.parameter.MAX = {
+        climate.info = { ...parameter };
+        
+        climate.info.MAX = {
             PRECTOTCORR: maxPrec,
             T2M_MAX: maxTempMax,
             WS2M: maxWindSpeed,
             TS: maxSurfaceTemp,
         };
 
-        result.data.properties.parameter.MIN = {
+        climate.info.MIN = {
             T2M_MIN: minTempMin,
             TS: minSurfaceTemp,
         };
 
-        result.data.properties.parameter.frostDays = frostDays;
+        climate.info.frostDays = frostDays;
 
-        result.data.properties.parameter.AVERAGES = {
-            T2M: averageT2M,
-            TS: averageTS,
-            WS2M: averageWS2M,
-            PS: averagePS,
-            RH2M: averageRH2M,
+        climate.info.AVERAGES = {
+            T2M: parseFloat(averageT2M.toFixed(2)),
+            TS: parseFloat(averageTS.toFixed(2)),
+            WS2M: parseFloat(averageWS2M.toFixed(2)),
+            PS: parseFloat(averagePS.toFixed(2)),
+            RH2M: parseFloat(averageRH2M.toFixed(2)),
         };
 
-        if (result.data) {
+        if (climate.info) {
             const pendingTime = requestPendingTime(startTime);
 
             return response.status(200).send({
-                ...result.data,
+                ...climate,
                 time: { type: "seconds", value: pendingTime },
             });
         }
@@ -174,7 +244,10 @@ router.get("/daily", getCoords, async (request, response) => {
 
         return response
             .status(500)
-            .send({ message: "Error getting climate data", time: { type: "seconds", value: pendingTime } });
+            .send({
+                message: "Error getting climate data",
+                time: { type: "seconds", value: pendingTime },
+            });
     }
 });
 
@@ -210,7 +283,10 @@ router.get("/years", getCoords, async (request, response) => {
 
             return response
                 .status(204)
-                .send({ message: "No data for request found", time: { type: "seconds", value: pendingTime } });
+                .send({
+                    message: "No data for request found",
+                    time: { type: "seconds", value: pendingTime },
+                });
         }
 
         // Кліматологічні дані, де наведені середні значення за певну кількість років (5 у цьому випадку)
@@ -226,14 +302,19 @@ router.get("/years", getCoords, async (request, response) => {
         //     },
         // });
 
-        const { properties: { parameter } } = monthlyResult.data;
+        const {
+            properties: { parameter },
+        } = monthlyResult.data;
 
         let averages = {};
 
         for (const [paramName, paramData] of Object.entries(parameter)) {
             for (const [date, value] of Object.entries(paramData)) {
-                if (date.toString().substring(3).includes('13')) {
-                    averages[paramName] = { ...averages[paramName], [date]: value };
+                if (date.toString().substring(4).includes("13")) {
+                    averages[paramName] = {
+                        ...averages[paramName],
+                        [date]: value,
+                    };
                 }
             }
         }
@@ -248,7 +329,12 @@ router.get("/years", getCoords, async (request, response) => {
         if (monthlyResult.data) {
             const pendingTime = requestPendingTime(startTime);
 
-            return response.status(200).send({ ...monthlyResult.data, time: { type: "seconds", value: pendingTime } });
+            return response
+                .status(200)
+                .send({
+                    ...monthlyResult.data,
+                    time: { type: "seconds", value: pendingTime },
+                });
         }
     } catch (error) {
         console.error("Error fetching climate data:", error.message);
@@ -257,7 +343,10 @@ router.get("/years", getCoords, async (request, response) => {
 
         return response
             .status(500)
-            .send({ message: "Error getting climate data", time: { type: "seconds", value: pendingTime } });
+            .send({
+                message: "Error getting climate data",
+                time: { type: "seconds", value: pendingTime },
+            });
     }
 });
 
