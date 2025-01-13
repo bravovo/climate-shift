@@ -16,10 +16,35 @@ const convertPressure = (pressureObject) => {
     const convertedPressureObj = {};
 
     for (const [date, value] of Object.entries(pressureObject)) {
-        convertedPressureObj[date] = parseFloat((value * PRESSURE_CONVERTION).toFixed(2));
+        convertedPressureObj[date] = parseFloat(
+            (value * PRESSURE_CONVERTION).toFixed(2)
+        );
     }
 
     return convertedPressureObj;
 };
 
-module.exports = { requestPendingTime, convertPressure };
+// Форматування дати з формату YYYYMMDD у формат DD.MM.YYYY
+const formatDate = (climateData) => {
+    const formatted = {};
+
+    for (const [paramName, paramData] of Object.entries(climateData)) {
+        formatted[paramName] = Object.entries(paramData).reduce(
+            (acc, [date, value]) => {
+                const year = paramData.date.slice(0, 4);
+                const month = paramData.date.slice(4, 6);
+                const day = paramData.date.slice(6, 8);
+                const formattedDate = `${day}.${month}.${year}`;
+                acc = { date: formattedDate, value: value };
+                return acc;
+            },
+            {}
+        );
+    };
+
+    return {
+        ...formatted,
+    };
+};
+
+module.exports = { requestPendingTime, convertPressure, formatDate };

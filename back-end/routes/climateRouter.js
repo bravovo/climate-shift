@@ -2,7 +2,7 @@ const { Router } = require("express");
 const axios = require("axios");
 
 const { getCoords } = require("../middleware/climateRouteMiddleware");
-const { requestPendingTime, convertPressure } = require("../utils/utils");
+const { requestPendingTime, convertPressure, formatDate } = require("../utils/utils");
 
 const BASE_URL = "https://power.larc.nasa.gov/api/temporal";
 const PARAMETERS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,WS2M,RH2M,PS,TS,FROST_DAYS";
@@ -97,8 +97,6 @@ router.get("/daily", getCoords, async (request, response) => {
         .split("T")[0]
         .replace(/-/g, "");
 
-    console.log(`LAT --- ${lat}; LNG --- ${lng}`);
-
     try {
         const result = await axios.get(`${BASE_URL}/daily/point`, {
             params: {
@@ -122,8 +120,6 @@ router.get("/daily", getCoords, async (request, response) => {
                     time: { type: "seconds", value: pendingTime },
                 });
         }
-
-        console.log("Climate Data ------------------------ \n", result.data);
 
         let {
             properties: { parameter },
@@ -228,6 +224,9 @@ router.get("/daily", getCoords, async (request, response) => {
             PS: parseFloat(averagePS.toFixed(2)),
             RH2M: parseFloat(averageRH2M.toFixed(2)),
         };
+
+        climate.info.MAX = formatDate(climate.info.MAX);
+        climate.info.MIN = formatDate(climate.info.MIN);
 
         if (climate.info) {
             const pendingTime = requestPendingTime(startTime);
