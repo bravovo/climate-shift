@@ -43,7 +43,12 @@ const climate = {
             "frostDays": {
                 "units": "дні",
                 "longname": "Морозні дні"
-            }
+            },
+            "metrics": {
+                "max": "Максимум",
+                "min": "Мінімум",
+                "avg": "В середньому",
+            },
         },
         eng: {
             "temp": {
@@ -73,7 +78,12 @@ const climate = {
             "frostDays": {
                 "units": "days",
                 "longname": "Frost Days"
-            }
+            },
+            "metrics": {
+                "max": "Maximum",
+                "min": "Minimum",
+                "avg": "Average",
+            },
         },
     },
 };
@@ -205,13 +215,13 @@ router.get("/daily", getCoords, async (request, response) => {
         
         climate.info.MAX = {
             PRECTOTCORR: maxPrec,
-            T2M_MAX: maxTempMax,
+            T2M: maxTempMax,
             WS2M: maxWindSpeed,
             TS: maxSurfaceTemp,
         };
 
         climate.info.MIN = {
-            T2M_MIN: minTempMin,
+            T2M: minTempMin,
             TS: minSurfaceTemp,
         };
 
