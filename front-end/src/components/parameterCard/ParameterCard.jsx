@@ -1,38 +1,64 @@
 import { useAtomValue } from "jotai";
 import { climateDataAtom, langAtom } from "../../atoms";
 import PropTypes from "prop-types";
-import { StyledContainer } from "./ParameterCard.styles";
+import {
+    StyledContainer,
+    Title3,
+    ParameterGroup,
+    ParameterLabel,
+    ParameterValue,
+    FrostDays,
+    StyledParameter,
+} from "./ParameterCard.styles";
+
 const ParameterCard = ({ property, parameters }) => {
     const climateData = useAtomValue(climateDataAtom);
     const lang = useAtomValue(langAtom);
 
     return (
         <StyledContainer>
-            <h3>
+            <Title3>
                 {climateData.parameters[lang][property].longname} (
                 {climateData.parameters[lang][property].units})
-            </h3>
+            </Title3>
             <div>
                 {parameters.map((value, index) => {
                     return (
-                        <div key={index}>
-                            <p>{climateData.AVERAGES[value] || null}</p>
+                        <ParameterGroup key={index}>
+                            {climateData.AVERAGES[value] ? (
+                                <StyledParameter>
+                                    <ParameterLabel>{climateData.parameters[lang].metrics.avg}</ParameterLabel>
+                                    <ParameterValue>
+                                        {climateData.AVERAGES[value]}
+                                    </ParameterValue>
+                                </StyledParameter>
+                            ) : null}
                             {climateData.MAX[value] ? (
-                                <p>
-                                    Max: {climateData.MAX[value].date} ---{" "}
-                                    {climateData.MAX[value].value}
-                                </p>
+                                <StyledParameter>
+                                    <ParameterLabel>{climateData.parameters[lang].metrics.max}</ParameterLabel>
+                                    <ParameterValue>
+                                        {climateData.MAX[value].date} ---{" "}
+                                        {climateData.MAX[value].value}
+                                    </ParameterValue>
+                                </StyledParameter>
                             ) : null}
                             {climateData.MIN[value] ? (
-                                <p>
-                                    Min: {climateData.MIN[value].date} ---{" "}
-                                    {climateData.MIN[value].value}
-                                </p>
+                                <StyledParameter>
+                                    <ParameterLabel>{climateData.parameters[lang].metrics.min}</ParameterLabel>
+                                    <ParameterValue>
+                                        {climateData.MIN[value].date} ---{" "}
+                                        {climateData.MIN[value].value}
+                                    </ParameterValue>
+                                </StyledParameter>
                             ) : null}
                             {property === "frostDays" ? (
-                                <p>{climateData.frostDays}</p>
+                                <StyledParameter>
+                                    <FrostDays>
+                                        {climateData.frostDays}
+                                    </FrostDays>
+                                </StyledParameter>
                             ) : null}
-                        </div>
+                        </ParameterGroup>
                     );
                 })}
             </div>
