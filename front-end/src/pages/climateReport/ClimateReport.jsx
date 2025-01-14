@@ -1,20 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAtom } from "jotai";
 import { climateDataAtom } from "../../atoms";
 import ParameterCard from "../../components/parameterCard/ParameterCard";
+import {
+    StyledLastMonthStats,
+    StyledParameterCardsContainer,
+    StyledErrorParagraph,
+    StyledInputContainer,
+    StyledContainer,
+    StyledComponentContainer,
+    StyledInput,
+    ClearInputButton
+} from "./ClimateReport.styles";
+
+const defaultCities = [
+    "Paris",
+    "Los Angeles",
+    "New York",
+    "London",
+    "Kyiv",
+    "Madrid",
+    "Oslo",
+    "Tokyo",
+    "Canberra",
+    "Cape Town",
+];
 
 const ClimateReport = () => {
     const [climateData, setClimateData] = useAtom(climateDataAtom);
     const [city, setCity] = useState("");
+    const [fetchedCity, setFetchedCity] = useState("");
     const [error, setError] = useState("");
 
-    const handleFindClimateDataSubmit = async () => {
-        if (city.length === 0) {
-            setError("Назва міста не може бути порожньою");
-            return;
-        }
+    useEffect(() => {
+        const cityToFetch =
+            defaultCities[parseInt(Math.random() * defaultCities.length)];
+        setFetchedCity(cityToFetch);
+        fetchCity(cityToFetch);
+    }, []);
 
+    const fetchCity = async (city) => {
         try {
             const response = await axios.get(
                 "http://localhost:5000/api/climate/daily",
@@ -37,6 +63,7 @@ const ClimateReport = () => {
             } else {
                 console.log(response.status, response.data.message);
             }
+            setFetchedCity(city);
         } catch (error) {
             console.log(error.message);
             if (error.response) {
@@ -53,28 +80,70 @@ const ClimateReport = () => {
         }
     };
 
+    const handleFindClimateDataSubmit = async () => {
+        if (city.length === 0) {
+            setError("Назва міста не може бути порожньою");
+            return;
+        }
+
+        fetchCity(city);
+    };
+
+    const handleClearInput = () => {
+        setCity("");
+
+        setClimateData({
+            fetched: false,
+            PRECTOTCORR: {},
+            T2M_MAX: {},
+            T2M_MIN: {},
+            T2M: {},
+            WS2M: {},
+            RH2M: {},
+            PS: {},
+            CLOUD_AMT: {},
+            TS: {},
+            FROST_DAYS: {},
+            MAX: {},
+            MIN: {},
+            AVERAGES: {},
+            frostDays: {},
+            parameters: {},
+        });
+    };
+
     return (
-        <div>
-            <div>
-                {error.length > 0 ? <p>{error}</p> : null}
-                <input
-                    type="text"
-                    placeholder="Введіть назву міста"
-                    value={city}
-                    onChange={(e) => setCity(e.target.value)}
-                />
-                <button onClick={handleFindClimateDataSubmit}>
-                    Знайти кліматичні дані
-                </button>
-            </div>
-            <div>
-                {climateData.fetched && (
+        <StyledContainer>
+            <StyledComponentContainer>
+                {error.length > 0 ? (
+                    <StyledErrorParagraph>{error}</StyledErrorParagraph>
+                ) : null}
+                <StyledInputContainer>
                     <div>
-                        <h1>Статистика за минулий місяць</h1>
-                        <div style={{display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center'}}>
+                        <StyledInput
+                            type="text"
+                            placeholder="Введіть назву міста"
+                            value={city}
+                            onChange={(e) => setCity(e.target.value)}
+                        />
+                        <ClearInputButton onClick={handleClearInput}>X</ClearInputButton>
+                    </div>
+                    <button onClick={handleFindClimateDataSubmit}>
+                        Знайти кліматичні дані
+                    </button>
+                </StyledInputContainer>
+            </StyledComponentContainer>
+            <StyledComponentContainer>
+                {climateData.fetched && (
+                    <StyledLastMonthStats>
+                        <h1>
+                            Статистика за минулий місяць{" "}
+                            {climateData.fetched ? `для ${fetchedCity}` : null}
+                        </h1>
+                        <StyledParameterCardsContainer>
                             <ParameterCard
                                 property="temp"
-                                parameters={["T2M", "T2M_MAX", "T2M_MIN"]}
+                                parameters={["T2M"]}
                             />
                             <ParameterCard
                                 property="surfaceTemp"
@@ -100,11 +169,11 @@ const ClimateReport = () => {
                                 property="frostDays"
                                 parameters={["FROST_DAYS"]}
                             />
-                        </div>
-                    </div>
+                        </StyledParameterCardsContainer>
+                    </StyledLastMonthStats>
                 )}
-            </div>
-        </div>
+            </StyledComponentContainer>
+        </StyledContainer>
     );
 };
 
