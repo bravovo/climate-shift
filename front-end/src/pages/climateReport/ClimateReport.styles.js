@@ -2,11 +2,15 @@ import styled from "styled-components";
 
 export const StyledContainer = styled.div`
     width: 100%;
-    place-items: center;
 `;
 
 export const StyledComponentContainer = styled.div`
     width: 100%;
+`;
+
+export const StyledComponentContainerExtended = styled.div`
+    width: 1000px;
+    position: sticky;
 `;
 
 export const StyledInputContainer = styled.div`
@@ -29,9 +33,19 @@ export const StyledInput = styled.input`
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
-    background-color: #1a1a1a;
+    background-color: #2f7a78;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
+
+    &::placeholder {
+        color: #ffffff;
+    }
+
+    &:focus {
+        outline: none;
+        border: 3px solid transparent;
+        background-color: #469280;
+    }
 `;
 
 export const ClearInputButton = styled.button`
@@ -47,10 +61,10 @@ export const StyledLastMonthStats = styled.div`
 `;
 
 export const StyledParameterCardsContainer = styled.div`
-    width: 100%;
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     justify-content: center;
-    align-items: center;
-    gap: 20px;
+    gap: 1em;
+    max-width: 1000px;
+    box-sizing: border-box;
 `;

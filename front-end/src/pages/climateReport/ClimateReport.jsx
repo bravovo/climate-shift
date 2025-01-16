@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { useAtom } from "jotai";
-import { climateDataAtom } from "../../atoms";
+import { useAtom, useAtomValue } from "jotai";
+import { climateDataAtom, defaultCitiesAtom } from "../../atoms";
 import ParameterCard from "../../components/parameterCard/ParameterCard";
 import {
     StyledLastMonthStats,
@@ -11,27 +11,16 @@ import {
     StyledContainer,
     StyledComponentContainer,
     StyledInput,
-    ClearInputButton
+    ClearInputButton,
+    StyledComponentContainerExtended
 } from "./ClimateReport.styles";
-
-const defaultCities = [
-    "Paris",
-    "Los Angeles",
-    "New York",
-    "London",
-    "Kyiv",
-    "Madrid",
-    "Oslo",
-    "Tokyo",
-    "Canberra",
-    "Cape Town",
-];
 
 const ClimateReport = () => {
     const [climateData, setClimateData] = useAtom(climateDataAtom);
     const [city, setCity] = useState("");
     const [fetchedCity, setFetchedCity] = useState("");
     const [error, setError] = useState("");
+    const defaultCities = useAtomValue(defaultCitiesAtom);
 
     useEffect(() => {
         const cityToFetch =
@@ -114,7 +103,7 @@ const ClimateReport = () => {
 
     return (
         <StyledContainer>
-            <StyledComponentContainer>
+            <StyledComponentContainerExtended>
                 {error.length > 0 ? (
                     <StyledErrorParagraph>{error}</StyledErrorParagraph>
                 ) : null}
@@ -132,14 +121,14 @@ const ClimateReport = () => {
                         Знайти кліматичні дані
                     </button>
                 </StyledInputContainer>
-            </StyledComponentContainer>
+            </StyledComponentContainerExtended>
             <StyledComponentContainer>
                 {climateData.fetched && (
                     <StyledLastMonthStats>
-                        <h1>
+                        <h2>
                             Статистика за минулий місяць{" "}
                             {climateData.fetched ? `для ${fetchedCity}` : null}
-                        </h1>
+                        </h2>
                         <StyledParameterCardsContainer>
                             <ParameterCard
                                 property="temp"

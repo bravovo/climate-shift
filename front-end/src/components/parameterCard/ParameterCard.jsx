@@ -9,14 +9,25 @@ import {
     ParameterValue,
     FrostDays,
     StyledParameter,
+    ParameterValueDate
 } from "./ParameterCard.styles";
+import { useEffect, useState } from "react";
 
 const ParameterCard = ({ property, parameters }) => {
+    const [variant, setVariant] = useState("1");
     const climateData = useAtomValue(climateDataAtom);
     const lang = useAtomValue(langAtom);
 
+    useEffect(() => {
+        if (property === "temp" || property === "surfaceTemp") {
+            setVariant("3");
+        } else if (property === "windSpeed") {
+            setVariant("2");
+        }
+    }, []);
+
     return (
-        <StyledContainer>
+        <StyledContainer variant={variant}>
             <Title3>
                 {climateData.parameters[lang][property].longname} (
                 {climateData.parameters[lang][property].units})
@@ -27,7 +38,12 @@ const ParameterCard = ({ property, parameters }) => {
                         <ParameterGroup key={index}>
                             {climateData.AVERAGES[value] ? (
                                 <StyledParameter>
-                                    <ParameterLabel>{climateData.parameters[lang].metrics.avg}</ParameterLabel>
+                                    <ParameterLabel>
+                                        {
+                                            climateData.parameters[lang].metrics
+                                                .avg
+                                        }
+                                    </ParameterLabel>
                                     <ParameterValue>
                                         {climateData.AVERAGES[value]}
                                     </ParameterValue>
@@ -35,18 +51,28 @@ const ParameterCard = ({ property, parameters }) => {
                             ) : null}
                             {climateData.MAX[value] ? (
                                 <StyledParameter>
-                                    <ParameterLabel>{climateData.parameters[lang].metrics.max}</ParameterLabel>
+                                    <ParameterLabel>
+                                        {
+                                            climateData.parameters[lang].metrics
+                                                .max
+                                        }
+                                    </ParameterLabel>
                                     <ParameterValue>
-                                        {climateData.MAX[value].date} ---{" "}
+                                        <ParameterValueDate>{climateData.MAX[value].date}</ParameterValueDate> | {" "}
                                         {climateData.MAX[value].value}
                                     </ParameterValue>
                                 </StyledParameter>
                             ) : null}
                             {climateData.MIN[value] ? (
                                 <StyledParameter>
-                                    <ParameterLabel>{climateData.parameters[lang].metrics.min}</ParameterLabel>
+                                    <ParameterLabel>
+                                        {
+                                            climateData.parameters[lang].metrics
+                                                .min
+                                        }
+                                    </ParameterLabel>
                                     <ParameterValue>
-                                        {climateData.MIN[value].date} ---{" "}
+                                        <ParameterValueDate>{climateData.MIN[value].date}</ParameterValueDate> |{" "}
                                         {climateData.MIN[value].value}
                                     </ParameterValue>
                                 </StyledParameter>
