@@ -18,11 +18,7 @@ const climate = {
             },
             "surfaceTemp": {
                 "units": "°C",
-                "longname": "Температура поверхні Землі"
-            },
-            "surfaceTemp": {
-                "units": "°C",
-                "longname": "Температура поверхні Землі"
+                "longname": "Температура поверхні"
             },
             "precipitation": {
                 "units": "мм/день",
@@ -37,8 +33,8 @@ const climate = {
                 "longname": "Вологість"
             },
             "pressure": {
-                "units": "мм. рт. ст.",
-                "longname": "Атмосферний тиск на поверхні"
+                "units": "мм.рт.ст",
+                "longname": "Атмосферний тиск"
             },
             "frostDays": {
                 "units": "дні",
@@ -72,7 +68,7 @@ const climate = {
                 "longname": "Humidity"
             },
             "pressure": {
-                "units": "mm of mercury",
+                "units": "mm Hg",
                 "longname": "Surface Pressure"
             },
             "frostDays": {
