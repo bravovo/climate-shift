@@ -277,7 +277,7 @@ router.get("/years", getCoords, async (request, response) => {
                 end: 2023,
                 latitude: lat,
                 longitude: lng,
-                parameters: PARAMETERS,
+                parameters: `${PARAMETERS},CLOUD_AMT`,
                 community: "AG",
                 format: "JSON",
             },
@@ -294,50 +294,35 @@ router.get("/years", getCoords, async (request, response) => {
                 });
         }
 
-        // Кліматологічні дані, де наведені середні значення за певну кількість років (5 у цьому випадку)
-        // const climatologyResult = await axios.get(`${BASE_URL}/climatology/point`, {
-        //     params: {
-        //         start: 2018,
-        //         end: 2023,
-        //         latitude: lat,
-        //         longitude: lng,
-        //         parameters: PARAMETERS,
-        //         community: "AG",
-        //         format: "JSON",
-        //     },
-        // });
-
         const {
             properties: { parameter },
         } = monthlyResult.data;
 
         let averages = {};
 
+        parameter.PS = convertPressure(parameter.PS);
+
         for (const [paramName, paramData] of Object.entries(parameter)) {
             for (const [date, value] of Object.entries(paramData)) {
                 if (date.toString().substring(4).includes("13")) {
                     averages[paramName] = {
                         ...averages[paramName],
-                        [date]: value,
+                        [date.substring(0, 4)]: value,
                     };
                 }
             }
         }
 
-        const convertedPressure = convertPressure(averages.PS);
+        climate.info = { ...parameter };
+        climate.info.AVERAGES = { ...averages };
 
-        averages = { ...averages, PS: convertedPressure };
-        console.log("AVERAGES ---", averages);
-
-        monthlyResult.data.properties.parameter.AVERAGES = { ...averages };
-
-        if (monthlyResult.data) {
+        if (climate.info) {
             const pendingTime = requestPendingTime(startTime);
 
             return response
                 .status(200)
                 .send({
-                    ...monthlyResult.data,
+                    ...climate,
                     time: { type: "seconds", value: pendingTime },
                 });
         }
