@@ -23,6 +23,7 @@ export const StyledInputContainer = styled.div`
 `;
 
 export const StyledErrorParagraph = styled.p`
+    font-weight: bold;
     color: red;
 `;
 
@@ -51,20 +52,4 @@ export const StyledInput = styled.input`
 export const ClearInputButton = styled.button`
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-`;
-
-export const StyledLastMonthStats = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-`;
-
-export const StyledParameterCardsContainer = styled.div`
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1em;
-    max-width: 1000px;
-    box-sizing: border-box;
 `;

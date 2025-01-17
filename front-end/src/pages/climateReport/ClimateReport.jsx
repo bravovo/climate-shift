@@ -2,10 +2,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useAtom, useAtomValue } from "jotai";
 import { climateDataAtom, defaultCitiesAtom } from "../../atoms";
-import ParameterCard from "../../components/parameterCard/ParameterCard";
+import LastMonthStats from "../../components/lastMonthStats/LastMonthStats";
 import {
-    StyledLastMonthStats,
-    StyledParameterCardsContainer,
     StyledErrorParagraph,
     StyledInputContainer,
     StyledContainer,
@@ -18,7 +16,7 @@ import {
 const ClimateReport = () => {
     const [climateData, setClimateData] = useAtom(climateDataAtom);
     const [city, setCity] = useState("");
-    const [fetchedCity, setFetchedCity] = useState("");
+    const [fetchedCity, setFetchedCity] = useState("Kyiv");
     const [error, setError] = useState("");
     const defaultCities = useAtomValue(defaultCitiesAtom);
 
@@ -41,7 +39,6 @@ const ClimateReport = () => {
             );
 
             if (response.status === 200) {
-                console.log(response.data);
                 const { parameters, info } = response.data;
                 setClimateData({
                     fetched: true,
@@ -50,14 +47,14 @@ const ClimateReport = () => {
                 });
                 setError("");
             } else {
-                console.log(response.status, response.data.message);
+                window.alert('За заданою локацією даних не знайдено. Спробуйте іншу локацію');
+                return;
             }
             setFetchedCity(city);
         } catch (error) {
-            console.log(error.message);
             if (error.response) {
                 if (error.response.status === 500) {
-                    setError("Помилка на сервері");
+                    setError(error.response.data.message || "Помилка на сервері");
                 } else {
                     setError(
                         error.response.data.message || "Щось пішло не так"
@@ -124,42 +121,7 @@ const ClimateReport = () => {
             </StyledComponentContainerExtended>
             <StyledComponentContainer>
                 {climateData.fetched && (
-                    <StyledLastMonthStats>
-                        <h2>
-                            Статистика за минулий місяць{" "}
-                            {climateData.fetched ? `для ${fetchedCity}` : null}
-                        </h2>
-                        <StyledParameterCardsContainer>
-                            <ParameterCard
-                                property="temp"
-                                parameters={["T2M"]}
-                            />
-                            <ParameterCard
-                                property="surfaceTemp"
-                                parameters={["TS"]}
-                            />
-                            <ParameterCard
-                                property="windSpeed"
-                                parameters={["WS2M"]}
-                            />
-                            <ParameterCard
-                                property="pressure"
-                                parameters={["PS"]}
-                            />
-                            <ParameterCard
-                                property="precipitation"
-                                parameters={["PRECTOTCORR"]}
-                            />
-                            <ParameterCard
-                                property="humidity"
-                                parameters={["RH2M"]}
-                            />
-                            <ParameterCard
-                                property="frostDays"
-                                parameters={["FROST_DAYS"]}
-                            />
-                        </StyledParameterCardsContainer>
-                    </StyledLastMonthStats>
+                    <LastMonthStats fetchedCity={fetchedCity} />
                 )}
             </StyledComponentContainer>
         </StyledContainer>
