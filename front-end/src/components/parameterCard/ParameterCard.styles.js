@@ -1,10 +1,10 @@
 import styled from "styled-components";
 
 export const StyledContainer = styled.div`
-    width: ${(props) => {
-        if (props.variant === "3") {
+    width: ${({$variant}) => {
+        if ($variant === "3") {
             return "900px";
-        } else if (props.variant === "2") {
+        } else if ($variant === "2") {
             return "575px";
         } else {
             return "250px";
@@ -49,21 +49,6 @@ export const StyledParameter = styled.div`
     border-radius: 10px;
     background-color: transparent;
     padding: 0 10px;
-`;
-
-export const ParameterLabel = styled.p`
-    font-size: 0.95em;
-    font-weight: bold;
-    color: #ffffff;
-`;
-
-export const ParameterValue = styled.p`
-    font-size: 1.5em;
-    margin: 3px 0;
-`;
-
-export const ParameterValueDate = styled.span`
-    color: #469280;
 `;
 
 export const FrostDays = styled.div`

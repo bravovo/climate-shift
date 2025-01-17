@@ -5,13 +5,11 @@ import {
     StyledContainer,
     Title3,
     ParameterGroup,
-    ParameterLabel,
-    ParameterValue,
     FrostDays,
     StyledParameter,
-    ParameterValueDate
 } from "./ParameterCard.styles";
 import { useEffect, useState } from "react";
+import Parameter from "../parameter/Parameter";
 
 const ParameterCard = ({ property, parameters }) => {
     const [variant, setVariant] = useState("1");
@@ -27,7 +25,7 @@ const ParameterCard = ({ property, parameters }) => {
     }, []);
 
     return (
-        <StyledContainer variant={variant}>
+        <StyledContainer $variant={variant}>
             <Title3>
                 {climateData.parameters[lang][property].longname} (
                 {climateData.parameters[lang][property].units})
@@ -37,45 +35,33 @@ const ParameterCard = ({ property, parameters }) => {
                     return (
                         <ParameterGroup key={index}>
                             {climateData.AVERAGES[value] ? (
-                                <StyledParameter>
-                                    <ParameterLabel>
-                                        {
-                                            climateData.parameters[lang].metrics
-                                                .avg
-                                        }
-                                    </ParameterLabel>
-                                    <ParameterValue>
-                                        {climateData.AVERAGES[value]}
-                                    </ParameterValue>
-                                </StyledParameter>
+                                <Parameter
+                                    content={[
+                                        climateData.parameters[lang].metrics
+                                            .avg,
+                                        climateData.AVERAGES[value],
+                                    ]}
+                                />
                             ) : null}
                             {climateData.MAX[value] ? (
-                                <StyledParameter>
-                                    <ParameterLabel>
-                                        {
-                                            climateData.parameters[lang].metrics
-                                                .max
-                                        }
-                                    </ParameterLabel>
-                                    <ParameterValue>
-                                        <ParameterValueDate>{climateData.MAX[value].date}</ParameterValueDate> | {" "}
-                                        {climateData.MAX[value].value}
-                                    </ParameterValue>
-                                </StyledParameter>
+                                <Parameter
+                                    content={[
+                                        climateData.parameters[lang].metrics
+                                            .max,
+                                        climateData.MAX[value].value,
+                                        climateData.MAX[value].date,
+                                    ]}
+                                />
                             ) : null}
                             {climateData.MIN[value] ? (
-                                <StyledParameter>
-                                    <ParameterLabel>
-                                        {
-                                            climateData.parameters[lang].metrics
-                                                .min
-                                        }
-                                    </ParameterLabel>
-                                    <ParameterValue>
-                                        <ParameterValueDate>{climateData.MIN[value].date}</ParameterValueDate> |{" "}
-                                        {climateData.MIN[value].value}
-                                    </ParameterValue>
-                                </StyledParameter>
+                                <Parameter
+                                    content={[
+                                        climateData.parameters[lang].metrics
+                                            .min,
+                                        climateData.MIN[value].value,
+                                        climateData.MIN[value].date,
+                                    ]}
+                                />
                             ) : null}
                             {property === "frostDays" ? (
                                 <StyledParameter>
