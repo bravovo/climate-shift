@@ -2,7 +2,11 @@ const { Router } = require("express");
 const axios = require("axios");
 
 const { getCoords } = require("../middleware/climateRouteMiddleware");
-const { requestPendingTime, convertPressure, formatDate } = require("../utils/utils");
+const {
+    requestPendingTime,
+    convertPressure,
+    formatDate,
+} = require("../utils/utils");
 
 const BASE_URL = "https://power.larc.nasa.gov/api/temporal";
 const PARAMETERS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,WS2M,RH2M,PS,TS,FROST_DAYS";
@@ -12,73 +16,73 @@ const router = Router();
 const climate = {
     parameters: {
         ukr: {
-            "temp": {
-                "units": "°C",
-                "longname": "Температура повітря"
+            temp: {
+                units: "°C",
+                longname: "Температура повітря",
             },
-            "surfaceTemp": {
-                "units": "°C",
-                "longname": "Температура поверхні"
+            surfaceTemp: {
+                units: "°C",
+                longname: "Температура поверхні",
             },
-            "precipitation": {
-                "units": "мм/день",
-                "longname": "Кількість опадів"
+            precipitation: {
+                units: "мм/день",
+                longname: "Кількість опадів",
             },
-            "windSpeed": {
-                "units": "м/с",
-                "longname": "Швидкість вітру"
+            windSpeed: {
+                units: "м/с",
+                longname: "Швидкість вітру",
             },
-            "humidity": {
-                "units": "%",
-                "longname": "Вологість"
+            humidity: {
+                units: "%",
+                longname: "Вологість",
             },
-            "pressure": {
-                "units": "мм.рт.ст",
-                "longname": "Атмосферний тиск"
+            pressure: {
+                units: "мм.рт.ст",
+                longname: "Атмосферний тиск",
             },
-            "frostDays": {
-                "units": "дні",
-                "longname": "Морозні дні"
+            frostDays: {
+                units: "дні",
+                longname: "Морозні дні",
             },
-            "metrics": {
-                "max": "Максимум",
-                "min": "Мінімум",
-                "avg": "В середньому",
+            metrics: {
+                max: "Максимум",
+                min: "Мінімум",
+                avg: "В середньому",
             },
         },
         eng: {
-            "temp": {
-                "units": "°C",
-                "longname": "Temperature"
+            temp: {
+                units: "°C",
+                longname: "Temperature",
             },
-            "surfaceTemp": {
-                "units": "°C",
-                "longname": "Surface temperature"
+            surfaceTemp: {
+                units: "°C",
+                longname: "Surface temperature",
             },
-            "precipitation": {
-                "units": "mm/day",
-                "longname": "Precipitation"
+            precipitation: {
+                units: "mm/day",
+                longname: "Precipitation",
             },
-            "windSpeed": {
-                "units": "m/s",
-                "longname": "Wind speed"
+            windSpeed: {
+                units: "m/s",
+                longname: "Wind speed",
             },
-            "humidity": {
-                "units": "%",
-                "longname": "Humidity"
+            humidity: {
+                units: "%",
+                longname: "Humidity",
             },
-            "pressure": {
-                "units": "mm Hg",
-                "longname": "Surface Pressure"
+            pressure: {
+                units: "mm Hg",
+                longname: "Surface Pressure",
             },
-            "frostDays": {
-                "units": "days",
-                "longname": "Frost Days"
+            frostDays: {
+                units: "days",
+                longname: "Frost Days",
             },
-            "metrics": {
-                "max": "Maximum",
-                "min": "Minimum",
-                "avg": "Average",
+            metrics: {
+                max: "Maximum",
+                min: "Minimum",
+                avg: "Average",
             },
         },
     },
@@ -116,15 +120,8 @@ router.get("/daily", getCoords, async (request, response) => {
             },
         });
 
-        if (!result.data) {
-            const pendingTime = requestPendingTime(startTime);
-
-            return response
-                .status(204)
-                .send({
-                    message: "No data for request found",
-                    time: { type: "seconds", value: pendingTime },
-                });
+        if (!result.data.properties) {
+            return response.status(204);
         }
 
         let {
@@ -247,12 +244,10 @@ router.get("/daily", getCoords, async (request, response) => {
 
         const pendingTime = requestPendingTime(startTime);
 
-        return response
-            .status(500)
-            .send({
-                message: "Error getting climate data",
-                time: { type: "seconds", value: pendingTime },
-            });
+        return response.status(500).send({
+            message: "Помилка на сервері під час виконання запиту",
+            time: { type: "seconds", value: pendingTime },
+        });
     }
 });
 
@@ -284,14 +279,7 @@ router.get("/years", getCoords, async (request, response) => {
         });
 
         if (!monthlyResult.data) {
-            const pendingTime = requestPendingTime(startTime);
-
-            return response
-                .status(204)
-                .send({
-                    message: "No data for request found",
-                    time: { type: "seconds", value: pendingTime },
-                });
+            return response.status(204);
         }
 
         const {
@@ -319,24 +307,20 @@ router.get("/years", getCoords, async (request, response) => {
         if (climate.info) {
             const pendingTime = requestPendingTime(startTime);
 
-            return response
-                .status(200)
-                .send({
-                    ...climate,
-                    time: { type: "seconds", value: pendingTime },
-                });
+            return response.status(200).send({
+                ...climate,
+                time: { type: "seconds", value: pendingTime },
+            });
         }
     } catch (error) {
         console.error("Error fetching climate data:", error.message);
 
         const pendingTime = requestPendingTime(startTime);
 
-        return response
-            .status(500)
-            .send({
-                message: "Error getting climate data",
-                time: { type: "seconds", value: pendingTime },
-            });
+        return response.status(500).send({
+            message: "Помилка на сервері під час виконання запиту",
+            time: { type: "seconds", value: pendingTime },
+        });
     }
 });
 
