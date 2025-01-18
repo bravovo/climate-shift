@@ -1,5 +1,3 @@
-import { useAtomValue } from "jotai";
-import { climateDataAtom, langAtom } from "../../atoms";
 import PropTypes from "prop-types";
 import {
     StyledContainer,
@@ -10,11 +8,12 @@ import {
 } from "./ParameterCard.styles";
 import { useEffect, useState } from "react";
 import Parameter from "../parameter/Parameter";
+import { useSelector } from "react-redux";
 
 const ParameterCard = ({ property, parameters }) => {
     const [variant, setVariant] = useState("1");
-    const climateData = useAtomValue(climateDataAtom);
-    const lang = useAtomValue(langAtom);
+    const climateData = useSelector((state) => state.monthlyClimateData);
+    const lang = useSelector((state) => state.dataLang);
 
     useEffect(() => {
         if (property === "temp" || property === "surfaceTemp") {

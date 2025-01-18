@@ -53,3 +53,7 @@ export const ClearInputButton = styled.button`
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 `;
+
+export const ChangeLangButton = styled.button`
+    width: 310px;
+`;

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { useAtom, useAtomValue } from "jotai";
-import { climateDataAtom, defaultCitiesAtom } from "../../atoms";
+import { useAtomValue } from "jotai";
+import { defaultCitiesAtom } from "../../atoms";
 import LastMonthStats from "../../components/lastMonthStats/LastMonthStats";
 import {
     StyledErrorParagraph,
@@ -10,59 +9,40 @@ import {
     StyledComponentContainer,
     StyledInput,
     ClearInputButton,
-    StyledComponentContainerExtended
+    StyledComponentContainerExtended,
+    ChangeLangButton
 } from "./ClimateReport.styles";
 
+import {
+    fetchMonthlyClimateData,
+    clear,
+} from "../../state/monthlyClimateData/monthlyClimateDataSlice";
+import { toggleLang } from '../../state/dataLang/dataLangSlice';
+import { useDispatch, useSelector } from "react-redux";
+
 const ClimateReport = () => {
-    const [climateData, setClimateData] = useAtom(climateDataAtom);
+    const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
+    const lang = useSelector((state) => state.dataLang);
+    const dispatch = useDispatch();
     const [city, setCity] = useState("");
-    const [fetchedCity, setFetchedCity] = useState("Kyiv");
     const [error, setError] = useState("");
     const defaultCities = useAtomValue(defaultCitiesAtom);
 
     useEffect(() => {
-        const cityToFetch =
-            defaultCities[parseInt(Math.random() * defaultCities.length)];
-        setFetchedCity(cityToFetch);
-        fetchCity(cityToFetch);
+        if (!monthlyClimateData.fetched) {
+            const cityToFetch =
+                defaultCities[parseInt(Math.random() * defaultCities.length)];
+                fetchMonthlyData(cityToFetch);
+        }
     }, []);
 
-    const fetchCity = async (city) => {
+    const fetchMonthlyData = (city) => {
         try {
-            const response = await axios.get(
-                "http://localhost:5000/api/climate/daily",
-                {
-                    params: {
-                        city: city,
-                    },
-                }
-            );
+            dispatch(fetchMonthlyClimateData(city));
 
-            if (response.status === 200) {
-                const { parameters, info } = response.data;
-                setClimateData({
-                    fetched: true,
-                    parameters: parameters,
-                    ...info,
-                });
-                setError("");
-            } else {
-                window.alert('За заданою локацією даних не знайдено. Спробуйте іншу локацію');
-                return;
-            }
-            setFetchedCity(city);
+            setError("");
         } catch (error) {
-            if (error.response) {
-                if (error.response.status === 500) {
-                    setError(error.response.data.message || "Помилка на сервері");
-                } else {
-                    setError(
-                        error.response.data.message || "Щось пішло не так"
-                    );
-                }
-            } else {
-                setError(error.message || "Щось пішло не так");
-            }
+            setError(error.message);
         }
     };
 
@@ -72,30 +52,17 @@ const ClimateReport = () => {
             return;
         }
 
-        fetchCity(city);
+        fetchMonthlyData(city);
+    };
+
+    const handleChangeDataLang = () => {
+        dispatch(toggleLang());
     };
 
     const handleClearInput = () => {
         setCity("");
 
-        setClimateData({
-            fetched: false,
-            PRECTOTCORR: {},
-            T2M_MAX: {},
-            T2M_MIN: {},
-            T2M: {},
-            WS2M: {},
-            RH2M: {},
-            PS: {},
-            CLOUD_AMT: {},
-            TS: {},
-            FROST_DAYS: {},
-            MAX: {},
-            MIN: {},
-            AVERAGES: {},
-            frostDays: {},
-            parameters: {},
-        });
+        dispatch(clear());
     };
 
     return (
@@ -112,17 +79,25 @@ const ClimateReport = () => {
                             value={city}
                             onChange={(e) => setCity(e.target.value)}
                         />
-                        <ClearInputButton onClick={handleClearInput}>X</ClearInputButton>
+                        <ClearInputButton onClick={handleClearInput}>
+                            X
+                        </ClearInputButton>
                     </div>
                     <button onClick={handleFindClimateDataSubmit}>
                         Знайти кліматичні дані
                     </button>
+                    <ChangeLangButton onClick={handleChangeDataLang}>
+                        {lang === 'eng' ? "Змінити мову відображення даних" : "Change data output language"}
+                    </ChangeLangButton>
                 </StyledInputContainer>
             </StyledComponentContainerExtended>
             <StyledComponentContainer>
-                {climateData.fetched && (
-                    <LastMonthStats fetchedCity={fetchedCity} />
+                {monthlyClimateData.fetched && (
+                    <LastMonthStats fetchedCity={monthlyClimateData.city} />
                 )}
+            </StyledComponentContainer>
+            <StyledComponentContainer>
+
             </StyledComponentContainer>
         </StyledContainer>
     );
