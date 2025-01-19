@@ -89,8 +89,13 @@ const climate = {
 };
 
 router.get("/daily", getCoords, async (request, response) => {
-    const { lat, lng } = request.decodedPlace.geometry;
-    const { startTime } = request.startTime;
+    const {
+        query: { city },
+        decodedPlace: {
+            geometry: { lat, lng },
+        },
+        startTime: { startTime },
+    } = request;
 
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
@@ -205,7 +210,7 @@ router.get("/daily", getCoords, async (request, response) => {
         const averageRH2M = rh2mSum / Object.keys(parameter.RH2M).length;
 
         climate.info = { ...parameter };
-        
+
         climate.info.MAX = {
             PRECTOTCORR: maxPrec,
             T2M: maxTempMax,
@@ -236,6 +241,7 @@ router.get("/daily", getCoords, async (request, response) => {
 
             return response.status(200).send({
                 ...climate,
+                point: { city: city, lat: lat, lng: lng },
                 time: { type: "seconds", value: pendingTime },
             });
         }
@@ -252,8 +258,13 @@ router.get("/daily", getCoords, async (request, response) => {
 });
 
 router.get("/years", getCoords, async (request, response) => {
-    const { lat, lng } = request.decodedPlace.geometry;
-    const { startTime } = request.startTime;
+    const {
+        query: { city },
+        decodedPlace: {
+            geometry: { lat, lng },
+        },
+        startTime: { startTime },
+    } = request;
 
     // Кліматичні дані доступні лише до 31 грудня 2023 року станом на 10.01.2025
     // const today = new Date();
@@ -309,6 +320,7 @@ router.get("/years", getCoords, async (request, response) => {
 
             return response.status(200).send({
                 ...climate,
+                point: { city: city, lat: lat, lng: lng },
                 time: { type: "seconds", value: pendingTime },
             });
         }
