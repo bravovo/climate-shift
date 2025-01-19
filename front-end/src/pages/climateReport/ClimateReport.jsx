@@ -10,18 +10,24 @@ import {
     StyledInput,
     ClearInputButton,
     StyledComponentContainerExtended,
-    ChangeLangButton
+    ChangeLangButton,
 } from "./ClimateReport.styles";
 
 import {
     fetchMonthlyClimateData,
-    clear,
+    clearMonthly,
 } from "../../state/monthlyClimateData/monthlyClimateDataSlice";
-import { toggleLang } from '../../state/dataLang/dataLangSlice';
+import { toggleLang } from "../../state/dataLang/dataLangSlice";
 import { useDispatch, useSelector } from "react-redux";
+import {
+    fetchYearsClimateData,
+    clearYears,
+} from "../../state/yearsClimateData/yearsClimateDataSlice";
+import YearsStats from "../../components/yearsStats/YearsStats";
 
 const ClimateReport = () => {
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
+    const yearsClimateData = useSelector((state) => state.yearsClimateData);
     const lang = useSelector((state) => state.dataLang);
     const dispatch = useDispatch();
     const [city, setCity] = useState("");
@@ -29,16 +35,17 @@ const ClimateReport = () => {
     const defaultCities = useAtomValue(defaultCitiesAtom);
 
     useEffect(() => {
-        if (!monthlyClimateData.fetched) {
+        if (!monthlyClimateData.fetched && !yearsClimateData.fetched) {
             const cityToFetch =
                 defaultCities[parseInt(Math.random() * defaultCities.length)];
-                fetchMonthlyData(cityToFetch);
+            fetchData(cityToFetch);
         }
     }, []);
 
-    const fetchMonthlyData = (city) => {
+    const fetchData = (city) => {
         try {
             dispatch(fetchMonthlyClimateData(city));
+            dispatch(fetchYearsClimateData(city));
 
             setError("");
         } catch (error) {
@@ -52,7 +59,7 @@ const ClimateReport = () => {
             return;
         }
 
-        fetchMonthlyData(city);
+        fetchData(city);
     };
 
     const handleChangeDataLang = () => {
@@ -62,7 +69,8 @@ const ClimateReport = () => {
     const handleClearInput = () => {
         setCity("");
 
-        dispatch(clear());
+        dispatch(clearMonthly());
+        dispatch(clearYears());
     };
 
     return (
@@ -87,7 +95,9 @@ const ClimateReport = () => {
                         Знайти кліматичні дані
                     </button>
                     <ChangeLangButton onClick={handleChangeDataLang}>
-                        {lang === 'eng' ? "Змінити мову відображення даних" : "Change data output language"}
+                        {lang === "eng"
+                            ? "Змінити мову відображення даних"
+                            : "Change data output language"}
                     </ChangeLangButton>
                 </StyledInputContainer>
             </StyledComponentContainerExtended>
@@ -97,7 +107,7 @@ const ClimateReport = () => {
                 )}
             </StyledComponentContainer>
             <StyledComponentContainer>
-
+                <YearsStats />
             </StyledComponentContainer>
         </StyledContainer>
     );
