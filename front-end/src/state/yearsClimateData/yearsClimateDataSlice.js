@@ -10,43 +10,41 @@ const initialState = {
     WS2M: {},
     RH2M: {},
     PS: {},
+    CLOUD_AMT: {},
     TS: {},
     FROST_DAYS: {},
-    MAX: {},
-    MIN: {},
     AVERAGES: {},
-    frostDays: {},
     parameters: {},
     city: ''
 };
 
-const monthlyClimateDataSlice = createSlice({
-    name: "monthlyClimateData",
+const yearsClimateDataSlice = createSlice({
+    name: "yearsClimateData",
     initialState,
     reducers: {
-        clearMonthly: () => {
+        clearYears: () => {
             return initialState;
         }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchMonthlyClimateData.pending, () => {
+            .addCase(fetchYearsClimateData.pending, () => {
                 console.log("Request is pending...");
             })
-            .addCase(fetchMonthlyClimateData.fulfilled, (state, action) => {
+            .addCase(fetchYearsClimateData.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
-            }).addCase(fetchMonthlyClimateData.rejected, (state, action) => {
+            }).addCase(fetchYearsClimateData.rejected, (state, action) => {
                 console.error("Failed to fetch climate data:", action.error.message);
             });
     },
 });
 
-export const fetchMonthlyClimateData = createAsyncThunk(
-    "monthlyClimateData/fetchMonthlyClimateData",
+export const fetchYearsClimateData = createAsyncThunk(
+    "yearsClimateData/fetchYearsClimateData",
     async (city = null, lat = null, lng = null) => {
         try {
             const response = await axios.get(
-                "http://localhost:5000/api/climate/daily",
+                "http://localhost:5000/api/climate/years",
                 {
                     params:
                         city === null
@@ -95,6 +93,6 @@ export const fetchMonthlyClimateData = createAsyncThunk(
     }
 );
 
-export const { clearMonthly } = monthlyClimateDataSlice.actions;
+export const { clearYears } = yearsClimateDataSlice.actions;
 
-export default monthlyClimateDataSlice.reducer;
+export default yearsClimateDataSlice.reducer;
