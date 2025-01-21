@@ -20,6 +20,14 @@ const climate = {
                 units: "°C",
                 longname: "Температура повітря",
             },
+            minTemp: {
+                units: "°C",
+                longname: "Мінімальна температура повітря",
+            },
+            maxTemp: {
+                units: "°C",
+                longname: "Максимальна температура повітря",
+            },
             surfaceTemp: {
                 units: "°C",
                 longname: "Температура поверхні",
@@ -54,6 +62,14 @@ const climate = {
             temp: {
                 units: "°C",
                 longname: "Temperature",
+            },
+            minTemp: {
+                units: "°C",
+                longname: "Min temperature",
+            },
+            maxTemp: {
+                units: "°C",
+                longname: "Max temperature",
             },
             surfaceTemp: {
                 units: "°C",
