@@ -107,7 +107,7 @@ const ClimateReport = () => {
                 )}
             </StyledComponentContainer>
             <StyledComponentContainer>
-                <YearsStats />
+                {yearsClimateData.fetched && (<YearsStats />)}
             </StyledComponentContainer>
         </StyledContainer>
     );
