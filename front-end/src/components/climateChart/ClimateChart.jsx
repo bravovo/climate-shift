@@ -10,6 +10,8 @@ import {
     Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
+import PropTypes from "prop-types";
+import { useEffect, useState } from "react";
 
 ChartJS.register(
     CategoryScale,
@@ -21,29 +23,31 @@ ChartJS.register(
     Legend
 );
 
-const ClimateChart = () => {
+const backgroundColor = "rgba(0,0,0,0)";
+
+const ClimateChart = ({ property, parameters, colors }) => {
     const yearsClimateData = useSelector((state) => state.yearsClimateData);
     const lang = useSelector((state) => state.dataLang);
+    const [chartData, setChartData] = useState({ labels: [], datasets: [] });
 
-    const chartData = {
-        labels: [...Object.keys(yearsClimateData.AVERAGES.T2M)],
-        datasets: [
-            {
-                label: `${yearsClimateData.parameters[lang]["temp"].longname} (${yearsClimateData.parameters[lang]["temp"].units})`,
-                data: Object.values(yearsClimateData.AVERAGES.T2M),
-                borderColor: "rgba(75,192,192,1)",
-                backgroundColor: "rgba(75,192,192,0.2)",
+    useEffect(() => {
+        let dataset = [];
+        property.forEach((element, index) => {
+            dataset.push({
+                label: `${yearsClimateData.parameters[lang][element].longname} (${yearsClimateData.parameters[lang][element].units})`,
+                data: [...Object.values(parameters[index])],
+                borderColor: colors[index],
+                backgroundColor: backgroundColor,
                 fill: false,
-            },
-            {
-                label: `${yearsClimateData.parameters[lang]["surfaceTemp"].longname} (${yearsClimateData.parameters[lang]["surfaceTemp"].units})`,
-                data: Object.values(yearsClimateData.AVERAGES.TS),
-                borderColor: "rgba(50,25,150,1)",
-                backgroundColor: "rgba(75,192,192,0.2)",
-                fill: false,
-            },
-        ],
-    };
+            });
+        });
+
+        const chart = {
+            labels: [...Object.keys(parameters[0])],
+            datasets: dataset,
+        };
+        setChartData(chart);
+    }, [property, parameters, colors, yearsClimateData, lang]);
 
     const options = {
         responsive: true,
@@ -53,11 +57,6 @@ const ClimateChart = () => {
                 labels: {
                     color: "#FFFFFF",
                 },
-            },
-            title: {
-                display: true,
-                text: "Climate Data Over Years",
-                color: "#FFFFFF",
             },
         },
         scales: {
@@ -75,6 +74,12 @@ const ClimateChart = () => {
     };
 
     return <Line data={chartData} options={options} />;
+};
+
+ClimateChart.propTypes = {
+    property: PropTypes.arrayOf(PropTypes.node).isRequired,
+    parameters: PropTypes.arrayOf(PropTypes.object).isRequired,
+    colors: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default ClimateChart;
