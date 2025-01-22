@@ -18,39 +18,48 @@ const climate = {
         ukr: {
             temp: {
                 units: "°C",
-                longname: "Температура повітря",
+                longname: "Температура повітря (°C)",
+                param: 'T2M',
             },
             minTemp: {
                 units: "°C",
-                longname: "Мінімальна температура повітря",
+                longname: "Мінімальна температура повітря (°C)",
+                param: 'T2M_MIN',
             },
             maxTemp: {
                 units: "°C",
-                longname: "Максимальна температура повітря",
+                longname: "Максимальна температура повітря (°C)",
+                param: 'T2M_MAX',
             },
             surfaceTemp: {
                 units: "°C",
-                longname: "Температура поверхні",
+                longname: "Температура поверхні (°C)",
+                param: 'TS',
             },
             precipitation: {
                 units: "мм/день",
-                longname: "Кількість опадів",
+                longname: "Кількість опадів (мм/день)",
+                param: 'PRECTOTCORR',
             },
             windSpeed: {
                 units: "м/с",
-                longname: "Швидкість вітру",
+                longname: "Швидкість вітру (м/с)",
+                param: 'WS2M',
             },
             humidity: {
                 units: "%",
-                longname: "Вологість",
+                longname: "Вологість (%)",
+                param: 'RH2M',
             },
             pressure: {
                 units: "мм.рт.ст",
-                longname: "Атмосферний тиск",
+                longname: "Атмосферний тиск (мм.рт.ст)",
+                param: 'PS',
             },
             frostDays: {
                 units: "дні",
-                longname: "Морозні дні",
+                longname: "Морозні дні (дні)",
+                param: 'FROST_DAYS',
             },
             metrics: {
                 max: "Максимум",
@@ -61,39 +70,48 @@ const climate = {
         eng: {
             temp: {
                 units: "°C",
-                longname: "Temperature",
+                longname: "Temperature (°C)",
+                param: 'T2M',
             },
             minTemp: {
                 units: "°C",
-                longname: "Min temperature",
+                longname: "Min temperature (°C)",
+                param: 'T2M_MIN',
             },
             maxTemp: {
                 units: "°C",
-                longname: "Max temperature",
+                longname: "Max temperature (°C)",
+                param: 'T2M_MAX',
             },
             surfaceTemp: {
                 units: "°C",
-                longname: "Surface temperature",
+                longname: "Surface temperature (°C)",
+                param: 'TS',
             },
             precipitation: {
                 units: "mm/day",
-                longname: "Precipitation",
+                longname: "Precipitation (mm/day)",
+                param: 'PRECTOTCORR',
             },
             windSpeed: {
                 units: "m/s",
-                longname: "Wind speed",
+                longname: "Wind speed (m/s)",
+                param: 'WS2M',
             },
             humidity: {
                 units: "%",
-                longname: "Humidity",
+                longname: "Humidity (%)",
+                param: 'RH2M',
             },
             pressure: {
                 units: "mm Hg",
-                longname: "Surface Pressure",
+                longname: "Surface Pressure (mm Hg)",
+                param: 'PS',
             },
             frostDays: {
                 units: "days",
-                longname: "Frost Days",
+                longname: "Frost Days (days)",
+                param: 'FROST_DAYS',
             },
             metrics: {
                 max: "Maximum",

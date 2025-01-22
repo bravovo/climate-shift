@@ -34,7 +34,7 @@ const ClimateChart = ({ property, parameters, colors }) => {
         let dataset = [];
         property.forEach((element, index) => {
             dataset.push({
-                label: `${yearsClimateData.parameters[lang][element].longname} (${yearsClimateData.parameters[lang][element].units})`,
+                label: `${yearsClimateData.parameters[lang][element].longname}`,
                 data: [...Object.values(parameters[index])],
                 borderColor: colors[index],
                 backgroundColor: backgroundColor,

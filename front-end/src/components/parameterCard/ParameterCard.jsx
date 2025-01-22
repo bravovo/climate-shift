@@ -26,8 +26,7 @@ const ParameterCard = ({ property, parameters }) => {
     return (
         <StyledContainer $variant={variant}>
             <Title3>
-                {climateData.parameters[lang][property].longname} (
-                {climateData.parameters[lang][property].units})
+                {climateData.parameters[lang][property].longname}
             </Title3>
             <div>
                 {parameters.map((value, index) => {

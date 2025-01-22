@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
     position: relative;
-    width: 225px;
+    width: 300px;
 `;
 
 export const MainButton = styled.button`
