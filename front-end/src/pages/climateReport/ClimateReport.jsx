@@ -24,10 +24,12 @@ import {
     clearYears,
 } from "../../state/yearsClimateData/yearsClimateDataSlice";
 import YearsStats from "../../components/yearsStats/YearsStats";
+import { fetchCoords } from "../../state/coords/coordsSlice";
 
 const ClimateReport = () => {
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
     const yearsClimateData = useSelector((state) => state.yearsClimateData);
+    const coords = useSelector((state) => state.coords);
     const lang = useSelector((state) => state.dataLang);
     const dispatch = useDispatch();
     const [city, setCity] = useState("");
@@ -42,10 +44,19 @@ const ClimateReport = () => {
         }
     }, []);
 
+    useEffect(() => {
+        if (coords.lat && coords.lng) {
+            console.log(coords);
+            dispatch(fetchMonthlyClimateData(coords));
+            dispatch(fetchYearsClimateData(coords));
+        }
+    }, [coords]);
+
     const fetchData = (city) => {
         try {
-            dispatch(fetchMonthlyClimateData(city));
-            dispatch(fetchYearsClimateData(city));
+            if (!(city === yearsClimateData.city) || !yearsClimateData.fetched) {
+                dispatch(fetchCoords(city));
+            }
 
             setError("");
         } catch (error) {
@@ -107,7 +118,7 @@ const ClimateReport = () => {
                 )}
             </StyledComponentContainer>
             <StyledComponentContainer>
-                {yearsClimateData.fetched && (<YearsStats />)}
+                {yearsClimateData.fetched && <YearsStats />}
             </StyledComponentContainer>
         </StyledContainer>
     );

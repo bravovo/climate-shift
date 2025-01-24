@@ -14,7 +14,7 @@ const initialState = {
     FROST_DAYS: {},
     AVERAGES: {},
     parameters: {},
-    city: ''
+    city: "",
 };
 
 const yearsClimateDataSlice = createSlice({
@@ -23,7 +23,7 @@ const yearsClimateDataSlice = createSlice({
     reducers: {
         clearYears: () => {
             return initialState;
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -32,28 +32,28 @@ const yearsClimateDataSlice = createSlice({
             })
             .addCase(fetchYearsClimateData.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
-            }).addCase(fetchYearsClimateData.rejected, (state, action) => {
-                console.error("Failed to fetch climate data:", action.error.message);
+            })
+            .addCase(fetchYearsClimateData.rejected, (state, action) => {
+                console.error(
+                    "Failed to fetch climate data:",
+                    action.error.message
+                );
             });
     },
 });
 
 export const fetchYearsClimateData = createAsyncThunk(
     "yearsClimateData/fetchYearsClimateData",
-    async (city = null, lat = null, lng = null) => {
+    async (coordinates) => {
+        const { lat, lng, city } = coordinates;
         try {
             const response = await axios.get(
                 "http://localhost:5000/api/climate/years",
                 {
-                    params:
-                        city === null
-                            ? {
-                                  lat: lat,
-                                  lng: lng,
-                              }
-                            : {
-                                  city: city,
-                              },
+                    params: {
+                        lat: lat,
+                        lng: lng,
+                    },
                 }
             );
 
@@ -63,7 +63,7 @@ export const fetchYearsClimateData = createAsyncThunk(
                     fetched: true,
                     parameters: parameters,
                     ...info,
-                    city: point.city,
+                    city: city,
                     lat: point.lat,
                     lng: point.lng,
                 });
@@ -71,12 +71,14 @@ export const fetchYearsClimateData = createAsyncThunk(
                     fetched: true,
                     parameters: parameters,
                     ...info,
-                    city: point.city,
+                    city: city,
                     lat: point.lat,
                     lng: point.lng,
                 };
             } else {
-                throw new Error("За заданою локацією даних не знайдено. Спробуйте іншу локацію");
+                throw new Error(
+                    "За заданою локацією даних не знайдено. Спробуйте іншу локацію"
+                );
             }
         } catch (error) {
             if (error.response) {
