@@ -1,40 +1,44 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
 import {
     Container,
     DropDownList,
     DropDownListValue,
     MainButton,
     StyledSpan,
-} from "./Combobox.styles";
+} from "./Select.styles";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 
-const ComboBox = ({ options, onChange }) => {
+const Select = ({ onChange, data }) => {
     const yearsClimateData = useSelector((state) => state.yearsClimateData);
     const lang = useSelector((state) => state.dataLang);
-    const [selectedValue, setSelectedValue] = useState(options[0]);
     const [isDropdownVisible, setIsDropdownVisible] = useState(false);
+    const [selectedValue, setSelectedValue] = useState(data[0]);
+
+    useEffect(() => { 
+        setSelectedValue(data[0]);
+        onChange(data[0]);
+    }, [yearsClimateData, lang]);
 
     return (
         <Container>
             <MainButton
+                value={selectedValue}
                 onClick={() => setIsDropdownVisible((prev) => !prev)}
                 onBlur={() =>
                     setTimeout(() => setIsDropdownVisible(false), 100)
                 }
                 $variant={isDropdownVisible}
             >
-                {
-                    yearsClimateData.parameters[lang][selectedValue.parameter]
-                        .longname
-                }
+                {selectedValue}
                 <span />
             </MainButton>
             {isDropdownVisible && (
                 <DropDownList>
-                    {options.map((option, index) => (
+                    {data.map((option) => (
                         <DropDownListValue
-                            key={index}
+                            key={option}
+                            value={option}
                             onClick={() => {
                                 setSelectedValue(option);
                                 setIsDropdownVisible(false);
@@ -43,10 +47,10 @@ const ComboBox = ({ options, onChange }) => {
                         >
                             <StyledSpan
                                 $variant={
-                                    option.parameter === selectedValue.parameter
+                                    option === selectedValue
                                 }
                             >
-                                {yearsClimateData.parameters[lang][option.parameter].longname}
+                                {option}
                             </StyledSpan>
                         </DropDownListValue>
                     ))}
@@ -56,9 +60,9 @@ const ComboBox = ({ options, onChange }) => {
     );
 };
 
-ComboBox.propTypes = {
-    options: PropTypes.arrayOf(PropTypes.object).isRequired,
+Select.propTypes = {
     onChange: PropTypes.func.isRequired,
+    data: PropTypes.array.isRequired,
 };
 
-export default ComboBox;
+export default Select;

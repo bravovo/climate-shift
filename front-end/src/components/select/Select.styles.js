@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 export const Container = styled.div`
     position: relative;
-    width: 300px;
+    width: 380px;
 `;
 
 export const MainButton = styled.button`
@@ -34,6 +34,7 @@ export const MainButton = styled.button`
 `;
 
 export const DropDownList = styled.ul`
+    z-index: 100;
     position: absolute;
     display: flex;
     flex-direction: column;
