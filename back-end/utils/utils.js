@@ -47,4 +47,32 @@ const formatDate = (climateData) => {
     };
 };
 
-module.exports = { requestPendingTime, convertPressure, formatDate };
+// Форматування дати з формату YYYYMM у формат MM.YYYY
+const formatYearDate = (climateData) => {
+    const formatted = {};
+
+    for (const [paramName, paramData] of Object.entries(climateData)) {
+        const formattedData = {};
+
+        for (const [date, value] of Object.entries(paramData)) {
+            const year = date.slice(0, 4);
+            const month = date.slice(4, 6);
+
+            if (month !== "13") {
+                const formattedDate = `${month}.${year}`;
+                formattedData[formattedDate] = value;
+            }
+        }
+
+        formatted[paramName] = formattedData;
+    };
+
+    return formatted;
+};
+
+module.exports = {
+    requestPendingTime,
+    convertPressure,
+    formatDate,
+    formatYearDate,
+};

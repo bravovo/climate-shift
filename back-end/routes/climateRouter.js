@@ -6,6 +6,7 @@ const {
     requestPendingTime,
     convertPressure,
     formatDate,
+    formatYearDate,
 } = require("../utils/utils");
 
 const BASE_URL = "https://power.larc.nasa.gov/api/temporal";
@@ -13,114 +14,7 @@ const PARAMETERS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,WS2M,RH2M,PS,TS,FROST_DAYS";
 
 const router = Router();
 
-const climate = {
-    parameters: {
-        ukr: {
-            temp: {
-                units: "°C",
-                longname: "Температура повітря (°C)",
-                param: 'T2M',
-            },
-            minTemp: {
-                units: "°C",
-                longname: "Мінімальна температура повітря (°C)",
-                param: 'T2M_MIN',
-            },
-            maxTemp: {
-                units: "°C",
-                longname: "Максимальна температура повітря (°C)",
-                param: 'T2M_MAX',
-            },
-            surfaceTemp: {
-                units: "°C",
-                longname: "Температура поверхні (°C)",
-                param: 'TS',
-            },
-            precipitation: {
-                units: "мм/день",
-                longname: "Кількість опадів (мм/день)",
-                param: 'PRECTOTCORR',
-            },
-            windSpeed: {
-                units: "м/с",
-                longname: "Швидкість вітру (м/с)",
-                param: 'WS2M',
-            },
-            humidity: {
-                units: "%",
-                longname: "Вологість (%)",
-                param: 'RH2M',
-            },
-            pressure: {
-                units: "мм.рт.ст",
-                longname: "Атмосферний тиск (мм.рт.ст)",
-                param: 'PS',
-            },
-            frostDays: {
-                units: "дні",
-                longname: "Морозні дні (дні)",
-                param: 'FROST_DAYS',
-            },
-            metrics: {
-                max: "Максимум",
-                min: "Мінімум",
-                avg: "В середньому",
-            },
-        },
-        eng: {
-            temp: {
-                units: "°C",
-                longname: "Temperature (°C)",
-                param: 'T2M',
-            },
-            minTemp: {
-                units: "°C",
-                longname: "Min temperature (°C)",
-                param: 'T2M_MIN',
-            },
-            maxTemp: {
-                units: "°C",
-                longname: "Max temperature (°C)",
-                param: 'T2M_MAX',
-            },
-            surfaceTemp: {
-                units: "°C",
-                longname: "Surface temperature (°C)",
-                param: 'TS',
-            },
-            precipitation: {
-                units: "mm/day",
-                longname: "Precipitation (mm/day)",
-                param: 'PRECTOTCORR',
-            },
-            windSpeed: {
-                units: "m/s",
-                longname: "Wind speed (m/s)",
-                param: 'WS2M',
-            },
-            humidity: {
-                units: "%",
-                longname: "Humidity (%)",
-                param: 'RH2M',
-            },
-            pressure: {
-                units: "mm Hg",
-                longname: "Surface Pressure (mm Hg)",
-                param: 'PS',
-            },
-            frostDays: {
-                units: "days",
-                longname: "Frost Days (days)",
-                param: 'FROST_DAYS',
-            },
-            metrics: {
-                max: "Maximum",
-                min: "Minimum",
-                avg: "Average",
-            },
-        },
-    },
-};
+const { climate } = require('../assets/variables');
 
 router.get("/daily", getCoords, async (request, response) => {
     const {
@@ -317,7 +211,7 @@ router.get("/years", getCoords, async (request, response) => {
                 end: 2023,
                 latitude: lat,
                 longitude: lng,
-                parameters: `${PARAMETERS},CLOUD_AMT`,
+                parameters: `${PARAMETERS}`,
                 community: "AG",
                 format: "JSON",
             },
@@ -347,6 +241,9 @@ router.get("/years", getCoords, async (request, response) => {
         }
 
         climate.info = { ...parameter };
+
+        climate.info = formatYearDate(climate.info);
+
         climate.info.AVERAGES = { ...averages };
 
         if (climate.info) {
