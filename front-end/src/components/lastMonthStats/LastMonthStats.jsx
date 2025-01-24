@@ -10,17 +10,17 @@ const LastMonthStats = ({fetchedCity}) => {
         <StyledLastMonthStats>
             <h2>Статистика за минулий місяць для {fetchedCity}</h2>
             <StyledParameterCardsContainer>
-                <ParameterCard property="temp" parameters={["T2M"]} />
-                <ParameterCard property="surfaceTemp" parameters={["TS"]} />
-                <ParameterCard property="windSpeed" parameters={["WS2M"]} />
-                <ParameterCard property="pressure" parameters={["PS"]} />
+                <ParameterCard property="T2M" parameters={["T2M"]} />
+                <ParameterCard property="TS" parameters={["TS"]} />
+                <ParameterCard property="WS2M" parameters={["WS2M"]} />
+                <ParameterCard property="PS" parameters={["PS"]} />
                 <ParameterCard
-                    property="precipitation"
+                    property="PRECTOTCORR"
                     parameters={["PRECTOTCORR"]}
                 />
-                <ParameterCard property="humidity" parameters={["RH2M"]} />
+                <ParameterCard property="RH2M" parameters={["RH2M"]} />
                 <ParameterCard
-                    property="frostDays"
+                    property="FROST_DAYS"
                     parameters={["FROST_DAYS"]}
                 />
             </StyledParameterCardsContainer>

@@ -10,7 +10,6 @@ const initialState = {
     WS2M: {},
     RH2M: {},
     PS: {},
-    CLOUD_AMT: {},
     TS: {},
     FROST_DAYS: {},
     AVERAGES: {},

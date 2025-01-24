@@ -16,9 +16,9 @@ const ParameterCard = ({ property, parameters }) => {
     const lang = useSelector((state) => state.dataLang);
 
     useEffect(() => {
-        if (property === "temp" || property === "surfaceTemp") {
+        if (property === "T2M" || property === "TS") {
             setVariant("3");
-        } else if (property === "windSpeed") {
+        } else if (property === "WS2M") {
             setVariant("2");
         }
     }, []);
@@ -61,7 +61,7 @@ const ParameterCard = ({ property, parameters }) => {
                                     ]}
                                 />
                             ) : null}
-                            {property === "frostDays" ? (
+                            {property === "FROST_DAYS" ? (
                                 <StyledParameter>
                                     <FrostDays>
                                         {climateData.frostDays}
