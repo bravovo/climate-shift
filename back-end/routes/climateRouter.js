@@ -1,7 +1,8 @@
 const { Router } = require("express");
 const axios = require("axios");
 
-const { getCoords } = require("../middleware/climateRouteMiddleware");
+const OPENCAGE_API = process.env.OPENCAGE_API_KEY;
+
 const {
     requestPendingTime,
     convertPressure,
@@ -14,16 +15,64 @@ const PARAMETERS = "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,WS2M,RH2M,PS,TS,FROST_DAYS";
 
 const router = Router();
 
-const { climate } = require('../assets/variables');
+const { climate } = require("../assets/variables");
 
-router.get("/daily", getCoords, async (request, response) => {
-    const {
-        query: { city },
-        decodedPlace: {
-            geometry: { lat, lng },
-        },
-        startTime: { startTime },
-    } = request;
+router.get("/coords", async (request, response) => {
+    const startTime = Date.now();
+    const { city } = request.query;
+    try {
+        const opencageResponse = await axios.get(
+            `https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${OPENCAGE_API}`
+        );
+
+        if (
+            opencageResponse.data.status.code === 200 &&
+            opencageResponse.data.results.length > 0
+        ) {
+            const place = opencageResponse.data.results[0];
+            console.log(
+                "Requests remaining",
+                opencageResponse.data.rate.remaining
+            );
+            console.log(place.formatted);
+            const pendingTime = requestPendingTime(startTime);
+            return response.status(200).send({
+                ...place,
+                city: city,
+                time: { type: "seconds", value: pendingTime },
+            });
+        } else {
+            console.log("Status", opencageResponse.data.status.message);
+            console.log("total_results", opencageResponse.data.total_results);
+            const pendingTime = requestPendingTime(startTime);
+            return response.status(404).send({
+                message: "Міста із заданою назвою не знайдено",
+                time: { type: "seconds", value: pendingTime },
+            });
+        }
+    } catch (error) {
+        console.log(error.message);
+
+        const endTime = Date.now();
+        console.log(
+            `Request duration: ${(endTime - startTime) / 1000} seconds`
+        );
+
+        if (error.response.status.code === 402) {
+            console.log("hit free trial daily limit");
+            return response.status(402).send({
+                message: "Зараз неможливо дізнатись координати за назвою міста",
+            });
+        }
+        return response.status(500).send({ message: "Помилка на сервері" });
+    }
+});
+
+router.get("/daily", async (request, response) => {
+    const startTime = Date.now();
+    const { lat, lng } = request.query;
+
+    console.log(lat, lng);
 
     const today = new Date();
     const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
@@ -169,7 +218,7 @@ router.get("/daily", getCoords, async (request, response) => {
 
             return response.status(200).send({
                 ...climate,
-                point: { city: city, lat: lat, lng: lng },
+                point: { lat: lat, lng: lng },
                 time: { type: "seconds", value: pendingTime },
             });
         }
@@ -185,14 +234,9 @@ router.get("/daily", getCoords, async (request, response) => {
     }
 });
 
-router.get("/years", getCoords, async (request, response) => {
-    const {
-        query: { city },
-        decodedPlace: {
-            geometry: { lat, lng },
-        },
-        startTime: { startTime },
-    } = request;
+router.get("/years", async (request, response) => {
+    const startTime = Date.now();
+    const { lat, lng } = request.query;
 
     // Кліматичні дані доступні лише до 31 грудня 2023 року станом на 10.01.2025
     // const today = new Date();
@@ -251,7 +295,7 @@ router.get("/years", getCoords, async (request, response) => {
 
             return response.status(200).send({
                 ...climate,
-                point: { city: city, lat: lat, lng: lng },
+                point: { lat: lat, lng: lng },
                 time: { type: "seconds", value: pendingTime },
             });
         }
