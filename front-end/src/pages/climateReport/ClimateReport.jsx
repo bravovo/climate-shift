@@ -7,10 +7,10 @@ import {
     StyledInputContainer,
     StyledContainer,
     StyledComponentContainer,
-    StyledInput,
-    ClearInputButton,
     StyledComponentContainerExtended,
     ChangeLangButton,
+    StyledCoordsInputContainer,
+    UseCoordsButton,
 } from "./ClimateReport.styles";
 
 import {
@@ -24,7 +24,8 @@ import {
     clearYears,
 } from "../../state/yearsClimateData/yearsClimateDataSlice";
 import YearsStats from "../../components/yearsStats/YearsStats";
-import { fetchCoords } from "../../state/coords/coordsSlice";
+import { fetchCoords, fetchCityName } from "../../state/coords/coordsSlice";
+import Input from "../../components/input/Input";
 
 const ClimateReport = () => {
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
@@ -35,6 +36,9 @@ const ClimateReport = () => {
     const [city, setCity] = useState("");
     const [error, setError] = useState("");
     const defaultCities = useAtomValue(defaultCitiesAtom);
+    const [useCoords, setUseCoords] = useState(false);
+    const [latValue, setLatValue] = useState("");
+    const [lngValue, setLngValue] = useState("");
 
     useEffect(() => {
         if (!monthlyClimateData.fetched && !yearsClimateData.fetched) {
@@ -46,15 +50,19 @@ const ClimateReport = () => {
 
     useEffect(() => {
         if (coords.lat && coords.lng) {
-            console.log(coords);
             dispatch(fetchMonthlyClimateData(coords));
             dispatch(fetchYearsClimateData(coords));
+            setLatValue(coords.lat);
+            setLngValue(coords.lng);
         }
     }, [coords]);
 
     const fetchData = (city) => {
         try {
-            if (!(city === yearsClimateData.city) || !yearsClimateData.fetched) {
+            if (
+                !(city === yearsClimateData.city) ||
+                !yearsClimateData.fetched
+            ) {
                 dispatch(fetchCoords(city));
             }
 
@@ -64,7 +72,7 @@ const ClimateReport = () => {
         }
     };
 
-    const handleFindClimateDataSubmit = async () => {
+    const handleFindClimateDataSubmit = () => {
         if (city.length === 0) {
             setError("Назва міста не може бути порожньою");
             return;
@@ -73,12 +81,35 @@ const ClimateReport = () => {
         fetchData(city);
     };
 
+    const handleFindClimateByCoords = () => {
+        if (!latValue.length && !lngValue.length) {
+            setError("Поля для координат не повинні бути порожні");
+            return;
+        }
+        if (!isFinite(latValue) && !isFinite(lngValue)) {
+            setError("Невірно вказані координати");
+            return;
+        }
+        if (
+            !(
+                latValue == yearsClimateData.lat &&
+                lngValue == yearsClimateData.lng
+            ) ||
+            !yearsClimateData.fetched
+        ) {
+            setError("");
+            dispatch(fetchCityName({ lat: latValue, lng: lngValue }));
+        }
+    };
+
     const handleChangeDataLang = () => {
         dispatch(toggleLang());
     };
 
     const handleClearInput = () => {
         setCity("");
+        setLatValue("");
+        setLngValue("");
 
         dispatch(clearMonthly());
         dispatch(clearYears());
@@ -90,19 +121,30 @@ const ClimateReport = () => {
                 {error.length > 0 ? (
                     <StyledErrorParagraph>{error}</StyledErrorParagraph>
                 ) : null}
+                <UseCoordsButton
+                    onClick={() => setUseCoords((prev) => !prev)}
+                    $variant={useCoords}
+                >
+                    {useCoords
+                        ? "Використовувати полe для вводу назви міста"
+                        : "Використовувати поля для вводу координат"}
+                </UseCoordsButton>
                 <StyledInputContainer>
-                    <div>
-                        <StyledInput
-                            type="text"
-                            placeholder="Введіть назву міста"
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                        />
-                        <ClearInputButton onClick={handleClearInput}>
-                            X
-                        </ClearInputButton>
-                    </div>
-                    <button onClick={handleFindClimateDataSubmit}>
+                    {useCoords ? (
+                        <StyledCoordsInputContainer>
+                            <Input placeholder="Введіть широту" value={latValue} onChange={(value) => setLatValue(value)} clear={handleClearInput}/>
+                            <Input placeholder="Введіть довготу" value={lngValue} onChange={(value) => setLngValue(value)} clear={handleClearInput}/>
+                        </StyledCoordsInputContainer>
+                    ) : (
+                        <Input placeholder="Введіть назву міста" value={city} onChange={(value) => setCity(value)} clear={handleClearInput}/>
+                    )}
+                    <button
+                        onClick={
+                            useCoords
+                                ? handleFindClimateByCoords
+                                : handleFindClimateDataSubmit
+                        }
+                    >
                         Знайти кліматичні дані
                     </button>
                     <ChangeLangButton onClick={handleChangeDataLang}>

@@ -1,12 +1,13 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const initialState = { lat: "", lng: "", city: '' };
+const initialState = { lat: "", lng: "", city: "" };
 
 const coordsSlice = createSlice({
     name: "coords",
     initialState,
-    reducers: {},
+    reducers: {
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchCoords.pending, () => {
@@ -20,6 +21,15 @@ const coordsSlice = createSlice({
                     "Failed to get coordinates:",
                     action.error.message
                 );
+            })
+            .addCase(fetchCityName.pending, () => {
+                console.log("Fetching city from coordinates");
+            })
+            .addCase(fetchCityName.fulfilled, (state, action) => {
+                return { ...action.payload };
+            })
+            .addCase(fetchCityName.rejected, (state, action) => {
+                console.error("Failed to get city:", action.error.message);
             });
     },
 });
@@ -41,7 +51,7 @@ export const fetchCoords = createAsyncThunk(
                 return {
                     ...response.data.geometry,
                     city: city,
-                }
+                };
             } else {
                 throw new Error(
                     "За заданою локацією координат не знайдено. Спробуйте іншу локацію"
@@ -60,5 +70,46 @@ export const fetchCoords = createAsyncThunk(
         }
     }
 );
+
+export const fetchCityName = createAsyncThunk(
+    "coords/getCityName",
+    async (coords) => {
+        const { lat, lng } = coords;
+        try {
+            const response = await axios.get(
+                "http://localhost:5000/api/climate/city",
+                {
+                    params: {
+                        lat: lat,
+                        lng: lng,
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                return {
+                    lat: lat,
+                    lng: lng,
+                    city: response.data.city,
+                };
+            } else {
+                throw new Error(
+                    "За заданими координатами міста не знайдено. Спробуйте інші координати"
+                );
+            }
+        } catch (error) {
+            if (error.response) {
+                if (error.response.status === 500) {
+                    return error.response.data.message || "Помилка на сервері";
+                } else {
+                    return error.response.data.message || "Щось пішло не так";
+                }
+            } else {
+                return error.message || "Щось пішло не так";
+            }
+        }
+    }
+);
+
 
 export default coordsSlice.reducer;
