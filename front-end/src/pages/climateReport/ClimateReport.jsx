@@ -60,11 +60,14 @@ const ClimateReport = () => {
     const fetchData = (city) => {
         try {
             if (
-                !(city === yearsClimateData.city) ||
-                !yearsClimateData.fetched
+                !(city === monthlyClimateData.city) ||
+                !monthlyClimateData.fetched
             ) {
                 dispatch(fetchCoords(city));
             }
+
+            setLatValue(monthlyClimateData.lat);
+            setLngValue(monthlyClimateData.lng);
 
             setError("");
         } catch (error) {
@@ -82,7 +85,7 @@ const ClimateReport = () => {
     };
 
     const handleFindClimateByCoords = () => {
-        if (!latValue.length && !lngValue.length) {
+        if (latValue.length === 0 && lngValue.length === 0) {
             setError("Поля для координат не повинні бути порожні");
             return;
         }
@@ -92,10 +95,10 @@ const ClimateReport = () => {
         }
         if (
             !(
-                latValue == yearsClimateData.lat &&
-                lngValue == yearsClimateData.lng
+                latValue == monthlyClimateData.lat &&
+                lngValue == monthlyClimateData.lng
             ) ||
-            !yearsClimateData.fetched
+            !monthlyClimateData.fetched
         ) {
             setError("");
             dispatch(fetchCityName({ lat: latValue, lng: lngValue }));
@@ -132,11 +135,26 @@ const ClimateReport = () => {
                 <StyledInputContainer>
                     {useCoords ? (
                         <StyledCoordsInputContainer>
-                            <Input placeholder="Введіть широту" value={latValue} onChange={(value) => setLatValue(value)} clear={handleClearInput}/>
-                            <Input placeholder="Введіть довготу" value={lngValue} onChange={(value) => setLngValue(value)} clear={handleClearInput}/>
+                            <Input
+                                placeholder="Введіть широту"
+                                value={latValue}
+                                onChange={(value) => setLatValue(value)}
+                                clear={handleClearInput}
+                            />
+                            <Input
+                                placeholder="Введіть довготу"
+                                value={lngValue}
+                                onChange={(value) => setLngValue(value)}
+                                clear={handleClearInput}
+                            />
                         </StyledCoordsInputContainer>
                     ) : (
-                        <Input placeholder="Введіть назву міста" value={city} onChange={(value) => setCity(value)} clear={handleClearInput}/>
+                        <Input
+                            placeholder="Введіть назву міста"
+                            value={city}
+                            onChange={(value) => setCity(value)}
+                            clear={handleClearInput}
+                        />
                     )}
                     <button
                         onClick={
@@ -156,7 +174,9 @@ const ClimateReport = () => {
             </StyledComponentContainerExtended>
             <StyledComponentContainer>
                 {monthlyClimateData.fetched && (
-                    <LastMonthStats fetchedCity={monthlyClimateData.city} />
+                    <LastMonthStats
+                        fetchedCity={monthlyClimateData.city || null}
+                    />
                 )}
             </StyledComponentContainer>
             <StyledComponentContainer>
