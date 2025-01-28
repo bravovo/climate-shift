@@ -29,7 +29,13 @@ router.get("/coords", async (request, response) => {
             opencageResponse.data.status.code === 200 &&
             opencageResponse.data.results.length > 0
         ) {
-            const place = opencageResponse.data.results[0];
+            const foundPlace = getCity(opencageResponse.data.results, city);
+            let place;
+            if (foundPlace !== '404') {
+                place = foundPlace;
+            } else {
+                place = opencageResponse.data.results[0];
+            }
             console.log(
                 "Requests remaining",
                 opencageResponse.data.rate.remaining
@@ -58,7 +64,7 @@ router.get("/coords", async (request, response) => {
             `Request duration: ${(endTime - startTime) / 1000} seconds`
         );
 
-        if (error.response.status.code === 402) {
+        if (error.response && error.response.status.code === 402) {
             console.log("hit free trial daily limit");
             return response.status(402).send({
                 message: "Зараз неможливо дізнатись координати за назвою міста",
@@ -67,6 +73,17 @@ router.get("/coords", async (request, response) => {
         return response.status(500).send({ message: "Помилка на сервері" });
     }
 });
+
+const getCity = (requestResponse, city) => { 
+    for (const [resultName, resultData]  of Object.entries(requestResponse)) {
+        console.log(resultData);
+        if (resultData && resultData.components.city == city) {
+            console.log('got it');
+            return resultData;
+        }
+    }
+    return '404';
+};
 
 router.get('/city', async (request, response) => { 
     const { lat, lng } = request.query;
