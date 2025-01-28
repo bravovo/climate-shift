@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import ClimateChart from "../climateChart/ClimateChart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
     ComboChartContainer,
@@ -10,6 +10,7 @@ import {
 } from "./YearsStats.styles";
 import Dashboard from "../dashboard/Dashboard";
 import Select from "../select/Select";
+import LeafletMap from "../leafletMap/LeafletMap";
 
 const YearsStats = () => {
     const yearsClimateData = useSelector((state) => state.yearsClimateData);
@@ -20,6 +21,11 @@ const YearsStats = () => {
     const [climateChartParam, setClimateChartParam] = useState({
         value: yearsClimateData.AVERAGES.PRECTOTCORR,
     });
+    const [leafletCenter, setLeafletCenter] = useState([parseFloat(yearsClimateData.lat), parseFloat(yearsClimateData.lng)]);
+
+    useEffect(() => { 
+        setLeafletCenter([parseFloat(yearsClimateData.lat), parseFloat(yearsClimateData.lng)]);
+    }, [yearsClimateData]);
 
     const options = [
         {
@@ -156,6 +162,10 @@ const YearsStats = () => {
                 </ComboChartContainer>
                 <div>
                     <Dashboard data={data} />
+                </div>
+                <div>
+                    <h2>Карта місцевості</h2>
+                    <LeafletMap center={leafletCenter} />
                 </div>
             </YearStatsContainer>
         )
