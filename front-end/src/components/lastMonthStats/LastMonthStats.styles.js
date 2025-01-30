@@ -5,6 +5,10 @@ export const StyledLastMonthStats = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
+    & h2 {
+        margin-top: 0;
+    }
 `;
 
 export const StyledParameterCardsContainer = styled.div`

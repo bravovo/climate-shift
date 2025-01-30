@@ -18,7 +18,9 @@ const LeafletMap = ({ center }) => {
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
                 <Marker position={center}>
-                    <Popup>{center[0]}, {center[1]}</Popup>
+                    <Popup>
+                        {center[0]}, {center[1]}
+                    </Popup>
                 </Marker>
                 <SetView coords={center} />
             </MapContainer>

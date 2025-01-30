@@ -2,6 +2,9 @@ import styled from "styled-components";
 
 export const StyledContainer = styled.div`
     width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 `;
 
 export const StyledComponentContainer = styled.div`
@@ -18,16 +21,19 @@ export const StyledComponentContainerExtended = styled.div`
 
 export const UseCoordsButton = styled.button`
     width: 400px;
-    background-color:${({ $variant }) => $variant ? 'transparent' : '#2f7a78'};
-    border-color: ${({ $variant }) => $variant ? '#2f7a78' : 'transparent'};
+    background-color: ${({ $variant }) =>
+        $variant ? "transparent" : "#2f7a78"};
+    border-color: ${({ $variant }) => ($variant ? "#2f7a78" : "transparent")};
 
-    &:focus{
+    &:focus {
         outline: none;
     }
 
-    &:hover{
-        background-color: ${({ $variant }) => $variant ? 'transparent' : '#469280'};
-        border-color: ${({ $variant }) => $variant ? '#469280' : 'transparent'};
+    &:hover {
+        background-color: ${({ $variant }) =>
+            $variant ? "transparent" : "#469280"};
+        border-color: ${({ $variant }) =>
+            $variant ? "#469280" : "transparent"};
     }
 `;
 

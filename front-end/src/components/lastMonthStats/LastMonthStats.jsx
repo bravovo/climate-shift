@@ -1,14 +1,13 @@
-import PropTypes from "prop-types";
 import ParameterCard from "../parameterCard/ParameterCard";
 import {
     StyledLastMonthStats,
     StyledParameterCardsContainer,
 } from "./LastMonthStats.styles";
 
-const LastMonthStats = ({fetchedCity}) => {
+const LastMonthStats = () => {
     return (
         <StyledLastMonthStats>
-            <h2>{fetchedCity ? `Статистика за минулий місяць для ${fetchedCity}` : 'Статистика за минулий місяць'}</h2>
+            <h2>Статистика за минулий місяць</h2>
             <StyledParameterCardsContainer>
                 <ParameterCard property="T2M" parameters={["T2M"]} />
                 <ParameterCard property="TS" parameters={["TS"]} />
@@ -26,10 +25,6 @@ const LastMonthStats = ({fetchedCity}) => {
             </StyledParameterCardsContainer>
         </StyledLastMonthStats>
     );
-};
-
-LastMonthStats.propTypes = {
-    fetchedCity: PropTypes.string
 };
 
 export default LastMonthStats;

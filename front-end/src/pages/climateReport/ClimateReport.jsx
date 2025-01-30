@@ -26,6 +26,7 @@ import {
 import YearsStats from "../../components/yearsStats/YearsStats";
 import { fetchCoords, fetchCityName } from "../../state/coords/coordsSlice";
 import Input from "../../components/input/Input";
+import LocationCard from "../../components/locationCard/LocationCard";
 
 const ClimateReport = () => {
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
@@ -54,6 +55,9 @@ const ClimateReport = () => {
             dispatch(fetchYearsClimateData(coords));
             setLatValue(coords.lat);
             setLngValue(coords.lng);
+            setError('');
+        } else {
+            setError(coords.message || '');
         }
     }, [coords]);
 
@@ -68,8 +72,6 @@ const ClimateReport = () => {
 
             setLatValue(monthlyClimateData.lat);
             setLngValue(monthlyClimateData.lng);
-
-            setError("");
         } catch (error) {
             setError(error.message);
         }
@@ -100,7 +102,6 @@ const ClimateReport = () => {
             ) ||
             !monthlyClimateData.fetched
         ) {
-            setError("");
             dispatch(fetchCityName({ lat: latValue, lng: lngValue }));
         }
     };
@@ -173,11 +174,10 @@ const ClimateReport = () => {
                 </StyledInputContainer>
             </StyledComponentContainerExtended>
             <StyledComponentContainer>
-                {monthlyClimateData.fetched && (
-                    <LastMonthStats
-                        fetchedCity={monthlyClimateData.city || null}
-                    />
-                )}
+                {monthlyClimateData.fetched && <LocationCard />}
+            </StyledComponentContainer>
+            <StyledComponentContainer>
+                {monthlyClimateData.fetched && <LastMonthStats />}
             </StyledComponentContainer>
             <StyledComponentContainer>
                 {yearsClimateData.fetched && <YearsStats />}

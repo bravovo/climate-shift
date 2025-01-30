@@ -51,6 +51,7 @@ export const fetchCoords = createAsyncThunk(
                 return {
                     ...response.data.geometry,
                     city: city,
+                    message: '',
                 };
             } else {
                 throw new Error(
@@ -60,12 +61,12 @@ export const fetchCoords = createAsyncThunk(
         } catch (error) {
             if (error.response) {
                 if (error.response.status === 500) {
-                    return error.response.data.message || "Помилка на сервері";
+                    return { message: error.response.data.message || "Помилка на сервері"};
                 } else {
-                    return error.response.data.message || "Щось пішло не так";
+                    return {message: error.response.data.message || "Щось пішло не так"};
                 }
             } else {
-                return error.message || "Щось пішло не так";
+                return { message: error.message || "Щось пішло не так" };
             }
         }
     }
