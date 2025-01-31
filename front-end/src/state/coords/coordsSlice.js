@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
-const initialState = { lat: "", lng: "", city: "" };
+const initialState = { lat: "", lng: "", city: "", country: '' };
 
 const coordsSlice = createSlice({
     name: "coords",
@@ -14,7 +14,7 @@ const coordsSlice = createSlice({
                 console.log("Request is pending...");
             })
             .addCase(fetchCoords.fulfilled, (state, action) => {
-                return { ...action.payload };
+                return { ...state, ...action.payload };
             })
             .addCase(fetchCoords.rejected, (state, action) => {
                 console.error(
@@ -36,13 +36,15 @@ const coordsSlice = createSlice({
 
 export const fetchCoords = createAsyncThunk(
     "coords/getCoords",
-    async (city) => {
+    async (params) => {
+        const { city, depth } = params;
         try {
             const response = await axios.get(
                 "http://localhost:5000/api/climate/coords",
                 {
                     params: {
                         city: city,
+                        depth: depth,
                     },
                 }
             );
@@ -51,6 +53,8 @@ export const fetchCoords = createAsyncThunk(
                 return {
                     ...response.data.geometry,
                     city: city,
+                    country: response.data.country,
+                    results: response.data.results,
                     message: '',
                 };
             } else {
@@ -92,6 +96,8 @@ export const fetchCityName = createAsyncThunk(
                     lat: lat,
                     lng: lng,
                     city: response.data.city,
+                    country: response.data.country,
+                    results: response.data.results,
                 };
             } else {
                 throw new Error(
