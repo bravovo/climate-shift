@@ -3,6 +3,7 @@ import monthlyClimateDataReducer from "./state/monthlyClimateData/monthlyClimate
 import dataLangReducer from "./state/dataLang/dataLangSlice";
 import yearsClimateDataReducer from "./state/yearsClimateData/yearsClimateDataSlice";
 import coordsReducer from './state/coords/coordsSlice';
+import loaderReducer from "./state/loader/loaderSlice";
 
 export const store = configureStore({
     reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
         yearsClimateData: yearsClimateDataReducer,
         dataLang: dataLangReducer,
         coords: coordsReducer,
+        loader: loaderReducer,
     },
 });

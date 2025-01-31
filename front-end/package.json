@@ -25,6 +25,7 @@
     "react-plotly.js": "^2.6.0",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.1.1",
+    "react-spinners": "^0.15.0",
     "styled-components": "^6.1.14"
   },
   "devDependencies": {

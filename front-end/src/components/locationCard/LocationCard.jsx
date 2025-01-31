@@ -16,6 +16,7 @@ import {
 import LeafletMap from "../leafletMap/LeafletMap";
 import { useEffect, useState } from "react";
 import { fetchCoords } from "../../state/coords/coordsSlice";
+import { toggleLoader } from "../../state/loader/loaderSlice";
 
 const langPref = {
     eng: {
@@ -36,26 +37,36 @@ const langPref = {
 
 const LocationCard = () => {
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
+    const coords = useSelector((state) => state.coords);
     const dispatch = useDispatch();
     const lang = useSelector((state) => state.dataLang);
     const [leafletCenter, setLeafletCenter] = useState([
-        parseFloat(monthlyClimateData.lat),
-        parseFloat(monthlyClimateData.lng),
+        parseFloat(coords.lat),
+        parseFloat(coords.lng),
     ]);
 
     useEffect(() => {
-        setLeafletCenter([
-            parseFloat(monthlyClimateData.lat),
-            parseFloat(monthlyClimateData.lng),
-        ]);
+        setLeafletCenter([parseFloat(coords.lat), parseFloat(coords.lng)]);
     }, [monthlyClimateData]);
 
-    const handleNextLocationButtonClick = () => { 
-        dispatch(fetchCoords({ city: monthlyClimateData.city, depth: monthlyClimateData.results.current + 1 }));
+    const handleNextLocationButtonClick = () => {
+        dispatch(toggleLoader(true));
+        dispatch(
+            fetchCoords({
+                city: coords.city,
+                depth: coords.results.current + 1,
+            })
+        );
     };
 
-    const handlePreviousLocationButtonClick = () => { 
-        dispatch(fetchCoords({ city: monthlyClimateData.city, depth: monthlyClimateData.results.current - 1 }));
+    const handlePreviousLocationButtonClick = () => {
+        dispatch(toggleLoader(true));
+        dispatch(
+            fetchCoords({
+                city: coords.city,
+                depth: coords.results.current - 1,
+            })
+        );
     };
 
     return (
@@ -67,43 +78,35 @@ const LocationCard = () => {
                         <ParagraphContainer>
                             <Paragraph>{langPref[lang].city}</Paragraph>
                             <hr />
-                            <ParagraphExtended>
-                                {monthlyClimateData.city}
-                            </ParagraphExtended>
+                            <ParagraphExtended>{coords.city}</ParagraphExtended>
                         </ParagraphContainer>
                         <ParagraphContainer>
                             <Paragraph>{langPref[lang].country}</Paragraph>
                             <hr />
                             <ParagraphExtended>
-                                {monthlyClimateData.country}
+                                {coords.country}
                             </ParagraphExtended>
                         </ParagraphContainer>
                         <ParagraphContainer>
                             <Paragraph>{langPref[lang].lat}</Paragraph>
                             <hr />
-                            <ParagraphExtended>
-                                {monthlyClimateData.lat}
-                            </ParagraphExtended>
+                            <ParagraphExtended>{coords.lat}</ParagraphExtended>
                         </ParagraphContainer>
                         <ParagraphContainer>
                             <Paragraph>{langPref[lang].lng}</Paragraph>
                             <hr />
-                            <ParagraphExtended>
-                                {monthlyClimateData.lng}
-                            </ParagraphExtended>
+                            <ParagraphExtended>{coords.lng}</ParagraphExtended>
                         </ParagraphContainer>
                     </MainInfoContainer>
                 </TextInfoContainer>
                 <LocationChoose>
-                    <h3>
-                        Кількість схожих локацій:{" "}
-                        {monthlyClimateData.results.total}
-                    </h3>
+                    <h3>Кількість схожих локацій: {coords.results.total}</h3>
                     <LocationButtons>
-                        <LocationButton onClick={handleNextLocationButtonClick}
+                        <LocationButton
+                            onClick={handleNextLocationButtonClick}
                             disabled={
-                                monthlyClimateData.results.current + 1 ===
-                                monthlyClimateData.results.total
+                                coords.results.current + 1 ===
+                                coords.results.total
                                     ? true
                                     : false
                             }
@@ -112,11 +115,7 @@ const LocationCard = () => {
                         </LocationButton>
                         <LocationButton
                             onClick={handlePreviousLocationButtonClick}
-                            disabled={
-                                monthlyClimateData.results.current
-                                    ? false
-                                    : true
-                            }
+                            disabled={coords.results.current ? false : true}
                         >
                             Попередня локація
                         </LocationButton>
@@ -125,9 +124,7 @@ const LocationCard = () => {
             </UpperContainer>
             <MapContainer>
                 <MapTitle>Карта місцевості</MapTitle>
-                {monthlyClimateData.lat && (
-                    <LeafletMap center={leafletCenter} />
-                )}
+                {coords.lat && <LeafletMap center={leafletCenter} />}
             </MapContainer>
         </Container>
     );

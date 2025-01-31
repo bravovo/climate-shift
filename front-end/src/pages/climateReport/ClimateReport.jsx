@@ -11,7 +11,9 @@ import {
     ChangeLangButton,
     StyledCoordsInputContainer,
     UseCoordsButton,
+    LoaderWrapper,
 } from "./ClimateReport.styles";
+import { BounceLoader } from 'react-spinners';
 
 import {
     fetchMonthlyClimateData,
@@ -25,10 +27,12 @@ import {
 } from "../../state/yearsClimateData/yearsClimateDataSlice";
 import YearsStats from "../../components/yearsStats/YearsStats";
 import { fetchCoords, fetchCityName } from "../../state/coords/coordsSlice";
+import { toggleLoader } from '../../state/loader/loaderSlice';
 import Input from "../../components/input/Input";
 import LocationCard from "../../components/locationCard/LocationCard";
 
 const ClimateReport = () => {
+    const loader = useSelector((state) => state.loader);
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
     const yearsClimateData = useSelector((state) => state.yearsClimateData);
     const coords = useSelector((state) => state.coords);
@@ -42,6 +46,7 @@ const ClimateReport = () => {
     const [lngValue, setLngValue] = useState("");
 
     useEffect(() => {
+        dispatch(toggleLoader(true));
         if (!monthlyClimateData.fetched && !yearsClimateData.fetched) {
             const cityToFetch =
                 defaultCities[parseInt(Math.random() * defaultCities.length)];
@@ -61,6 +66,12 @@ const ClimateReport = () => {
         }
     }, [coords]);
 
+    useEffect(() => { 
+        if (yearsClimateData.fetched) {
+            dispatch(toggleLoader(false));
+        }
+    }, [yearsClimateData]);
+
     const fetchData = (city) => {
         try {
             if (
@@ -78,6 +89,7 @@ const ClimateReport = () => {
     };
 
     const handleFindClimateDataSubmit = () => {
+        dispatch(toggleLoader(true));
         if (city.length === 0) {
             setError("Назва міста не може бути порожньою");
             return;
@@ -87,6 +99,7 @@ const ClimateReport = () => {
     };
 
     const handleFindClimateByCoords = () => {
+        dispatch(toggleLoader(true));
         if (latValue.length === 0 && lngValue.length === 0) {
             setError("Поля для координат не повинні бути порожні");
             return;
@@ -117,10 +130,20 @@ const ClimateReport = () => {
 
         dispatch(clearMonthly());
         dispatch(clearYears());
+        dispatch(toggleLoader(false));
     };
 
     return (
         <StyledContainer>
+            {loader && (
+                <LoaderWrapper>
+                    <BounceLoader
+                        className="loader"
+                        color="#000000"
+                        speedMultiplier={1}
+                    />
+                </LoaderWrapper>
+            )}
             <StyledComponentContainerExtended>
                 {error.length > 0 ? (
                     <StyledErrorParagraph>{error}</StyledErrorParagraph>

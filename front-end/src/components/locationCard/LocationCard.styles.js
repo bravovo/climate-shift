@@ -52,7 +52,8 @@ export const LocationButton = styled.button`
     cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 
     &:hover {
-        background-color: ${(props) => (props.disabled ? "#2f7a78" : "#469280")};
+        background-color: ${(props) =>
+            props.disabled ? "#2f7a78" : "#469280"};
     }
 `;
 
