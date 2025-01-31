@@ -19,7 +19,7 @@ const { climate } = require("../assets/variables");
 
 router.get("/coords", async (request, response) => {
     const startTime = Date.now();
-    const { city } = request.query;
+    const { city, depth } = request.query;
     try {
         const opencageResponse = await axios.get(
             `https://api.opencagedata.com/geocode/v1/json?q=${city}&key=${OPENCAGE_API}`
@@ -29,12 +29,16 @@ router.get("/coords", async (request, response) => {
             opencageResponse.data.status.code === 200 &&
             opencageResponse.data.results.length > 0
         ) {
-            const foundPlace = getCity(opencageResponse.data.results, city);
+            const resultsCount = opencageResponse.data.results.length;
             let place;
-            if (foundPlace !== '404') {
-                place = foundPlace;
+            if (depth > resultsCount - 1) {
+                const pendingTime = requestPendingTime(startTime);
+                return response.status(404).send({
+                    message: "Більше схожих результатів не знайдено",
+                    time: { type: "seconds", value: pendingTime },
+                });
             } else {
-                place = opencageResponse.data.results[0];
+                place = opencageResponse.data.results[depth];
             }
             console.log(
                 "Requests remaining",
@@ -43,8 +47,10 @@ router.get("/coords", async (request, response) => {
             console.log(place.formatted);
             const pendingTime = requestPendingTime(startTime);
             return response.status(200).send({
-                ...place,
+                geometry: place.geometry,
+                country: place.components.country,
                 city: city,
+                results: { total: resultsCount, current: parseInt(depth) },
                 time: { type: "seconds", value: pendingTime },
             });
         } else {
@@ -74,18 +80,7 @@ router.get("/coords", async (request, response) => {
     }
 });
 
-const getCity = (requestResponse, city) => { 
-    for (const [resultName, resultData]  of Object.entries(requestResponse)) {
-        console.log(resultData);
-        if (resultData && resultData.components.city == city) {
-            console.log('got it');
-            return resultData;
-        }
-    }
-    return '404';
-};
-
-router.get('/city', async (request, response) => { 
+router.get("/city", async (request, response) => {
     const { lat, lng } = request.query;
 
     const startTime = Date.now();
@@ -107,6 +102,8 @@ router.get('/city', async (request, response) => {
             const pendingTime = requestPendingTime(startTime);
             return response.status(200).send({
                 city: place.components.city,
+                country: place.components.country,
+                results: { total: 1, current: 0 },
                 time: { type: "seconds", value: pendingTime },
             });
         } else {
