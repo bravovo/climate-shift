@@ -1,4 +1,4 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
     Container,
     Paragraph,
@@ -11,9 +11,11 @@ import {
     LocationChoose,
     LocationButtons,
     ParagraphExtended,
+    LocationButton,
 } from "./LocationCard.styles";
 import LeafletMap from "../leafletMap/LeafletMap";
 import { useEffect, useState } from "react";
+import { fetchCoords } from "../../state/coords/coordsSlice";
 
 const langPref = {
     eng: {
@@ -34,6 +36,7 @@ const langPref = {
 
 const LocationCard = () => {
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
+    const dispatch = useDispatch();
     const lang = useSelector((state) => state.dataLang);
     const [leafletCenter, setLeafletCenter] = useState([
         parseFloat(monthlyClimateData.lat),
@@ -47,6 +50,14 @@ const LocationCard = () => {
         ]);
     }, [monthlyClimateData]);
 
+    const handleNextLocationButtonClick = () => { 
+        dispatch(fetchCoords({ city: monthlyClimateData.city, depth: monthlyClimateData.results.current + 1 }));
+    };
+
+    const handlePreviousLocationButtonClick = () => { 
+        dispatch(fetchCoords({ city: monthlyClimateData.city, depth: monthlyClimateData.results.current - 1 }));
+    };
+
     return (
         <Container>
             <UpperContainer>
@@ -56,30 +67,59 @@ const LocationCard = () => {
                         <ParagraphContainer>
                             <Paragraph>{langPref[lang].city}</Paragraph>
                             <hr />
-                            <ParagraphExtended>{monthlyClimateData.city}</ParagraphExtended>
+                            <ParagraphExtended>
+                                {monthlyClimateData.city}
+                            </ParagraphExtended>
                         </ParagraphContainer>
                         <ParagraphContainer>
                             <Paragraph>{langPref[lang].country}</Paragraph>
                             <hr />
-                            <ParagraphExtended>{monthlyClimateData.city}</ParagraphExtended>
+                            <ParagraphExtended>
+                                {monthlyClimateData.country}
+                            </ParagraphExtended>
                         </ParagraphContainer>
                         <ParagraphContainer>
                             <Paragraph>{langPref[lang].lat}</Paragraph>
                             <hr />
-                            <ParagraphExtended>{monthlyClimateData.lat}</ParagraphExtended>
+                            <ParagraphExtended>
+                                {monthlyClimateData.lat}
+                            </ParagraphExtended>
                         </ParagraphContainer>
                         <ParagraphContainer>
                             <Paragraph>{langPref[lang].lng}</Paragraph>
                             <hr />
-                            <ParagraphExtended>{monthlyClimateData.lng}</ParagraphExtended>
+                            <ParagraphExtended>
+                                {monthlyClimateData.lng}
+                            </ParagraphExtended>
                         </ParagraphContainer>
                     </MainInfoContainer>
                 </TextInfoContainer>
                 <LocationChoose>
-                    <h3>Кількість схожих локацій: 57685688</h3>
+                    <h3>
+                        Кількість схожих локацій:{" "}
+                        {monthlyClimateData.results.total}
+                    </h3>
                     <LocationButtons>
-                        <button>Наступна локація</button>
-                        <button>Попередня локація</button>
+                        <LocationButton onClick={handleNextLocationButtonClick}
+                            disabled={
+                                monthlyClimateData.results.current + 1 ===
+                                monthlyClimateData.results.total
+                                    ? true
+                                    : false
+                            }
+                        >
+                            Наступна локація
+                        </LocationButton>
+                        <LocationButton
+                            onClick={handlePreviousLocationButtonClick}
+                            disabled={
+                                monthlyClimateData.results.current
+                                    ? false
+                                    : true
+                            }
+                        >
+                            Попередня локація
+                        </LocationButton>
                     </LocationButtons>
                 </LocationChoose>
             </UpperContainer>

@@ -48,6 +48,14 @@ export const LocationButtons = styled.div`
     gap: 20px;
 `;
 
+export const LocationButton = styled.button`
+    cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+
+    &:hover {
+        background-color: ${(props) => (props.disabled ? "#2f7a78" : "#469280")};
+    }
+`;
+
 export const MapContainer = styled.div`
     width: 100%;
 `;

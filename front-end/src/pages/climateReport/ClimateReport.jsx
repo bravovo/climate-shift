@@ -67,7 +67,7 @@ const ClimateReport = () => {
                 !(city === monthlyClimateData.city) ||
                 !monthlyClimateData.fetched
             ) {
-                dispatch(fetchCoords(city));
+                dispatch(fetchCoords({ city: city, depth: 0 }));
             }
 
             setLatValue(monthlyClimateData.lat);
