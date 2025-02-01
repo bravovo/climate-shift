@@ -140,7 +140,7 @@ router.get("/daily", async (request, response) => {
     console.log(lat, lng);
 
     const today = new Date();
-    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1); // 1
     const lastMonthStart = lastMonth
         .toISOString()
         .split("T")[0]
@@ -148,7 +148,7 @@ router.get("/daily", async (request, response) => {
     const lastMonthEnd = new Date(
         lastMonth.getFullYear(),
         lastMonth.getMonth() + 1,
-        0
+        today.getDate() - 2 // 0
     )
         .toISOString()
         .split("T")[0]
