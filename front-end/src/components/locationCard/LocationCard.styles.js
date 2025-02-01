@@ -49,6 +49,7 @@ export const LocationButtons = styled.div`
 `;
 
 export const LocationButton = styled.button`
+    width: 200px;
     cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
 
     &:hover {

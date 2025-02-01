@@ -1,13 +1,25 @@
+import { useSelector } from "react-redux";
 import ParameterCard from "../parameterCard/ParameterCard";
 import {
     StyledLastMonthStats,
     StyledParameterCardsContainer,
 } from "./LastMonthStats.styles";
 
+const langPref = {
+    eng: {
+        statsTitle: 'Last month statistics',
+    },
+    ukr: {
+        statsTitle: "Статистика за минулий місяць"
+    }
+}
+
 const LastMonthStats = () => {
+    const lang = useSelector((state) => state.dataLang);
+
     return (
         <StyledLastMonthStats>
-            <h2>Статистика за минулий місяць</h2>
+            <h2>{langPref[lang].statsTitle}</h2>
             <StyledParameterCardsContainer>
                 <ParameterCard property="T2M" parameters={["T2M"]} />
                 <ParameterCard property="TS" parameters={["TS"]} />

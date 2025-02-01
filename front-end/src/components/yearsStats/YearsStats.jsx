@@ -11,6 +11,15 @@ import {
 import Dashboard from "../dashboard/Dashboard";
 import Select from "../select/Select";
 
+const langPref = {
+    eng: {
+        yearsDataTitle: "Data for the period from 2014 to 2023",
+    },
+    ukr: {
+        yearsDataTitle: "Дані за період з 2014 до 2023 року",
+    },
+};
+
 const YearsStats = () => {
     const yearsClimateData = useSelector((state) => state.yearsClimateData);
     const lang = useSelector((state) => state.dataLang);
@@ -113,52 +122,45 @@ const YearsStats = () => {
     };
 
     return (
-        yearsClimateData.fetched && (
-            <YearStatsContainer>
-                <h2>Дані за період з 2014 до 2023 року</h2>
-                <DefaultChartsContainer>
-                    <ClimateChart
-                        property={[
-                            yearsClimateData.parameters[lang]["T2M"].longname,
-                            yearsClimateData.parameters[lang]["TS"].longname,
-                        ]}
-                        parameters={[
-                            yearsClimateData.AVERAGES.T2M,
-                            yearsClimateData.AVERAGES.TS,
-                        ]}
-                        colors={["rgba(75,192,192,1)", "rgba(75,192,75,1)"]}
-                    />
-                    <StyledHorizontal />
-                    <ClimateChart
-                        property={[
-                            yearsClimateData.parameters[lang]["T2M_MIN"]
-                                .longname,
-                            yearsClimateData.parameters[lang]["T2M_MAX"]
-                                .longname,
-                        ]}
-                        parameters={[
-                            yearsClimateData.AVERAGES.T2M_MIN,
-                            yearsClimateData.AVERAGES.T2M_MAX,
-                        ]}
-                        colors={["rgba(192,75,192,1)", "rgba(192,75,75,1)"]}
-                    />
-                </DefaultChartsContainer>
-                <ComboChartContainer>
-                    <Select
-                        data={chartData}
-                        onChange={handleComboBoxChange}
-                    />
-                    <ClimateChart
-                        property={[comboboxValue]}
-                        parameters={[climateChartParam]}
-                        colors={["rgba(75,192,75,1)"]}
-                    />
-                </ComboChartContainer>
-                <div>
-                    <Dashboard data={data} />
-                </div>
-            </YearStatsContainer>
-        )
+        <YearStatsContainer>
+            <h2>{langPref[lang].yearsDataTitle}</h2>
+            <DefaultChartsContainer>
+                <ClimateChart
+                    property={[
+                        yearsClimateData.parameters[lang]["T2M"].longname,
+                        yearsClimateData.parameters[lang]["TS"].longname,
+                    ]}
+                    parameters={[
+                        yearsClimateData.AVERAGES.T2M,
+                        yearsClimateData.AVERAGES.TS,
+                    ]}
+                    colors={["rgba(75,192,192,1)", "rgba(75,192,75,1)"]}
+                />
+                <StyledHorizontal />
+                <ClimateChart
+                    property={[
+                        yearsClimateData.parameters[lang]["T2M_MIN"].longname,
+                        yearsClimateData.parameters[lang]["T2M_MAX"].longname,
+                    ]}
+                    parameters={[
+                        yearsClimateData.AVERAGES.T2M_MIN,
+                        yearsClimateData.AVERAGES.T2M_MAX,
+                    ]}
+                    colors={["rgba(192,75,192,1)", "rgba(192,75,75,1)"]}
+                />
+            </DefaultChartsContainer>
+            <ComboChartContainer>
+                <Select data={chartData} onChange={handleComboBoxChange} />
+                <ClimateChart
+                    property={[comboboxValue]}
+                    parameters={[climateChartParam]}
+                    colors={["rgba(75,192,75,1)"]}
+                />
+            </ComboChartContainer>
+            <div>
+                <Dashboard data={data} />
+            </div>
+        </YearStatsContainer>
     );
 };
 

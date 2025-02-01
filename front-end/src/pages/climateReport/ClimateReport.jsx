@@ -8,12 +8,14 @@ import {
     StyledContainer,
     StyledComponentContainer,
     StyledComponentContainerExtended,
-    ChangeLangButton,
     StyledCoordsInputContainer,
     UseCoordsButton,
     LoaderWrapper,
+    GoUpContainer,
+    Button,
 } from "./ClimateReport.styles";
-import { BounceLoader } from 'react-spinners';
+import { BounceLoader } from "react-spinners";
+import { FaAngleUp } from "react-icons/fa";
 
 import {
     fetchMonthlyClimateData,
@@ -27,9 +29,34 @@ import {
 } from "../../state/yearsClimateData/yearsClimateDataSlice";
 import YearsStats from "../../components/yearsStats/YearsStats";
 import { fetchCoords, fetchCityName } from "../../state/coords/coordsSlice";
-import { toggleLoader } from '../../state/loader/loaderSlice';
+import { toggleLoader } from "../../state/loader/loaderSlice";
 import Input from "../../components/input/Input";
 import LocationCard from "../../components/locationCard/LocationCard";
+
+const langPref = {
+    eng: {
+        coordsButton: "Use coords values fields",
+        cityButton: "Use city value field",
+        findDataButton: "Find climate data",
+        cityField: "Type city name",
+        coordsLat: "Type location latitude",
+        coordsLng: "Type location longitude",
+        nullCityError: 'City name can`t be empty',
+        nullCoordsError: 'Coordinates fields can`t be empty',
+        invalidCoords: "Invalid coordinates",
+    },
+    ukr: {
+        coordsButton: "Використовувати поля для вводу координат",
+        cityButton: "Використовувати поле для вводу назви міста",
+        findDataButton: "Знайти кліматичні дані",
+        cityField: "Введіть назву міста",
+        coordsLat: "Введіть широту",
+        coordsLng: "Введіть довготу",
+        nullCityError: 'Назва міста не може бути порожньою',
+        nullCoordsError: 'Поля для координат не можуть бути порожні',
+        invalidCoords: "Невірно вказані координати",
+    },
+};
 
 const ClimateReport = () => {
     const loader = useSelector((state) => state.loader);
@@ -44,6 +71,7 @@ const ClimateReport = () => {
     const [useCoords, setUseCoords] = useState(false);
     const [latValue, setLatValue] = useState("");
     const [lngValue, setLngValue] = useState("");
+    const [upButton, setUpButton] = useState(false);
 
     useEffect(() => {
         dispatch(toggleLoader(true));
@@ -60,17 +88,30 @@ const ClimateReport = () => {
             dispatch(fetchYearsClimateData(coords));
             setLatValue(coords.lat);
             setLngValue(coords.lng);
-            setError('');
+            setError("");
         } else {
-            setError(coords.message || '');
+            setError(coords.message || "");
         }
     }, [coords]);
 
-    useEffect(() => { 
+    useEffect(() => {
         if (yearsClimateData.fetched) {
             dispatch(toggleLoader(false));
         }
     }, [yearsClimateData]);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 500) {
+                setUpButton(true);
+            } else {
+                setUpButton(false);
+            }
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     const fetchData = (city) => {
         try {
@@ -89,23 +130,21 @@ const ClimateReport = () => {
     };
 
     const handleFindClimateDataSubmit = () => {
-        dispatch(toggleLoader(true));
         if (city.length === 0) {
-            setError("Назва міста не може бути порожньою");
+            setError(langPref[lang].nullCityError);
             return;
         }
-
+        dispatch(toggleLoader(true));
         fetchData(city);
     };
 
     const handleFindClimateByCoords = () => {
-        dispatch(toggleLoader(true));
         if (latValue.length === 0 && lngValue.length === 0) {
-            setError("Поля для координат не повинні бути порожні");
+            setError(langPref[lang].nullCoordsError);
             return;
         }
         if (!isFinite(latValue) && !isFinite(lngValue)) {
-            setError("Невірно вказані координати");
+            setError(langPref[lang].invalidCoords);
             return;
         }
         if (
@@ -115,6 +154,7 @@ const ClimateReport = () => {
             ) ||
             !monthlyClimateData.fetched
         ) {
+            dispatch(toggleLoader(true));
             dispatch(fetchCityName({ lat: latValue, lng: lngValue }));
         }
     };
@@ -131,6 +171,10 @@ const ClimateReport = () => {
         dispatch(clearMonthly());
         dispatch(clearYears());
         dispatch(toggleLoader(false));
+    };
+
+    const handleGoUpButtonClick = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     return (
@@ -153,20 +197,20 @@ const ClimateReport = () => {
                     $variant={useCoords}
                 >
                     {useCoords
-                        ? "Використовувати полe для вводу назви міста"
-                        : "Використовувати поля для вводу координат"}
+                        ? langPref[lang].cityButton
+                        : langPref[lang].coordsButton}
                 </UseCoordsButton>
                 <StyledInputContainer>
                     {useCoords ? (
                         <StyledCoordsInputContainer>
                             <Input
-                                placeholder="Введіть широту"
+                                placeholder={langPref[lang].coordsLat}
                                 value={latValue}
                                 onChange={(value) => setLatValue(value)}
                                 clear={handleClearInput}
                             />
                             <Input
-                                placeholder="Введіть довготу"
+                                placeholder={langPref[lang].coordsLng}
                                 value={lngValue}
                                 onChange={(value) => setLngValue(value)}
                                 clear={handleClearInput}
@@ -174,26 +218,26 @@ const ClimateReport = () => {
                         </StyledCoordsInputContainer>
                     ) : (
                         <Input
-                            placeholder="Введіть назву міста"
+                            placeholder={langPref[lang].cityField}
                             value={city}
                             onChange={(value) => setCity(value)}
                             clear={handleClearInput}
                         />
                     )}
-                    <button
+                    <Button
                         onClick={
                             useCoords
                                 ? handleFindClimateByCoords
                                 : handleFindClimateDataSubmit
                         }
                     >
-                        Знайти кліматичні дані
-                    </button>
-                    <ChangeLangButton onClick={handleChangeDataLang}>
+                        {langPref[lang].findDataButton}
+                    </Button>
+                    <Button onClick={handleChangeDataLang}>
                         {lang === "eng"
                             ? "Змінити мову відображення даних"
                             : "Change data output language"}
-                    </ChangeLangButton>
+                    </Button>
                 </StyledInputContainer>
             </StyledComponentContainerExtended>
             <StyledComponentContainer>
@@ -205,6 +249,11 @@ const ClimateReport = () => {
             <StyledComponentContainer>
                 {yearsClimateData.fetched && <YearsStats />}
             </StyledComponentContainer>
+            {upButton && (
+                <GoUpContainer onClick={handleGoUpButtonClick}>
+                    <FaAngleUp size={20} />
+                </GoUpContainer>
+            )}
         </StyledContainer>
     );
 };

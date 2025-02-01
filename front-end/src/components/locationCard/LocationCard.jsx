@@ -25,6 +25,10 @@ const langPref = {
         country: "Country",
         lat: "Latitude",
         lng: "Longitude",
+        sameLocation: 'Number of similar locations',
+        nextLocationButton: 'Next location',
+        prevLocationButton: 'Previous location',
+        map: 'Location map',
     },
     ukr: {
         title: "Короткий опис обраної локації",
@@ -32,6 +36,10 @@ const langPref = {
         country: "Країна",
         lat: "Широта",
         lng: "Довгота",
+        sameLocation: 'Кількість схожих локацій',
+        nextLocationButton: 'Наступна локація',
+        prevLocationButton: 'Попередня локація',
+        map: 'Карта місцевості'
     },
 };
 
@@ -100,7 +108,7 @@ const LocationCard = () => {
                     </MainInfoContainer>
                 </TextInfoContainer>
                 <LocationChoose>
-                    <h3>Кількість схожих локацій: {coords.results.total}</h3>
+                    <h3>{langPref[lang].sameLocation}: {coords.results.total}</h3>
                     <LocationButtons>
                         <LocationButton
                             onClick={handleNextLocationButtonClick}
@@ -111,19 +119,19 @@ const LocationCard = () => {
                                     : false
                             }
                         >
-                            Наступна локація
+                            {langPref[lang].nextLocationButton}
                         </LocationButton>
                         <LocationButton
                             onClick={handlePreviousLocationButtonClick}
                             disabled={coords.results.current ? false : true}
                         >
-                            Попередня локація
+                            {langPref[lang].prevLocationButton}
                         </LocationButton>
                     </LocationButtons>
                 </LocationChoose>
             </UpperContainer>
             <MapContainer>
-                <MapTitle>Карта місцевості</MapTitle>
+                <MapTitle>{langPref[lang].map}</MapTitle>
                 {coords.lat && <LeafletMap center={leafletCenter} />}
             </MapContainer>
         </Container>
