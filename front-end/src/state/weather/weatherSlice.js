@@ -30,6 +30,8 @@ const initialState = {
         cityName: "",
         fetched: false,
     },
+    lat: null, 
+    lng: null,
 };
 
 const weatherSlice = createSlice({
@@ -96,7 +98,7 @@ export const fetchCurrentWeather = createAsyncThunk(
                     fetched: true,
                     cityName: city,
                 };
-                return { current: current };
+                return { current: current, lat: lat, lng: lng };
             } else {
                 return {};
             }
@@ -136,7 +138,7 @@ export const fetchForecast = createAsyncThunk(
                     fetched: true,
                     cityName: city,
                 };
-                return { forecast: forecast };
+                return { forecast: forecast, lat: lat, lng: lng };
             } else {
                 return {};
             }
