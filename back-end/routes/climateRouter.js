@@ -1,8 +1,6 @@
 const { Router } = require("express");
 const axios = require("axios");
 
-const OPENCAGE_API = process.env.OPENCAGE_API_KEY;
-
 const {
     requestPendingTime,
     convertPressure,
