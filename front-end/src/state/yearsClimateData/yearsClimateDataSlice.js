@@ -14,6 +14,7 @@ const initialState = {
     FROST_DAYS: {},
     AVERAGES: {},
     parameters: {},
+    city: '',
 };
 
 const yearsClimateDataSlice = createSlice({
@@ -44,7 +45,7 @@ const yearsClimateDataSlice = createSlice({
 export const fetchYearsClimateData = createAsyncThunk(
     "yearsClimateData/fetchYearsClimateData",
     async (coordinates) => {
-        const { lat, lng } = coordinates;
+        const { lat, lng, city } = coordinates;
         try {
             const response = await axios.get(
                 "http://localhost:5000/api/climate/years",
@@ -64,6 +65,7 @@ export const fetchYearsClimateData = createAsyncThunk(
                     ...info,
                     lat: point.lat,
                     lng: point.lng,
+                    city: city,
                 };
             } else {
                 throw new Error(

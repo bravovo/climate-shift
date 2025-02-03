@@ -17,6 +17,7 @@ const initialState = {
     AVERAGES: {},
     frostDays: {},
     parameters: {},
+    city: ''
 };
 
 const monthlyClimateDataSlice = createSlice({
@@ -47,7 +48,7 @@ const monthlyClimateDataSlice = createSlice({
 export const fetchMonthlyClimateData = createAsyncThunk(
     "monthlyClimateData/fetchMonthlyClimateData",
     async (coordinates) => {
-        const { lat, lng } = coordinates;
+        const { lat, lng, city } = coordinates;
         try {
             console.log("in monthlySlice", lat, lng);
             const response = await axios.get(
@@ -68,6 +69,7 @@ export const fetchMonthlyClimateData = createAsyncThunk(
                     ...info,
                     lat: point.lat,
                     lng: point.lng,
+                    city: city,
                 };
             } else {
                 throw new Error(

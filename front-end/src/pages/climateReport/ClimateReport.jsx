@@ -32,6 +32,7 @@ import { fetchCoords, fetchCityName } from "../../state/coords/coordsSlice";
 import { toggleLoader } from "../../state/loader/loaderSlice";
 import Input from "../../components/input/Input";
 import LocationCard from "../../components/locationCard/LocationCard";
+import { Link } from "react-router-dom";
 
 const langPref = {
     eng: {
@@ -75,7 +76,7 @@ const ClimateReport = () => {
 
     useEffect(() => {
         dispatch(toggleLoader(true));
-        if (!monthlyClimateData.fetched && !yearsClimateData.fetched) {
+        if ((!monthlyClimateData.fetched && !yearsClimateData.fetched) && !coords.city) {
             const cityToFetch =
                 defaultCities[parseInt(Math.random() * defaultCities.length)];
             fetchData(cityToFetch);
@@ -83,7 +84,7 @@ const ClimateReport = () => {
     }, []);
 
     useEffect(() => {
-        if (coords.lat && coords.lng) {
+        if ((coords.lat && coords.lng) && (coords.lat != yearsClimateData.city) && (coords.lng != yearsClimateData.lng)) {
             dispatch(fetchMonthlyClimateData(coords));
             dispatch(fetchYearsClimateData(coords));
             setLatValue(coords.lat);
@@ -254,6 +255,7 @@ const ClimateReport = () => {
                     <FaAngleUp size={20} />
                 </GoUpContainer>
             )}
+            <Link to={'/weather'}>WeatherReport</Link>
         </StyledContainer>
     );
 };

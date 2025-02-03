@@ -40,7 +40,7 @@ export const fetchCoords = createAsyncThunk(
         const { city, depth } = params;
         try {
             const response = await axios.get(
-                "http://localhost:5000/api/climate/coords",
+                "http://localhost:5000/api/coords/coords",
                 {
                     params: {
                         city: city,
@@ -82,7 +82,7 @@ export const fetchCityName = createAsyncThunk(
         const { lat, lng } = coords;
         try {
             const response = await axios.get(
-                "http://localhost:5000/api/climate/city",
+                "http://localhost:5000/api/coords/city",
                 {
                     params: {
                         lat: lat,
