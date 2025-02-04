@@ -19,6 +19,7 @@ const initialState = {
         name: "",
         cod: null,
         fetched: false,
+        loading: false,
         cityName: "",
     },
     forecast: {
@@ -29,6 +30,7 @@ const initialState = {
         city: {},
         cityName: "",
         fetched: false,
+        loading: false,
     },
     lat: null, 
     lng: null,
@@ -38,6 +40,9 @@ const weatherSlice = createSlice({
     name: "weather",
     initialState,
     reducers: {
+        clearWeather: () => {
+            return initialState;
+        },
         setFetchedFalse: (state) => {
             const current = {...state.current, fetched: false};
             const forecast = { ...state.forecast, fetched: false };
@@ -46,8 +51,9 @@ const weatherSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchCurrentWeather.pending, () => {
+            .addCase(fetchCurrentWeather.pending, (state) => {
                 console.log("current is pending...");
+                state.current.loading = true;
             })
             .addCase(fetchCurrentWeather.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
@@ -58,8 +64,9 @@ const weatherSlice = createSlice({
                     action.error.message
                 );
             })
-            .addCase(fetchForecast.pending, () => {
+            .addCase(fetchForecast.pending, (state) => {
                 console.log("forecast is pending...");
+                state.forecast.loading = true;
             })
             .addCase(fetchForecast.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
@@ -96,6 +103,7 @@ export const fetchCurrentWeather = createAsyncThunk(
                 const current = {
                     ...openWeatherResponse.data,
                     fetched: true,
+                    loading: false, 
                     cityName: city,
                 };
                 return { current: current, lat: lat, lng: lng };
@@ -136,6 +144,7 @@ export const fetchForecast = createAsyncThunk(
                 const forecast = {
                     ...openWeatherResponse.data,
                     fetched: true,
+                    loading: false,
                     cityName: city,
                 };
                 return { forecast: forecast, lat: lat, lng: lng };
@@ -153,6 +162,6 @@ export const fetchForecast = createAsyncThunk(
     }
 );
 
-export const { setFetchedFalse } = weatherSlice.actions;
+export const { clearWeather, setFetchedFalse } = weatherSlice.actions;
 
 export default weatherSlice.reducer;

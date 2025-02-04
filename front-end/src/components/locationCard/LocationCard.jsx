@@ -16,7 +16,6 @@ import {
 import LeafletMap from "../leafletMap/LeafletMap";
 import { useEffect, useState } from "react";
 import { fetchCoords } from "../../state/coords/coordsSlice";
-import { toggleLoader } from "../../state/loader/loaderSlice";
 
 const langPref = {
     eng: {
@@ -44,7 +43,6 @@ const langPref = {
 };
 
 const LocationCard = () => {
-    const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
     const coords = useSelector((state) => state.coords);
     const dispatch = useDispatch();
     const lang = useSelector((state) => state.dataLang);
@@ -55,10 +53,9 @@ const LocationCard = () => {
 
     useEffect(() => {
         setLeafletCenter([parseFloat(coords.lat), parseFloat(coords.lng)]);
-    }, [monthlyClimateData]);
+    }, [coords]);
 
     const handleNextLocationButtonClick = () => {
-        dispatch(toggleLoader(true));
         dispatch(
             fetchCoords({
                 city: coords.city,
@@ -68,7 +65,6 @@ const LocationCard = () => {
     };
 
     const handlePreviousLocationButtonClick = () => {
-        dispatch(toggleLoader(true));
         dispatch(
             fetchCoords({
                 city: coords.city,

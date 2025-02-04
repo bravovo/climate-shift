@@ -2,30 +2,27 @@ import { useEffect, useState } from "react";
 import { useAtomValue } from "jotai";
 import { defaultCitiesAtom } from "../../atoms";
 import LastMonthStats from "../../components/lastMonthStats/LastMonthStats";
-import {
-    StyledErrorParagraph,
-    StyledContainer,
-    StyledComponentContainer,
-    StyledComponentContainerExtended,
-    LoaderWrapper,
-    GoUpContainer,
-} from "./ClimateReport.styles";
 import { BounceLoader } from "react-spinners";
-import { FaAngleUp } from "react-icons/fa";
 
-import {
-    fetchMonthlyClimateData,
-} from "../../state/monthlyClimateData/monthlyClimateDataSlice";
+import { fetchMonthlyClimateData } from "../../state/monthlyClimateData/monthlyClimateDataSlice";
 import { useDispatch, useSelector } from "react-redux";
 import {
     fetchYearsClimateData,
+    setFetchedFalse,
 } from "../../state/yearsClimateData/yearsClimateDataSlice";
 import YearsStats from "../../components/yearsStats/YearsStats";
 import { fetchCoords } from "../../state/coords/coordsSlice";
-import { toggleLoader } from "../../state/loader/loaderSlice";
 import LocationCard from "../../components/locationCard/LocationCard";
 import { Link } from "react-router-dom";
 import FindData from "../../components/findData/FindData";
+import {
+    LoaderWrapper,
+    StyledComponentContainer,
+    StyledComponentContainerExtended,
+    StyledContainer,
+    StyledErrorParagraph,
+} from "../../assets/styles/SharedStyles.styles";
+import UpButton from "../../components/upButton/UpButton";
 
 const langPref = {
     eng: {
@@ -35,8 +32,8 @@ const langPref = {
         cityField: "Type city name",
         coordsLat: "Type location latitude",
         coordsLng: "Type location longitude",
-        nullCityError: 'City name can`t be empty',
-        nullCoordsError: 'Coordinates fields can`t be empty',
+        nullCityError: "City name can`t be empty",
+        nullCoordsError: "Coordinates fields can`t be empty",
         invalidCoords: "Invalid coordinates",
     },
     ukr: {
@@ -46,33 +43,40 @@ const langPref = {
         cityField: "Введіть назву міста",
         coordsLat: "Введіть широту",
         coordsLng: "Введіть довготу",
-        nullCityError: 'Назва міста не може бути порожньою',
-        nullCoordsError: 'Поля для координат не можуть бути порожні',
+        nullCityError: "Назва міста не може бути порожньою",
+        nullCoordsError: "Поля для координат не можуть бути порожні",
         invalidCoords: "Невірно вказані координати",
     },
 };
 
 const ClimateReport = () => {
-    const loader = useSelector((state) => state.loader);
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
     const yearsClimateData = useSelector((state) => state.yearsClimateData);
     const coords = useSelector((state) => state.coords);
     const dispatch = useDispatch();
     const [error, setError] = useState("");
     const defaultCities = useAtomValue(defaultCitiesAtom);
-    const [upButton, setUpButton] = useState(false);
 
     useEffect(() => {
-        dispatch(toggleLoader(true));
-        if ((!monthlyClimateData.fetched && !yearsClimateData.fetched) && !coords.city) {
-            const cityToFetch =
-                defaultCities[parseInt(Math.random() * defaultCities.length)];
-            fetchData(cityToFetch);
-        }
+        window.scrollTo({ top: 0 });
     }, []);
 
     useEffect(() => {
-        if ((coords.lat && coords.lng) && (coords.lat != yearsClimateData.city) && (coords.lng != yearsClimateData.lng)) {
+        if (
+            !monthlyClimateData.fetched &&
+            !yearsClimateData.fetched &&
+            !coords.city
+        ) {
+            const cityToFetch =
+                defaultCities[parseInt(Math.random() * defaultCities.length)];
+            fetchData(cityToFetch);
+        } else if (
+            coords.lat &&
+            coords.lng &&
+            coords.lat != yearsClimateData.city &&
+            coords.lng != yearsClimateData.lng
+        ) {
+            dispatch(setFetchedFalse());
             dispatch(fetchMonthlyClimateData(coords));
             dispatch(fetchYearsClimateData(coords));
             setError("");
@@ -80,25 +84,6 @@ const ClimateReport = () => {
             setError(coords.message || "");
         }
     }, [coords]);
-
-    useEffect(() => {
-        if (yearsClimateData.fetched) {
-            dispatch(toggleLoader(false));
-        }
-    }, [yearsClimateData]);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY > 500) {
-                setUpButton(true);
-            } else {
-                setUpButton(false);
-            }
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
 
     const fetchData = (city) => {
         try {
@@ -108,19 +93,14 @@ const ClimateReport = () => {
             ) {
                 dispatch(fetchCoords({ city: city, depth: 0 }));
             }
-
         } catch (error) {
             setError(error.message);
         }
     };
 
-    const handleGoUpButtonClick = () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    };
-
     return (
         <StyledContainer>
-            {loader && (
+            {yearsClimateData.loading && (
                 <LoaderWrapper>
                     <BounceLoader
                         className="loader"
@@ -133,7 +113,11 @@ const ClimateReport = () => {
                 {error.length > 0 ? (
                     <StyledErrorParagraph>{error}</StyledErrorParagraph>
                 ) : null}
-                <FindData langPref={langPref} onError={(value) => setError(value)} fetch={(city) => fetchData(city)} />
+                <FindData
+                    langPref={langPref}
+                    onError={(value) => setError(value)}
+                    fetch={(city) => fetchData(city)}
+                />
             </StyledComponentContainerExtended>
             <StyledComponentContainer>
                 {monthlyClimateData.fetched && <LocationCard />}
@@ -144,12 +128,8 @@ const ClimateReport = () => {
             <StyledComponentContainer>
                 {yearsClimateData.fetched && <YearsStats />}
             </StyledComponentContainer>
-            {upButton && (
-                <GoUpContainer onClick={handleGoUpButtonClick}>
-                    <FaAngleUp size={20} />
-                </GoUpContainer>
-            )}
-            <Link to={'/weather'}>WeatherReport</Link>
+            <UpButton />
+            <Link to={"/weather"}>WeatherReport</Link>
         </StyledContainer>
     );
 };

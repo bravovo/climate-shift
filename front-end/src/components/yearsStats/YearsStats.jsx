@@ -79,6 +79,7 @@ const YearsStats = () => {
                     "lng",
                     "city",
                     "parameters",
+                    'loading',
                 ].includes(paramName)
             ) {
                 continue;

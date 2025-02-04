@@ -11,11 +11,13 @@ import { useAtomValue } from "jotai";
 import { BounceLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import FindData from "../../components/findData/FindData";
-import { LoaderWrapper } from "../climateReport/ClimateReport.styles";
 import {
     StyledComponentContainerExtended,
     StyledErrorParagraph,
 } from "./WeatherReport.styles";
+import { LoaderWrapper, StyledComponentContainer, StyledContainer } from "../../assets/styles/SharedStyles.styles";
+import LocationCard from "../../components/locationCard/LocationCard";
+import UpButton from "../../components/upButton/UpButton";
 
 const langPref = {
     eng: {
@@ -50,6 +52,10 @@ const WeatherReport = () => {
     const [error, setError] = useState("");
 
     useEffect(() => {
+        window.scrollTo({ top: 0 });
+    }, []);
+
+    useEffect(() => {
         if (!weather.forecast.fetched && !coords.city) {
             const cityToFetch =
                 defaultCities[parseInt(Math.random() * defaultCities.length)];
@@ -63,12 +69,15 @@ const WeatherReport = () => {
             dispatch(setFetchedFalse());
             dispatch(fetchCurrentWeather(coords));
             dispatch(fetchForecast(coords));
+            setError("");
+        } else {
+            setError(coords.message || "");
         }
     }, [coords]);
 
     const fetchData = (city) => {
         try {
-            if (!weather.forecast.fetched) {
+            if (!(city === coords.city) || !weather.forecast.fetched) {
                 dispatch(fetchCoords({ city: city, depth: 0 }));
             }
         } catch (error) {
@@ -77,8 +86,8 @@ const WeatherReport = () => {
     };
 
     return (
-        <div>
-            {!weather.forecast.fetched && (
+        <StyledContainer>
+            {weather.forecast.loading && (
                 <LoaderWrapper>
                     <BounceLoader
                         className="loader"
@@ -97,11 +106,14 @@ const WeatherReport = () => {
                     fetch={(city) => fetchData(city)}
                 />
             </StyledComponentContainerExtended>
-
+            <StyledComponentContainer>
+                {weather.forecast.fetched && <LocationCard/>}
+            </StyledComponentContainer>
+            <UpButton />
             {weather.forecast.fetched && "May the force be with you"}
             <br />
             <Link to={"/climate"}>ClimateReport</Link>
-        </div>
+        </StyledContainer>
     );
 };
 

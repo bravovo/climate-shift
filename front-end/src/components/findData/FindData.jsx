@@ -11,8 +11,8 @@ import { toggleLang } from "../../state/dataLang/dataLangSlice";
 import PropTypes from "prop-types";
 import { clearMonthly } from "../../state/monthlyClimateData/monthlyClimateDataSlice";
 import { clearYears } from "../../state/yearsClimateData/yearsClimateDataSlice";
-import { toggleLoader } from "../../state/loader/loaderSlice";
 import { fetchCityName } from "../../state/coords/coordsSlice";
+import { clearWeather } from "../../state/weather/weatherSlice";
 
 const FindData = ({ langPref, onError, fetch }) => {
     const [useCoords, setUseCoords] = useState(false);
@@ -34,7 +34,6 @@ const FindData = ({ langPref, onError, fetch }) => {
             onError(langPref[lang].nullCityError);
             return;
         }
-        dispatch(toggleLoader(true));
         fetch(city);
     };
 
@@ -54,7 +53,6 @@ const FindData = ({ langPref, onError, fetch }) => {
             ) ||
             !monthlyClimateData.fetched
         ) {
-            dispatch(toggleLoader(true));
             dispatch(fetchCityName({ lat: latValue, lng: lngValue }));
         }
     };
@@ -66,7 +64,7 @@ const FindData = ({ langPref, onError, fetch }) => {
 
         dispatch(clearMonthly());
         dispatch(clearYears());
-        dispatch(toggleLoader(false));
+        dispatch(clearWeather());
     };
 
     const handleChangeDataLang = () => {

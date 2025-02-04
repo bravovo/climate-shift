@@ -3,6 +3,7 @@ import axios from "axios";
 
 const initialState = {
     fetched: false,
+    loading: false,
     PRECTOTCORR: {},
     T2M_MAX: {},
     T2M_MIN: {},
@@ -24,11 +25,15 @@ const yearsClimateDataSlice = createSlice({
         clearYears: () => {
             return initialState;
         },
+        setFetchedFalse: (state) => {
+            return { ...state, fetched: false };
+        }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchYearsClimateData.pending, () => {
+            .addCase(fetchYearsClimateData.pending, (state) => {
                 console.log("Request is pending...");
+                state.loading = true;
             })
             .addCase(fetchYearsClimateData.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
@@ -61,6 +66,7 @@ export const fetchYearsClimateData = createAsyncThunk(
                 const { parameters, info, point } = response.data;
                 return {
                     fetched: true,
+                    loading: false,
                     parameters: parameters,
                     ...info,
                     lat: point.lat,
@@ -86,6 +92,6 @@ export const fetchYearsClimateData = createAsyncThunk(
     }
 );
 
-export const { clearYears } = yearsClimateDataSlice.actions;
+export const { clearYears, setFetchedFalse } = yearsClimateDataSlice.actions;
 
 export default yearsClimateDataSlice.reducer;
