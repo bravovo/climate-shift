@@ -34,6 +34,7 @@ const initialState = {
     },
     lat: null, 
     lng: null,
+    lang: 'ukr',
 };
 
 const weatherSlice = createSlice({
@@ -82,7 +83,7 @@ const weatherSlice = createSlice({
 
 export const fetchCurrentWeather = createAsyncThunk(
     "weather/current",
-    async (coordinates) => {
+    async ({coordinates, lang}) => {
         const { lat, lng, city } = coordinates;
 
         try {
@@ -93,7 +94,7 @@ export const fetchCurrentWeather = createAsyncThunk(
                         lat: lat,
                         lon: lng,
                         units: "metric",
-                        lang: "uk",
+                        lang: lang === 'eng' ? 'en' : 'uk',
                         appid: OPEN_WEATHER_API_KEY,
                     },
                 }
@@ -106,7 +107,7 @@ export const fetchCurrentWeather = createAsyncThunk(
                     loading: false, 
                     cityName: city,
                 };
-                return { current: current, lat: lat, lng: lng };
+                return { current: current, lat: lat, lng: lng, lang: lang };
             } else {
                 return {};
             }
@@ -123,7 +124,7 @@ export const fetchCurrentWeather = createAsyncThunk(
 
 export const fetchForecast = createAsyncThunk(
     "weather/forecast",
-    async (coordinates) => {
+    async ({coordinates, lang}) => {
         const { lat, lng, city } = coordinates;
 
         try {
@@ -134,7 +135,7 @@ export const fetchForecast = createAsyncThunk(
                         lat: lat,
                         lon: lng,
                         units: "metric",
-                        lang: "uk",
+                        lang: lang === 'eng' ? 'en' : 'uk',
                         appid: OPEN_WEATHER_API_KEY,
                     },
                 }
@@ -147,7 +148,7 @@ export const fetchForecast = createAsyncThunk(
                     loading: false,
                     cityName: city,
                 };
-                return { forecast: forecast, lat: lat, lng: lng };
+                return { forecast: forecast, lat: lat, lng: lng, lang: lang };
             } else {
                 return {};
             }
