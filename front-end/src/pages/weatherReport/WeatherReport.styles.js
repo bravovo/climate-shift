@@ -15,9 +15,9 @@ export const StyledErrorParagraph = styled.p`
 
 /* Weather card styles start */
 
-export const WeatherContainer = styled.div`
+export const Container = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: center;
     gap: 20px;
     background-color: #13404d;
@@ -26,32 +26,6 @@ export const WeatherContainer = styled.div`
     border-radius: 10px;
 `;
 
-export const TemperatureContainer = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 100px;
-`;
-
-export const Titleh3 = styled.h3`
-    margin: 0;
-    font-size: 1.6em;
-`;
-
-export const IconImageStyles = styled.img`
-    width: 100px;
-`;
-
-export const WeatherDescContainer = styled.div`
-    width: 450px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 30px;
-    border-right: 1px solid #1d5a67;
-`;
+export const ForecastContainer = styled.div``;
 
 /* Weather card styles end */

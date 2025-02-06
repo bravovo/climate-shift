@@ -12,13 +12,10 @@ import { BounceLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import FindData from "../../components/findData/FindData";
 import {
-    IconImageStyles,
+    Container,
+    ForecastContainer,
     StyledComponentContainerExtended,
     StyledErrorParagraph,
-    TemperatureContainer,
-    Titleh3,
-    WeatherContainer,
-    WeatherDescContainer,
 } from "./WeatherReport.styles";
 import {
     LoaderWrapper,
@@ -27,7 +24,7 @@ import {
 } from "../../assets/styles/SharedStyles.styles";
 import LocationCard from "../../components/locationCard/LocationCard";
 import UpButton from "../../components/upButton/UpButton";
-import { getWeatherIcon } from "../../utils/weatherIcons";
+import CurrentWeatherCard from "../../components/currentWeatherCard/CurrentWeatherCard";
 
 const findDatalangPref = {
     eng: {
@@ -51,17 +48,6 @@ const findDatalangPref = {
         nullCityError: "Назва міста не може бути порожньою",
         nullCoordsError: "Поля для координат не можуть бути порожні",
         invalidCoords: "Невірно вказані координати",
-    },
-};
-
-const langPref = {
-    eng: {
-        humidity: "Humidity",
-        feels_like: "Feels like",
-    },
-    ukr: {
-        humidity: "Вологість",
-        feels_like: "Відчувається",
     },
 };
 
@@ -134,35 +120,12 @@ const WeatherReport = () => {
             </StyledComponentContainer>
             <UpButton />
             {weather.current.fetched && (
-                <WeatherContainer>
-                    <WeatherDescContainer>
-                        <IconImageStyles
-                            src={getWeatherIcon(
-                                `${weather.current.weather[0].icon}.png`
-                            )}
-                            alt={weather.current.weather[0].main}
-                        />
-                        <Titleh3>
-                            {weather.current.weather[0].description
-                                .charAt(0)
-                                .toUpperCase() +
-                                weather.current.weather[0].description.slice(1)}
-                        </Titleh3>
-                        <Titleh3>{weather.current.main.temp}°C</Titleh3>
-                    </WeatherDescContainer>
-                    <TemperatureContainer>
-                        <div>
-                            <Titleh3>{langPref[lang].feels_like}</Titleh3>
-                            <Titleh3>
-                                {weather.current.main.feels_like}°C
-                            </Titleh3>
-                        </div>
-                        <div>
-                            <Titleh3>{langPref[lang].humidity}</Titleh3>
-                            <Titleh3>{weather.current.main.humidity}</Titleh3>
-                        </div>
-                    </TemperatureContainer>
-                </WeatherContainer>
+                <Container>
+                    <CurrentWeatherCard />
+                    <ForecastContainer>
+
+                    </ForecastContainer>
+                </Container>
             )}
             <br />
             <Link to={"/climate"}>ClimateReport</Link>
