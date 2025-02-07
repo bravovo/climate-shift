@@ -13,8 +13,6 @@ export const StyledErrorParagraph = styled.p`
     color: red;
 `;
 
-/* Weather card styles start */
-
 export const Container = styled.div`
     display: flex;
     flex-direction: column;
@@ -26,6 +24,22 @@ export const Container = styled.div`
     border-radius: 10px;
 `;
 
-export const ForecastContainer = styled.div``;
+/* Forecast card styles start */
 
-/* Weather card styles end */
+export const ForecastContainer = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+`;
+
+export const CardContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid #1d5a67;
+`;
+
+/* Forecast card styles end */

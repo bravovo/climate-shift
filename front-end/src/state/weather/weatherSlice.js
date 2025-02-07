@@ -23,18 +23,14 @@ const initialState = {
         cityName: "",
     },
     forecast: {
-        cod: "",
-        message: null,
-        cnt: null,
-        list: [],
-        city: {},
+        data: {},
         cityName: "",
         fetched: false,
         loading: false,
     },
-    lat: null, 
+    lat: null,
     lng: null,
-    lang: 'ukr',
+    lang: "ukr",
 };
 
 const weatherSlice = createSlice({
@@ -45,10 +41,10 @@ const weatherSlice = createSlice({
             return initialState;
         },
         setFetchedFalse: (state) => {
-            const current = {...state.current, fetched: false};
+            const current = { ...state.current, fetched: false };
             const forecast = { ...state.forecast, fetched: false };
             return { current: current, forecast: forecast };
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -83,7 +79,7 @@ const weatherSlice = createSlice({
 
 export const fetchCurrentWeather = createAsyncThunk(
     "weather/current",
-    async ({coordinates, lang}) => {
+    async ({ coordinates, lang }) => {
         const { lat, lng, city } = coordinates;
 
         try {
@@ -94,7 +90,7 @@ export const fetchCurrentWeather = createAsyncThunk(
                         lat: lat,
                         lon: lng,
                         units: "metric",
-                        lang: lang === 'eng' ? 'en' : 'uk',
+                        lang: lang === "eng" ? "en" : "uk",
                         appid: OPEN_WEATHER_API_KEY,
                     },
                 }
@@ -104,12 +100,15 @@ export const fetchCurrentWeather = createAsyncThunk(
                 const current = {
                     ...openWeatherResponse.data,
                     fetched: true,
-                    loading: false, 
+                    loading: false,
                     cityName: city,
                 };
                 return { current: current, lat: lat, lng: lng, lang: lang };
             } else {
-                return {};
+                return {
+                    current: { loading: false, fetched: false },
+                    message: "No weather data",
+                };
             }
         } catch (error) {
             console.log(error.message);
@@ -124,33 +123,34 @@ export const fetchCurrentWeather = createAsyncThunk(
 
 export const fetchForecast = createAsyncThunk(
     "weather/forecast",
-    async ({coordinates, lang}) => {
+    async ({ coordinates, lang }) => {
         const { lat, lng, city } = coordinates;
 
         try {
-            const openWeatherResponse = await axios.get(
-                "https://api.openweathermap.org/data/2.5/forecast",
+            const serverResponse = await axios.get(
+                "http://localhost:5000/api/forecast",
                 {
                     params: {
                         lat: lat,
-                        lon: lng,
-                        units: "metric",
-                        lang: lang === 'eng' ? 'en' : 'uk',
-                        appid: OPEN_WEATHER_API_KEY,
+                        lng: lng,
+                        lang: lang === "eng" ? "en" : "uk",
                     },
                 }
             );
 
-            if (openWeatherResponse) {
+            if (serverResponse && serverResponse.status !== 204) {
                 const forecast = {
-                    ...openWeatherResponse.data,
+                    data: serverResponse.data.forecast,
                     fetched: true,
                     loading: false,
                     cityName: city,
                 };
                 return { forecast: forecast, lat: lat, lng: lng, lang: lang };
-            } else {
-                return {};
+            } else if (serverResponse.status === 204) {
+                return {
+                    forecast: { loading: false, fetched: false },
+                    message: "No forecast data",
+                };
             }
         } catch (error) {
             console.log(error.message);

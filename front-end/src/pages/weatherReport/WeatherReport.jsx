@@ -12,6 +12,7 @@ import { BounceLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import FindData from "../../components/findData/FindData";
 import {
+    CardContainer,
     Container,
     ForecastContainer,
     StyledComponentContainerExtended,
@@ -25,6 +26,9 @@ import {
 import LocationCard from "../../components/locationCard/LocationCard";
 import UpButton from "../../components/upButton/UpButton";
 import CurrentWeatherCard from "../../components/currentWeatherCard/CurrentWeatherCard";
+import { IconImageStyles } from "../../components/currentWeatherCard/CurrentWeatherCard.styles";
+import { getWeatherIcon } from "../../utils/weatherIcons";
+import { FaArrowLeftLong } from "react-icons/fa6";
 
 const findDatalangPref = {
     eng: {
@@ -48,6 +52,25 @@ const findDatalangPref = {
         nullCityError: "Назва міста не може бути порожньою",
         nullCoordsError: "Поля для координат не можуть бути порожні",
         invalidCoords: "Невірно вказані координати",
+    },
+};
+
+const langPref = {
+    eng: {
+        humidity: "Humidity",
+        wind: {
+            speed: "Wind speed",
+            direction: "Wind direction",
+            unit: "m/s",
+        },
+    },
+    ukr: {
+        humidity: "Вологість",
+        wind: {
+            speed: "Швидкість вітру",
+            direction: "Напрямок вітру",
+            unit: "м/с",
+        },
     },
 };
 
@@ -116,17 +139,51 @@ const WeatherReport = () => {
                 />
             </StyledComponentContainerExtended>
             <StyledComponentContainer>
-                {weather.forecast.fetched && <LocationCard />}
+                {coords.city && <LocationCard />}
             </StyledComponentContainer>
             <UpButton />
-            {weather.current.fetched && (
-                <Container>
-                    <CurrentWeatherCard />
+            <Container>
+                {weather.current.fetched && <CurrentWeatherCard />}
+                {weather.forecast.fetched ? (
                     <ForecastContainer>
-
+                        {Object.entries(weather.forecast.data)
+                            .filter((_, index) => index !== 0)
+                            .map(([key, data]) => (
+                                <CardContainer key={key}>
+                                    <h2>{data.date}</h2>
+                                    <h2>{data.avgTemp} °C</h2>
+                                    <h2>{data.avgHumidity}</h2>
+                                    <h2>
+                                        {data.dominantWeather
+                                            .charAt(0)
+                                            .toUpperCase() +
+                                            data.dominantWeather.slice(1)}
+                                    </h2>
+                                    <h2>
+                                        {data.avgWindSpeed}{" "}
+                                        {langPref[lang].wind.unit}
+                                    </h2>
+                                    <FaArrowLeftLong
+                                        style={{
+                                            transform: `rotate(${data.avgWindDirection}deg)`,
+                                            fontSize: "1.1em",
+                                        }}
+                                    />
+                                    <IconImageStyles
+                                        src={getWeatherIcon(`${data.icon}.png`)}
+                                        alt={data.dominantWeather}
+                                    />
+                                </CardContainer>
+                            ))}
                     </ForecastContainer>
-                </Container>
-            )}
+                ) : (
+                    <p>
+                        {lang === "ukr"
+                            ? "Прогноз погоди відсутній"
+                            : "No forecast data available"}
+                    </p>
+                )}
+            </Container>
             <br />
             <Link to={"/climate"}>ClimateReport</Link>
         </StyledContainer>
