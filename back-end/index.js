@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const climateRouter = require('./routes/climateRouter');
 const coordsRouter = require('./routes/coordsRouter');
+const forecastRouter = require('./routes/forecastRouter');
 
 const app = express();
 
@@ -29,6 +30,7 @@ const PORT = process.env.PORT || 5000;
 
 app.use('/api/coords', coordsRouter);
 app.use('/api/climate', climateRouter);
+app.use('/api/forecast', forecastRouter);
 
 app.get('/', (request, response) => {
     return response.status(200).send({ message: "API is OK" });
