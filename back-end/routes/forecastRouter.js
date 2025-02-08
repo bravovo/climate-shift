@@ -6,6 +6,59 @@ const OPEN_WEATHER_API_KEY = process.env.OPEN_WEATHER_API_KEY;
 
 const router = Router();
 
+const datesAndMonths = {
+    en: {
+        dates: {
+            sun: "Sunday",
+            mon: "Monday",
+            tue: "Tuesday",
+            wed: "Wednesday",
+            thu: "Thursday",
+            fri: "Friday",
+            sat: "Saturday",
+        },
+        months: {
+            jan: "January",
+            feb: "February",
+            mar: "March",
+            apr: "April",
+            may: "May",
+            jun: "June",
+            jul: "July",
+            aug: "August",
+            sep: "September",
+            oct: "October",
+            nov: "November",
+            dec: "December",
+        },
+    },
+    uk: {
+        dates: {
+            sun: "Неділя",
+            mon: "Понеділок",
+            tue: "Вівторок",
+            wed: "Середа",
+            thu: "Четвер",
+            fri: "П'ятниця",
+            sat: "Субота",
+        },
+        months: {
+            jan: "Січня",
+            feb: "Лютого",
+            mar: "Березня",
+            apr: "Квітня",
+            may: "Травня",
+            jun: "Червня",
+            jul: "Липня",
+            aug: "Серпня",
+            sep: "Вересня",
+            oct: "Жовтня",
+            nov: "Листопада",
+            dec: "Грудня",
+        },
+    },
+};
+
 router.get("/", async (request, response) => {
     const startTime = Date.now();
     const { lat, lng, lang } = request.query;
@@ -40,7 +93,7 @@ router.get("/", async (request, response) => {
                     weatherDesc: {},
                     windSpeed: [],
                     windDirection: [],
-                    icon: data.weather[0].icon,
+                    icons: {},
                 };
             }
 
@@ -50,6 +103,8 @@ router.get("/", async (request, response) => {
             dateForecast[date].windDirection.push(data.wind.deg);
 
             const weatherMain = data.weather[0].description;
+            const weatherIcon = data.weather[0].icon;
+            dateForecast[date].icons[weatherMain] = weatherIcon;
 
             dateForecast[date].weatherDesc[weatherMain] =
                 (dateForecast[date].weatherDesc[weatherMain] || 0) + 1;
@@ -71,6 +126,8 @@ router.get("/", async (request, response) => {
                 (max, curr) => (curr[1] > max[1] ? curr : max)
             )[0];
 
+            const icon = day.icons[dominantWeather];
+
             const avgWindSpeed = (
                 day.windSpeed.reduce((sum, curr) => sum + curr, 0) /
                 day.windSpeed.length
@@ -88,18 +145,39 @@ router.get("/", async (request, response) => {
                 dominantWeather,
                 avgWindSpeed,
                 avgWindDirection,
-                icon: day.icon,
+                icon,
             };
+        });
+
+        Object.values(forecast).forEach((obj) => {
+            const formattedDate = new Date(obj.date)
+                .toDateString()
+                .slice(0, 10)
+                .split(" ");
+            const newDate = `${
+                datesAndMonths[lang].dates[formattedDate[0].toLowerCase()]
+            } ${
+                lang === "en"
+                    ? datesAndMonths[lang].months[
+                          formattedDate[1].toLowerCase()
+                      ] +
+                      " " +
+                      formattedDate[2]
+                    : formattedDate[2] +
+                      " " +
+                      datesAndMonths[lang].months[
+                          formattedDate[1].toLowerCase()
+                      ]
+            }`;
+            obj.date = newDate;
         });
 
         const pendingTime = requestPendingTime(startTime);
 
-        return response
-            .status(200)
-            .send({
-                forecast: forecast,
-                time: { type: "seconds", value: pendingTime },
-            });
+        return response.status(200).send({
+            forecast: forecast,
+            time: { type: "seconds", value: pendingTime },
+        });
     } catch (error) {
         console.log(error.message);
         if (error.response) {
