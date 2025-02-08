@@ -36,3 +36,17 @@ export const StyledErrorParagraph = styled.p`
 export const StyledComponentContainer = styled.div`
     width: 100%;
 `;
+
+export const Titleh3 = styled.h3`
+    margin: 0;
+    font-size: 1.6em;
+`;
+
+export const ValueTitleh3 = styled(Titleh3)`
+    color: #469280;
+    font-size: 1.6em;
+`;
+
+export const IconImageStyles = styled.img`
+    width: 100px;
+`;
