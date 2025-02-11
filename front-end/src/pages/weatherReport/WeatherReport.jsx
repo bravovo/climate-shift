@@ -9,7 +9,6 @@ import { fetchCoords } from "../../state/coords/coordsSlice";
 import { defaultCitiesAtom } from "../../atoms";
 import { useAtomValue } from "jotai";
 import { BounceLoader } from "react-spinners";
-import { Link } from "react-router-dom";
 import FindData from "../../components/findData/FindData";
 import {
     Container,
@@ -25,6 +24,7 @@ import LocationCard from "../../components/locationCard/LocationCard";
 import UpButton from "../../components/upButton/UpButton";
 import CurrentWeatherCard from "../../components/currentWeatherCard/CurrentWeatherCard";
 import ForecastCard from "../../components/forecastCard/ForecastCard";
+import Sidebar from "../../components/sidebar/Sidebar";
 
 const findDatalangPref = {
     eng: {
@@ -96,6 +96,7 @@ const WeatherReport = () => {
 
     return (
         <StyledContainer>
+            <Sidebar />
             {weather.forecast.loading && (
                 <LoaderWrapper>
                     <BounceLoader
@@ -131,8 +132,6 @@ const WeatherReport = () => {
                     </p>
                 )}
             </Container>
-            <br />
-            <Link to={"/climate"}>ClimateReport</Link>
         </StyledContainer>
     );
 };

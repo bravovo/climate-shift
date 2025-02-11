@@ -13,7 +13,6 @@ import {
 import YearsStats from "../../components/yearsStats/YearsStats";
 import { fetchCoords } from "../../state/coords/coordsSlice";
 import LocationCard from "../../components/locationCard/LocationCard";
-import { Link } from "react-router-dom";
 import FindData from "../../components/findData/FindData";
 import {
     LoaderWrapper,
@@ -23,6 +22,7 @@ import {
     StyledErrorParagraph,
 } from "../../assets/styles/SharedStyles.styles";
 import UpButton from "../../components/upButton/UpButton";
+import Sidebar from "../../components/sidebar/Sidebar";
 
 const langPref = {
     eng: {
@@ -100,6 +100,7 @@ const ClimateReport = () => {
 
     return (
         <StyledContainer>
+            <Sidebar />
             {yearsClimateData.loading && (
                 <LoaderWrapper>
                     <BounceLoader
@@ -129,7 +130,6 @@ const ClimateReport = () => {
                 {yearsClimateData.fetched && <YearsStats />}
             </StyledComponentContainer>
             <UpButton />
-            <Link to={"/weather"}>WeatherReport</Link>
         </StyledContainer>
     );
 };
