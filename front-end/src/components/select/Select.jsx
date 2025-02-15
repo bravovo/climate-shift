@@ -29,6 +29,7 @@ const Select = ({ onChange, data }) => {
                     setTimeout(() => setIsDropdownVisible(false), 200)
                 }
                 $variant={isDropdownVisible}
+                type="button"
             >
                 {selectedValue}
                 <span />
@@ -44,6 +45,7 @@ const Select = ({ onChange, data }) => {
                                 setIsDropdownVisible(false);
                                 onChange(option);
                             }}
+                            type="button"
                         >
                             <StyledSpan
                                 $variant={

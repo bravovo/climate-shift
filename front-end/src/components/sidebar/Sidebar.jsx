@@ -51,6 +51,9 @@ const Sidebar = () => {
                         <StyledLink>
                             <Link to="/weather">{lang === 'eng' ? 'Weather' : "Погода"}</Link>
                         </StyledLink>
+                        <StyledLink>
+                            <Link to="/register">{lang === 'eng' ? 'Profile' : "Профіль"}</Link>
+                        </StyledLink>
                     </RoutesContainer>
                     <OtherContainer>
                         <LinksContainer>

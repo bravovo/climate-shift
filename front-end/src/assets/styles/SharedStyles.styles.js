@@ -6,6 +6,7 @@ export const StyledContainer = styled.div`
     flex-direction: column;
     gap: 20px;
     position: relative;
+    padding: 2rem 0 2rem 0;
 `;
 
 export const LoaderWrapper = styled.div`

@@ -1,6 +1,7 @@
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import ClimateReport from "../pages/climateReport/ClimateReport";
 import WeatherReport from "../pages/weatherReport/WeatherReport";
+import Register from "../pages/register/Register";
 
 export const router = createBrowserRouter([
     {
@@ -15,6 +16,10 @@ export const router = createBrowserRouter([
     {
         path: '/weather',
         element: <WeatherReport />
+    },
+    {
+        path: '/register',
+        element: <Register />
     },
     {
         path: "*",
