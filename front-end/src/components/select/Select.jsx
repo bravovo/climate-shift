@@ -26,7 +26,7 @@ const Select = ({ onChange, data }) => {
                 value={selectedValue}
                 onClick={() => setIsDropdownVisible((prev) => !prev)}
                 onBlur={() =>
-                    setTimeout(() => setIsDropdownVisible(false), 100)
+                    setTimeout(() => setIsDropdownVisible(false), 200)
                 }
                 $variant={isDropdownVisible}
             >

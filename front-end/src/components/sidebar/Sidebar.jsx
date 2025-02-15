@@ -10,10 +10,12 @@ import {
 } from "./Sidebar.styles";
 import { Link } from "react-router-dom";
 import { IoLogoGithub } from "react-icons/io";
+import { useSelector } from 'react-redux';
 
 const VERSION = import.meta.env.VITE_VERSION;
 
 const Sidebar = () => {
+    const lang = useSelector((state) => state.dataLang);
     const [isOpen, setIsOpen] = useState(false);
     const sidebarRef = useRef(null);
 
@@ -44,10 +46,10 @@ const Sidebar = () => {
                 <SidebarContainer>
                     <RoutesContainer>
                         <StyledLink>
-                            <Link to="/climate">Клімат</Link>
+                            <Link to="/climate">{lang === 'eng' ? 'Climate' : "Клімат"}</Link>
                         </StyledLink>
                         <StyledLink>
-                            <Link to="/weather">Погода</Link>
+                            <Link to="/weather">{lang === 'eng' ? 'Weather' : "Погода"}</Link>
                         </StyledLink>
                     </RoutesContainer>
                     <OtherContainer>
