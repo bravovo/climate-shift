@@ -3,6 +3,7 @@ const User = require("../schemas/user/UserSchema");
 const { userValidationSchema } = require("../validations/registerValidation");
 const { checkSchema, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
+const { getCoords } = require("../middleware/coordsMiddleware");
 
 const router = Router();
 
@@ -10,9 +11,10 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 router.post(
     "/register",
+    getCoords,
     checkSchema(userValidationSchema),
     async (request, response) => {
-        const { email, password, lang } = request.body;
+        const { email, password, lang, lat, lng } = request.body;
 
         const validationRes = validationResult(request);
 
@@ -25,8 +27,8 @@ router.post(
                 email,
                 password,
                 lang,
-                lat: -33.9288301,
-                lng: 18.4172197,
+                lat,
+                lng,
             });
 
             console.log(userObj);
@@ -49,25 +51,22 @@ router.post(
                     lat: userObj.lat,
                     lng: userObj.lng,
                 };
-                return response.status(201).send(request.session.user);
+                request.session.save(() => {
+                    response.status(201).send(request.session.user);
+                });
+                return;
             } else {
                 return response
                     .status(500)
                     .send({ message: "No user created" });
             }
         } catch (error) {
-            console.log(error.message);
-            return response.status(400).send({ message: error.message });
+            console.error(error);
+            return response.status(400).json({
+                message: error.message,
+            });
         }
     }
 );
-
-router.get("/status", async (request, response) => {
-    if (request.session.user) {
-        return response.status(200).send(request.session.user);
-    } else {
-        return response.sendStatus(401);
-    }
-});
 
 module.exports = router;

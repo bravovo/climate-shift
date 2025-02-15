@@ -17,8 +17,24 @@ const userValidationSchema = {
                 min: 8
             },
             errorMessage: {
-                ukr: "Довжина паролюне може бути менше 8 символів",
+                ukr: "Довжина паролю не може бути менше 8 символів",
                 eng: "Password length cannot be less that 8 symbols",
+            }
+        }
+    },
+    lat: {
+        isNumeric: {
+            errorMessage: {
+                ukr: "Довгота має бути числом",
+                eng: "Latitude has to be a number",
+            }
+        },
+    },
+    lng: {
+        isNumeric: {
+            errorMessage: {
+                ukr: "Широта має бути числом",
+                eng: "Longitude has to be a number",
             }
         }
     }
