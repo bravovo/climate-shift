@@ -22,6 +22,7 @@ const FindData = ({ langPref, onError, fetch }) => {
     const lang = useSelector((state) => state.dataLang);
     const coords = useSelector((state) => state.coords);
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
+    const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
 
     useEffect(() => { 
@@ -114,11 +115,11 @@ const FindData = ({ langPref, onError, fetch }) => {
                 >
                     {langPref[lang].findDataButton}
                 </Button>
-                <Button onClick={handleChangeDataLang}>
+                {user.email.length === 0 ? <Button onClick={handleChangeDataLang}>
                     {lang === "eng"
                         ? "Змінити мову відображення даних"
                         : "Change data output language"}
-                </Button>
+                </Button> : null}
             </StyledInputContainer>
         </>
     );
