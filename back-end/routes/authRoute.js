@@ -4,6 +4,7 @@ const { userValidationSchema } = require("../validations/registerValidation");
 const { checkSchema, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const { getCoords } = require("../middleware/coordsMiddleware");
+const bcrypt = require("bcrypt");
 
 const router = Router();
 
@@ -68,5 +69,56 @@ router.post(
         }
     }
 );
+
+router.post("/login", async (request, response) => {
+    const { email, password } = request.body;
+
+    try {
+        const user = await User.findOne({ email: email });
+
+        if (!user) {
+            console.log('USER NOT FOUND');
+            return response
+                .status(400)
+                .send({ message: "Неправильно введені дані для входу" });
+        }
+
+        bcrypt.compare(password, user.password, (err, data) => {
+            if (err) {
+                throw new Error("Помилка під час порівняння паролів");
+            }
+
+            if (data) {
+                const token = jwt.sign({ id: user._id.toString() }, JWT_SECRET);
+
+                response.cookie('token', token, {
+                    httpOnly: true,
+                    secure: false,
+                    sameSite: "Strict",
+                    maxAge: 60000 * 60 * 24 * 7,
+                    signed: true,
+                });
+
+                request.session.user = {
+                    email: user.email,
+                    lang: user.lang,
+                    lat: user.lat,
+                    lng: user.lng,
+                };
+            } else {
+                console.log("INVALID PASSWORD");
+                return response.status(400).send({message: "Неправильно введені дані для входу"});
+            }
+
+            request.session.save(() => {
+                response.status(200).send(request.session.user);
+            });
+            return;
+        });
+    } catch (error) {
+        console.log(error.message);
+        return response.status(500).send({ message: error.message });
+    }
+});
 
 module.exports = router;
