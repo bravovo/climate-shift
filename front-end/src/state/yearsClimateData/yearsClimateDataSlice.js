@@ -15,7 +15,7 @@ const initialState = {
     FROST_DAYS: {},
     AVERAGES: {},
     parameters: {},
-    city: '',
+    city: "",
 };
 
 const yearsClimateDataSlice = createSlice({
@@ -27,7 +27,7 @@ const yearsClimateDataSlice = createSlice({
         },
         setFetchedFalse: (state) => {
             return { ...state, fetched: false };
-        }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -81,9 +81,19 @@ export const fetchYearsClimateData = createAsyncThunk(
         } catch (error) {
             if (error.response) {
                 if (error.response.status === 500) {
-                    return error.response.data.message || "Помилка на сервері";
+                    return {
+                        message:
+                            error.response.data.message || "Помилка на сервері",
+                        loading: false,
+                        fetched: false,
+                    };
                 } else {
-                    return error.response.data.message || "Щось пішло не так";
+                    return {
+                        message:
+                            error.response.data.message || "Щось пішло не так",
+                        loading: false,
+                        fetched: false,
+                    };
                 }
             } else {
                 return error.message || "Щось пішло не так";

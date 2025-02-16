@@ -8,10 +8,13 @@ const dataLangSlice = createSlice({
     reducers: { 
         toggleLang: (state) => {
             return state === 'ukr' ? 'eng' : 'ukr';
+        },
+        setLang: (state, action) => {
+            return action.payload;
         }
     }
 });
 
-export const { toggleLang } = dataLangSlice.actions;
+export const { toggleLang, setLang } = dataLangSlice.actions;
 
 export default dataLangSlice.reducer;

@@ -6,8 +6,6 @@ const initialState = { lat: "", lng: "", city: "", country: '' };
 const coordsSlice = createSlice({
     name: "coords",
     initialState,
-    reducers: {
-    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchCoords.pending, () => {
