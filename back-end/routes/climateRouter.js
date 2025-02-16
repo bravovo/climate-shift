@@ -22,16 +22,21 @@ router.get("/daily", async (request, response) => {
     console.log(lat, lng);
 
     const today = new Date();
-    const lastMonth = new Date(today.getFullYear(), today.getMonth() - 1); // 1
-    const lastMonthStart = lastMonth
+
+    const lastMonthStart = new Date(
+        today.getFullYear(),
+        today.getMonth() - 1,
+        1
+    )
         .toISOString()
         .split("T")[0]
         .replace(/-/g, "");
-    const lastMonthEnd = new Date(
-        lastMonth.getFullYear(),
-        lastMonth.getMonth() + 1,
-        today.getDate() - 2 // 0
-    )
+
+    const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+
+    lastMonthEnd.setDate(lastMonthEnd.getDate() - 3);
+
+    const lastMonthEndFormatted = lastMonthEnd
         .toISOString()
         .split("T")[0]
         .replace(/-/g, "");
@@ -40,7 +45,7 @@ router.get("/daily", async (request, response) => {
         const result = await axios.get(`${BASE_URL}/daily/point`, {
             params: {
                 start: lastMonthStart,
-                end: lastMonthEnd,
+                end: lastMonthEndFormatted,
                 latitude: lat,
                 longitude: lng,
                 parameters: PARAMETERS,
@@ -185,7 +190,7 @@ router.get("/years", async (request, response) => {
     const startTime = Date.now();
     const { lat, lng } = request.query;
 
-    // Кліматичні дані доступні лише до 31 грудня 2023 року станом на 10.01.2025
+    // Кліматичні дані доступні лише до 31 грудня 2023 року станом на 16.02.2025
     // const today = new Date();
     // const currentYear = new Date(today.getFullYear(), today.getMonth());
 

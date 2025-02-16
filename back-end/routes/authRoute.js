@@ -121,4 +121,11 @@ router.post("/login", async (request, response) => {
     }
 });
 
+router.get('/user', (request, response) => { 
+    if (request.session.user) {
+        return response.status(200).send(request.session.user);
+    }
+    return response.status(400).send({ message: "Сесія користувача завершена" });
+});
+
 module.exports = router;
