@@ -2,6 +2,7 @@ import { Navigate, createBrowserRouter } from "react-router-dom";
 import ClimateReport from "../pages/climateReport/ClimateReport";
 import WeatherReport from "../pages/weatherReport/WeatherReport";
 import Register from "../pages/register/Register";
+import Login from "../pages/login/Login";
 
 export const router = createBrowserRouter([
     {
@@ -20,6 +21,10 @@ export const router = createBrowserRouter([
     {
         path: '/register',
         element: <Register />
+    },
+    {
+        path: '/login',
+        element: <Login />
     },
     {
         path: "*",

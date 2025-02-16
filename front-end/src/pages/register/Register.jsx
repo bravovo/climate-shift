@@ -1,22 +1,15 @@
 import { Link } from "react-router-dom";
 import Sidebar from "../../components/sidebar/Sidebar";
 import {
-    Container,
-    Error,
-    Fields,
-    FormBottom,
-    FormContainer,
-    FormParam,
-    Input,
     LocationContainer,
     Paragraph,
     StyledButton,
     StyledCoordsInputContainer,
-    StyledForm,
 } from "./Register.styles";
 import { useState } from "react";
 import Select from "../../components/select/Select";
 import axios from "axios";
+import { Container, Error, Fields, FormBottom, FormContainer, FormParam, Input, StyledForm } from "../../assets/styles/SharedStyles.styles";
 
 const Register = () => {
     const [stage, setStage] = useState(1);
@@ -149,7 +142,7 @@ const Register = () => {
                             </FormParam>
                         </Fields>
                         <FormBottom>
-                            <Link to="">Уже маю акаунт</Link>
+                            <Link to="/login">Уже маю акаунт</Link>
                             <button type="submit">Далі</button>
                         </FormBottom>
                         {error && <Error>{error}</Error>}
