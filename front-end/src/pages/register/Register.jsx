@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Sidebar from "../../components/sidebar/Sidebar";
 import {
     LocationContainer,
@@ -9,7 +9,20 @@ import {
 import { useState } from "react";
 import Select from "../../components/select/Select";
 import axios from "axios";
-import { Container, Error, Fields, FormBottom, FormContainer, FormParam, Input, StyledForm } from "../../assets/styles/SharedStyles.styles";
+import {
+    Container,
+    Error,
+    Fields,
+    FormBottom,
+    FormContainer,
+    FormParam,
+    Input,
+    StyledForm,
+} from "../../assets/styles/SharedStyles.styles";
+import { useDispatch } from "react-redux";
+import { addUser } from "../../state/user/userSlice";
+import { setLang } from "../../state/dataLang/dataLangSlice";
+import { fetchCityName } from "../../state/coords/coordsSlice";
 
 const Register = () => {
     const [stage, setStage] = useState(1);
@@ -23,6 +36,10 @@ const Register = () => {
     const [useCoords, setUseCoords] = useState(false);
     const [langValue, setLangValue] = useState("Українська");
     const [error, setError] = useState("");
+
+    const dispatch = useDispatch();
+
+    const navigate = useNavigate();
 
     const handleStageOneSumbit = (event) => {
         event.preventDefault();
@@ -63,6 +80,10 @@ const Register = () => {
 
             if (serverResponse.data) {
                 console.log("Success", serverResponse.data);
+                dispatch(addUser(serverResponse.data));
+                dispatch(setLang(serverResponse.data.lang));
+                dispatch(fetchCityName({ lat: serverResponse.data.lat, lng: serverResponse.data.lng }));
+                navigate("/climate");
                 setError("");
             } else {
                 throw new Error("Виникла помилка при створенні акаунту");
@@ -75,7 +96,10 @@ const Register = () => {
                 ) {
                     console.log(error.response.data.errors[0]);
                     setError(error.response.data.errors[0].msg.ukr);
-                } else if (error.response.status === 400 && error.response.data.message) { 
+                } else if (
+                    error.response.status === 400 &&
+                    error.response.data.message
+                ) {
                     setError(error.response.data.message);
                 } else if (error.response.status === 500) {
                     console.log("Internal server error");
@@ -210,7 +234,9 @@ const Register = () => {
                             </FormParam>
                         </Fields>
                         <FormBottom>
-                            <button type="button" onClick={() => setStage(1)}>Назад</button>
+                            <button type="button" onClick={() => setStage(1)}>
+                                Назад
+                            </button>
                             <button type="submit">Створити акаунт</button>
                         </FormBottom>
                         {error && <Error>{error}</Error>}

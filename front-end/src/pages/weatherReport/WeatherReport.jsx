@@ -5,7 +5,7 @@ import {
     fetchForecast,
     setFetchedFalse,
 } from "../../state/weather/weatherSlice";
-import { fetchCoords } from "../../state/coords/coordsSlice";
+import { fetchCityName, fetchCoords } from "../../state/coords/coordsSlice";
 import { defaultCitiesAtom } from "../../atoms";
 import { useAtomValue } from "jotai";
 import { BounceLoader } from "react-spinners";
@@ -25,6 +25,8 @@ import UpButton from "../../components/upButton/UpButton";
 import CurrentWeatherCard from "../../components/currentWeatherCard/CurrentWeatherCard";
 import ForecastCard from "../../components/forecastCard/ForecastCard";
 import Sidebar from "../../components/sidebar/Sidebar";
+import { checkUserExist } from "../../state/user/userSlice";
+import { setLang } from "../../state/dataLang/dataLangSlice";
 
 const findDatalangPref = {
     eng: {
@@ -55,6 +57,7 @@ const WeatherReport = () => {
     const coords = useSelector((state) => state.coords);
     const weather = useSelector((state) => state.weather);
     const lang = useSelector((state) => state.dataLang);
+    const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const defaultCities = useAtomValue(defaultCitiesAtom);
     const [error, setError] = useState("");
@@ -64,25 +67,40 @@ const WeatherReport = () => {
     }, []);
 
     useEffect(() => {
-        if (!weather.forecast.fetched && !coords.city) {
-            const cityToFetch =
-                defaultCities[parseInt(Math.random() * defaultCities.length)];
-            fetchData(cityToFetch);
+        if (!user.loading && !user.fetched) {
+            dispatch(checkUserExist());
         } else if (
-            (coords.lat &&
-                coords.lng &&
-                coords.lat != weather.lat &&
-                coords.lng != weather.lng) ||
-            lang !== weather.lang
+            (!user.loading && user.fetched && !user.email) ||
+            coords.lat
         ) {
-            dispatch(setFetchedFalse());
-            dispatch(fetchCurrentWeather({ coordinates: coords, lang: lang }));
-            dispatch(fetchForecast({ coordinates: coords, lang: lang }));
-            setError("");
-        } else {
-            setError(coords.message || "");
+            if (!weather.forecast.fetched && !coords.city) {
+                const cityToFetch =
+                    defaultCities[
+                        parseInt(Math.random() * defaultCities.length)
+                    ];
+                fetchData(cityToFetch);
+            } else if (
+                (coords.lat &&
+                    coords.lng &&
+                    coords.lat != weather.lat &&
+                    coords.lng != weather.lng) ||
+                lang !== weather.lang
+            ) {
+                dispatch(setFetchedFalse());
+                dispatch(
+                    fetchCurrentWeather({ coordinates: coords, lang: lang })
+                );
+                dispatch(fetchForecast({ coordinates: coords, lang: lang }));
+                setError("");
+                setError("");
+            } else {
+                setError(coords.message || "");
+            }
+        } else if (user.fetched && user.email) {
+            dispatch(setLang(user.lang));
+            dispatch(fetchCityName({ lat: user.lat, lng: user.lng }));
         }
-    }, [coords, lang]);
+    }, [user, coords]);
 
     const fetchData = (city) => {
         try {

@@ -11,7 +11,7 @@ import {
     setFetchedFalse,
 } from "../../state/yearsClimateData/yearsClimateDataSlice";
 import YearsStats from "../../components/yearsStats/YearsStats";
-import { fetchCoords } from "../../state/coords/coordsSlice";
+import { fetchCityName, fetchCoords } from "../../state/coords/coordsSlice";
 import LocationCard from "../../components/locationCard/LocationCard";
 import FindData from "../../components/findData/FindData";
 import {
@@ -23,6 +23,8 @@ import {
 } from "../../assets/styles/SharedStyles.styles";
 import UpButton from "../../components/upButton/UpButton";
 import Sidebar from "../../components/sidebar/Sidebar";
+import { checkUserExist } from "../../state/user/userSlice";
+import { setLang } from "../../state/dataLang/dataLangSlice";
 
 const langPref = {
     eng: {
@@ -53,37 +55,45 @@ const ClimateReport = () => {
     const monthlyClimateData = useSelector((state) => state.monthlyClimateData);
     const yearsClimateData = useSelector((state) => state.yearsClimateData);
     const coords = useSelector((state) => state.coords);
+    const user = useSelector((state) => state.user);
     const dispatch = useDispatch();
     const [error, setError] = useState("");
     const defaultCities = useAtomValue(defaultCitiesAtom);
 
     useEffect(() => {
-        window.scrollTo({ top: 0 });
-    }, []);
+        if (!user.loading && !user.fetched) {
+            dispatch(checkUserExist());
+        } else if ((!user.loading && user.fetched && !user.email) || coords.lat) {
+            if (
+                !monthlyClimateData.fetched &&
+                !yearsClimateData.fetched &&
+                !coords.city
+            ) {
+                const cityToFetch =
+                    defaultCities[parseInt(Math.random() * defaultCities.length)];
+                fetchData(cityToFetch);
+            } else if (
+                coords.lat &&
+                coords.lng &&
+                coords.lat != yearsClimateData.city &&
+                coords.lng != yearsClimateData.lng
+            ) {
+                dispatch(setFetchedFalse());
+                dispatch(fetchMonthlyClimateData(coords));
+                dispatch(fetchYearsClimateData(coords));
+                setError("");
+            } else {
+                setError(coords.message || "");
+            }
+        } else if (user.fetched && user.email) {
+            dispatch(setLang(user.lang));
+            dispatch(fetchCityName({ lat: user.lat, lng: user.lng }));
+        }
+    }, [user, coords]);
 
     useEffect(() => {
-        if (
-            !monthlyClimateData.fetched &&
-            !yearsClimateData.fetched &&
-            !coords.city
-        ) {
-            const cityToFetch =
-                defaultCities[parseInt(Math.random() * defaultCities.length)];
-            fetchData(cityToFetch);
-        } else if (
-            coords.lat &&
-            coords.lng &&
-            coords.lat != yearsClimateData.city &&
-            coords.lng != yearsClimateData.lng
-        ) {
-            dispatch(setFetchedFalse());
-            dispatch(fetchMonthlyClimateData(coords));
-            dispatch(fetchYearsClimateData(coords));
-            setError("");
-        } else {
-            setError(coords.message || "");
-        }
-    }, [coords]);
+        window.scrollTo({ top: 0 });
+    }, []);
 
     const fetchData = (city) => {
         try {

@@ -115,7 +115,7 @@ const FindData = ({ langPref, onError, fetch }) => {
                 >
                     {langPref[lang].findDataButton}
                 </Button>
-                {user.email.length === 0 ? <Button onClick={handleChangeDataLang}>
+                {!user.email ? <Button onClick={handleChangeDataLang}>
                     {lang === "eng"
                         ? "Змінити мову відображення даних"
                         : "Change data output language"}

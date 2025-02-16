@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Sidebar from "../../components/sidebar/Sidebar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
     Container,
     Error,
@@ -12,11 +12,19 @@ import {
     StyledForm,
 } from "../../assets/styles/SharedStyles.styles";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+
+import { addUser } from "../../state/user/userSlice";
+import { setLang } from "../../state/dataLang/dataLangSlice";
+import { fetchCityName } from "../../state/coords/coordsSlice";
 
 const Login = () => {
     const [emailValue, setEmailValue] = useState("");
     const [passwordValue, setPasswordValue] = useState("");
     const [error, setError] = useState("");
+    const dispatch = useDispatch();
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (event) => {
         event.preventDefault();
@@ -33,11 +41,14 @@ const Login = () => {
 
             if (serverResponse) {
                 console.log(serverResponse.data);
+                dispatch(addUser(serverResponse.data));
+                dispatch(setLang(serverResponse.data.lang));
+                dispatch(fetchCityName({ lat: serverResponse.data.lat, lng: serverResponse.data.lng }));
+                navigate("/climate");
                 setError("");
             } else {
-                throw new Error('Помилка під час входу в акаунт');
+                throw new Error("Помилка під час входу в акаунт");
             }
-
         } catch (error) {
             if (error.response) {
                 setError(error.response.data.message || "Щось пішло не так");
