@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const UseCoordsButton = styled.button`
     width: 400px;
@@ -37,4 +37,8 @@ export const StyledCoordsInputContainer = styled.div`
 
 export const Button = styled.button`
     width: 310px;
+`;
+
+export const LangButton = styled.button`
+    width: 150px;
 `;

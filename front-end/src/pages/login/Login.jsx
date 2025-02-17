@@ -9,19 +9,42 @@ import {
     FormContainer,
     FormParam,
     Input,
+    LangButton,
     StyledForm,
 } from "../../assets/styles/SharedStyles.styles";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { addUser } from "../../state/user/userSlice";
-import { setLang } from "../../state/dataLang/dataLangSlice";
+import { setLang, toggleLang } from "../../state/dataLang/dataLangSlice";
 import { fetchCityName } from "../../state/coords/coordsSlice";
+
+const langPref = {
+    eng: {
+        formTitle: "Log in",
+        email: "Email",
+        password: "Password",
+        dontHaveAcc: "Don`t have account",
+        login: "Log in",
+        userLoginError: "Error while log in",
+        serverError: "Something went wrong",
+    },
+    ukr: {
+        formTitle: "Вхід в акаунт",
+        email: "Електронна пошта",
+        password: "Пароль",
+        dontHaveAcc: "Ще не маю акаунта",
+        login: "Увійти",
+        userLoginError: "Помилка під час входу в акаунт",
+        serverError: "Щось пішло не так",
+    },
+};
 
 const Login = () => {
     const [emailValue, setEmailValue] = useState("");
     const [passwordValue, setPasswordValue] = useState("");
     const [error, setError] = useState("");
+    const lang = useSelector((state) => state.dataLang);
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
@@ -47,11 +70,11 @@ const Login = () => {
                 navigate("/climate");
                 setError("");
             } else {
-                throw new Error("Помилка під час входу в акаунт");
+                throw new Error(langPref[lang].userLoginError);
             }
         } catch (error) {
             if (error.response) {
-                setError(error.response.data.message || "Щось пішло не так");
+                setError(error.response.data.message[lang] || langPref[lang].serverError);
             } else {
                 console.log(error.message);
                 setError(error.message);
@@ -62,25 +85,28 @@ const Login = () => {
     return (
         <Container>
             <Sidebar />
+            <LangButton onClick={() => dispatch(toggleLang())}>
+                {lang === "eng" ? "Українська" : "English"}
+            </LangButton>
             <FormContainer>
-                <h2>Вхід в акаунт</h2>
+                <h2>{langPref[lang].formTitle}</h2>
                 <StyledForm onSubmit={handleSubmit}>
                     <Fields>
                         <FormParam>
                             <label htmlFor="email-field">
-                                Електронна пошта
+                                {langPref[lang].email}
                             </label>
                             <Input
                                 value={emailValue}
                                 onChange={(e) => setEmailValue(e.target.value)}
                                 type="email"
                                 name="email-field"
-                                placeholder="Email"
+                                placeholder={langPref[lang].email}
                                 required={true}
                             />
                         </FormParam>
                         <FormParam>
-                            <label htmlFor="password-field">Пароль</label>
+                            <label htmlFor="password-field">{langPref[lang].password}</label>
                             <Input
                                 value={passwordValue}
                                 onChange={(e) =>
@@ -88,14 +114,14 @@ const Login = () => {
                                 }
                                 type="password"
                                 name="password-field"
-                                placeholder="Password"
+                                placeholder={langPref[lang].password}
                                 required={true}
                             />
                         </FormParam>
                     </Fields>
                     <FormBottom>
-                        <Link to="/register">Ще не маю акаунта</Link>
-                        <button type="submit">Увійти</button>
+                        <Link to="/register">{langPref[lang].dontHaveAcc}</Link>
+                        <button type="submit">{langPref[lang].login}</button>
                     </FormBottom>
                     {error && <Error>{error}</Error>}
                 </StyledForm>

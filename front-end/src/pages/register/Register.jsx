@@ -17,12 +17,58 @@ import {
     FormContainer,
     FormParam,
     Input,
+    LangButton,
     StyledForm,
 } from "../../assets/styles/SharedStyles.styles";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../../state/user/userSlice";
-import { setLang } from "../../state/dataLang/dataLangSlice";
+import { setLang, toggleLang } from "../../state/dataLang/dataLangSlice";
 import { fetchCityName } from "../../state/coords/coordsSlice";
+
+const langPref = {
+    eng: {
+        formTitle: "Account creating",
+        stageTitle: "Registration stage",
+        email: "Email",
+        password: "Password",
+        confirmPassword: "Password confirmation",
+        haveAcc: "Already have account",
+        location: "Default location",
+        writeCoords: "Use coordinates",
+        writeCity: "Use location name",
+        latitude: "Latitude",
+        longitude: "Longitude",
+        dataLang: "Data display language",
+        back: "Back",
+        next: "Next",
+        create: "Create account",
+        passwordsNotEqual: 'Passwords are not equal in fields',
+        locationEmpty: 'Location fields can`t be empty',
+        userCreateError: "Error creating account",
+        serverError: "Internal server error",
+    },
+    ukr: {
+        formTitle: "Створення акаунта",
+        stageTitle: "Етап реєстрації",
+        email: "Електронна пошта",
+        password: "Пароль",
+        confirmPassword: "Підтвердження паролю",
+        haveAcc: "Уже маю акаунт",
+        location: "Локація за замовчуванням",
+        writeCoords: "Вписати координати",
+        writeCity: "Вписати локацію",
+        latitude: "Довгота",
+        longitude: "Широта",
+        dataLang: "Мова відображення даних",
+        back: "Назад",
+        next: "Далі",
+        create: "Створити акаунт",
+        passwordsNotEqual: 'Паролі у полях не співпадають',
+        locationEmpty: "Поля для вводу локації не можуть бути порожніми",
+        userCreateError: "Виникла помилка при створенні акаунту",
+        serverError: "Внутрішня помилка сервера",
+    },
+};
 
 const Register = () => {
     const [stage, setStage] = useState(1);
@@ -37,6 +83,8 @@ const Register = () => {
     const [langValue, setLangValue] = useState("Українська");
     const [error, setError] = useState("");
 
+    const lang = useSelector((state) => state.dataLang);
+
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
@@ -45,11 +93,12 @@ const Register = () => {
         event.preventDefault();
 
         if (passwordValue !== confirmValue) {
-            setError("Паролі у полях не співпадають");
+            setError(langPref[lang].passwordsNotEqual);
             return;
         }
 
         setStage(2);
+        setError("");
     };
 
     const handleStageTwoSumbit = async (event) => {
@@ -60,7 +109,7 @@ const Register = () => {
             latValue.length === 0 &&
             lngValue.length === 0
         ) {
-            setError("Поля для вводу локації не можуть бути порожніми");
+            setError(langPref[lang].locationEmpty);
             return;
         }
 
@@ -82,11 +131,16 @@ const Register = () => {
                 console.log("Success", serverResponse.data);
                 dispatch(addUser(serverResponse.data));
                 dispatch(setLang(serverResponse.data.lang));
-                dispatch(fetchCityName({ lat: serverResponse.data.lat, lng: serverResponse.data.lng }));
+                dispatch(
+                    fetchCityName({
+                        lat: serverResponse.data.lat,
+                        lng: serverResponse.data.lng,
+                    })
+                );
                 navigate("/climate");
                 setError("");
             } else {
-                throw new Error("Виникла помилка при створенні акаунту");
+                throw new Error(langPref[lang].userCreateError);
             }
         } catch (error) {
             if (error.response) {
@@ -95,7 +149,7 @@ const Register = () => {
                     error.response.data.errors
                 ) {
                     console.log(error.response.data.errors[0]);
-                    setError(error.response.data.errors[0].msg.ukr);
+                    setError(error.response.data.errors[0].msg[lang]);
                 } else if (
                     error.response.status === 400 &&
                     error.response.data.message
@@ -103,7 +157,7 @@ const Register = () => {
                     setError(error.response.data.message);
                 } else if (error.response.status === 500) {
                     console.log("Internal server error");
-                    setError("Internal server error");
+                    setError(langPref[lang].serverError);
                 }
             } else {
                 console.log(error.message);
@@ -115,15 +169,23 @@ const Register = () => {
     return (
         <Container>
             <Sidebar />
+            <LangButton onClick={() => dispatch(toggleLang())}>
+                {lang === "eng" ? "Українська" : "English"}
+            </LangButton>
             <FormContainer>
-                <h2>Створення акаунта</h2>
+                <h2>
+                    {langPref[lang].formTitle}
+                </h2>
                 {stage === 1 ? (
                     <StyledForm onSubmit={handleStageOneSumbit}>
-                        <Paragraph>Етап реєстрації {stage} / 2</Paragraph>
+                        <Paragraph>
+                            {langPref[lang].stageTitle}{" "}
+                            {stage} / 2
+                        </Paragraph>
                         <Fields>
                             <FormParam>
                                 <label htmlFor="email-field">
-                                    Електронна пошта
+                                    {langPref[lang].email}
                                 </label>
                                 <Input
                                     value={emailValue}
@@ -132,12 +194,14 @@ const Register = () => {
                                     }
                                     type="email"
                                     name="email-field"
-                                    placeholder="Email"
+                                    placeholder={langPref[lang].email}
                                     required={true}
                                 />
                             </FormParam>
                             <FormParam>
-                                <label htmlFor="password-field">Пароль</label>
+                                <label htmlFor="password-field">
+                                    {langPref[lang].password}
+                                </label>
                                 <Input
                                     value={passwordValue}
                                     onChange={(e) =>
@@ -145,13 +209,13 @@ const Register = () => {
                                     }
                                     type="password"
                                     name="password-field"
-                                    placeholder="Password"
+                                    placeholder={langPref[lang].password}
                                     required={true}
                                 />
                             </FormParam>
                             <FormParam>
                                 <label htmlFor="confirm-password-field">
-                                    Підтвердження паролю
+                                    {langPref[lang].confirmPassword}
                                 </label>
                                 <Input
                                     value={confirmValue}
@@ -160,25 +224,27 @@ const Register = () => {
                                     }
                                     type="password"
                                     name="confirm-password-field"
-                                    placeholder="Confirm password"
+                                    placeholder={langPref[lang].confirmPassword}
                                     required={true}
                                 />
                             </FormParam>
                         </Fields>
                         <FormBottom>
-                            <Link to="/login">Уже маю акаунт</Link>
-                            <button type="submit">Далі</button>
+                            <Link to="/login">
+                                {langPref[lang].haveAcc}
+                            </Link>
+                            <button type="submit">{langPref[lang].next}</button>
                         </FormBottom>
                         {error && <Error>{error}</Error>}
                     </StyledForm>
                 ) : (
                     <StyledForm onSubmit={handleStageTwoSumbit}>
-                        <Paragraph>Етап реєстрації {stage} / 2</Paragraph>
+                        <Paragraph>{langPref[lang].stageTitle}{" "}{stage} / 2</Paragraph>
                         <Fields>
                             <FormParam>
                                 <LocationContainer>
                                     <label htmlFor="location-field">
-                                        Локація за замовчуванням
+                                        {langPref[lang].location}
                                     </label>
                                     <StyledButton
                                         onClick={() =>
@@ -188,15 +254,15 @@ const Register = () => {
                                         type="button"
                                     >
                                         {useCoords
-                                            ? "Вписати локацію"
-                                            : "Вписати координати"}
+                                            ? langPref[lang].writeCity
+                                            : langPref[lang].writeCoords}
                                     </StyledButton>
                                 </LocationContainer>
                                 {useCoords ? (
                                     <StyledCoordsInputContainer>
                                         <Input
                                             type="text"
-                                            placeholder="Довгота"
+                                            placeholder={langPref[lang].latitude}
                                             value={latValue}
                                             onChange={(e) =>
                                                 setLatValue(e.target.value)
@@ -204,7 +270,7 @@ const Register = () => {
                                         />
                                         <Input
                                             type="text"
-                                            placeholder="Широта"
+                                            placeholder={langPref[lang].longitude}
                                             value={lngValue}
                                             onChange={(e) =>
                                                 setLngValue(e.target.value)
@@ -219,12 +285,12 @@ const Register = () => {
                                         }
                                         type="text"
                                         name="location-field"
-                                        placeholder="Location"
+                                        placeholder={langPref[lang].location}
                                     />
                                 )}
                             </FormParam>
                             <FormParam>
-                                <label>Мова відображення даних</label>
+                                <label>{langPref[lang].dataLang}</label>
                                 <Select
                                     onChange={(value) => {
                                         setLangValue(value);
@@ -235,9 +301,9 @@ const Register = () => {
                         </Fields>
                         <FormBottom>
                             <button type="button" onClick={() => setStage(1)}>
-                                Назад
+                                {langPref[lang].back}
                             </button>
-                            <button type="submit">Створити акаунт</button>
+                            <button type="submit">{langPref[lang].create}</button>
                         </FormBottom>
                         {error && <Error>{error}</Error>}
                     </StyledForm>

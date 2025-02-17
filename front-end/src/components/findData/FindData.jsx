@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import {
     Button,
+    LangButton,
     StyledCoordsInputContainer,
     StyledInputContainer,
     UseCoordsButton,
@@ -115,11 +116,11 @@ const FindData = ({ langPref, onError, fetch }) => {
                 >
                     {langPref[lang].findDataButton}
                 </Button>
-                {!user.email ? <Button onClick={handleChangeDataLang}>
+                {!user.email ? <LangButton onClick={handleChangeDataLang}>
                     {lang === "eng"
-                        ? "Змінити мову відображення даних"
-                        : "Change data output language"}
-                </Button> : null}
+                        ? "Українська"
+                        : "English"}
+                </LangButton> : null}
             </StyledInputContainer>
         </>
     );

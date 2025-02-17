@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled from "styled-components";
 
 export const StyledContainer = styled.div`
     width: 100%;
@@ -148,6 +148,14 @@ export const FormBottom = styled.div`
             opacity: 0.7;
         }
     }
+`;
+
+export const LangButton = styled.button`
+    width: 150px;
+    top: 25px;
+    right: 25px;
+    position: fixed;
+    z-index: 9999;
 `;
 
 /* Register / Login pages styles  end */

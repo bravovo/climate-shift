@@ -59,7 +59,7 @@ router.post(
             } else {
                 return response
                     .status(500)
-                    .send({ message: "No user created" });
+                    .send({ message: { ukr: 'Акаунт користувача не створенно', eng: "No user created" } });
             }
         } catch (error) {
             console.error(error);
@@ -80,12 +80,12 @@ router.post("/login", async (request, response) => {
             console.log('USER NOT FOUND');
             return response
                 .status(400)
-                .send({ message: "Неправильно введені дані для входу" });
+                .send({ message: { ukr: 'Неправильно введені дані для входу', eng: "Invalid email or password" } });
         }
 
         bcrypt.compare(password, user.password, (err, data) => {
             if (err) {
-                throw new Error("Помилка під час порівняння паролів");
+                throw new Error({ ukr: 'Помилка під час порівняння паролів', eng: "Error while passwords comparison" });
             }
 
             if (data) {
@@ -107,7 +107,7 @@ router.post("/login", async (request, response) => {
                 };
             } else {
                 console.log("INVALID PASSWORD");
-                return response.status(400).send({message: "Неправильно введені дані для входу"});
+                return response.status(400).send({ message: { ukr: 'Неправильно введені дані для входу', eng: "Invalid email or password" } });
             }
 
             request.session.save(() => {
