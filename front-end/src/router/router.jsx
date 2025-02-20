@@ -3,6 +3,7 @@ import ClimateReport from "../pages/climateReport/ClimateReport";
 import WeatherReport from "../pages/weatherReport/WeatherReport";
 import Register from "../pages/register/Register";
 import Login from "../pages/login/Login";
+import Profile from "../pages/profile/Profile";
 
 export const router = createBrowserRouter([
     {
@@ -25,6 +26,10 @@ export const router = createBrowserRouter([
     {
         path: '/login',
         element: <Login />
+    },
+    {
+        path: "/profile",
+        element: <Profile />
     },
     {
         path: "*",
