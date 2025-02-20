@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Sidebar from "../../components/sidebar/Sidebar";
 import { Link, useNavigate } from "react-router-dom";
 import {
@@ -10,14 +10,16 @@ import {
     FormParam,
     Input,
     LangButton,
+    LoaderWrapper,
     StyledForm,
 } from "../../assets/styles/SharedStyles.styles";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 
-import { addUser } from "../../state/user/userSlice";
+import { addUser, checkUserExist } from "../../state/user/userSlice";
 import { setLang, toggleLang } from "../../state/dataLang/dataLangSlice";
 import { fetchCityName } from "../../state/coords/coordsSlice";
+import { BounceLoader } from "react-spinners";
 
 const langPref = {
     eng: {
@@ -41,18 +43,32 @@ const langPref = {
 };
 
 const Login = () => {
+    const user = useSelector((state) => state.user);
     const [emailValue, setEmailValue] = useState("");
     const [passwordValue, setPasswordValue] = useState("");
     const [error, setError] = useState("");
     const lang = useSelector((state) => state.dataLang);
     const dispatch = useDispatch();
 
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
+
+    useEffect(() => { 
+        dispatch(checkUserExist());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (user.id) {
+            navigate('/profile');
+        }
+    }, [user, navigate]);
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         try {
+            setLoading(true);
             const serverResponse = await axios.post(
                 "http://localhost:5000/api/auth/login",
                 {
@@ -67,7 +83,8 @@ const Login = () => {
                 dispatch(addUser(serverResponse.data));
                 dispatch(setLang(serverResponse.data.lang));
                 dispatch(fetchCityName({ lat: serverResponse.data.lat, lng: serverResponse.data.lng }));
-                navigate("/climate");
+                setLoading(false);
+                navigate("/profile");
                 setError("");
             } else {
                 throw new Error(langPref[lang].userLoginError);
@@ -84,6 +101,15 @@ const Login = () => {
 
     return (
         <Container>
+            {loading && (
+                <LoaderWrapper>
+                    <BounceLoader
+                        className="loader"
+                        color="#000000"
+                        speedMultiplier={1}
+                    />
+                </LoaderWrapper>
+            )}
             <Sidebar />
             <LangButton onClick={() => dispatch(toggleLang())}>
                 {lang === "eng" ? "Українська" : "English"}

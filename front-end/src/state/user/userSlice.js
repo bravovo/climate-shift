@@ -5,7 +5,8 @@ const initialState = {
     email: "",
     lat: null,
     lng: null,
-    lang: "",
+    city: '',
+    lang: "ukr",
     loading: false,
     feched: false,
 };
@@ -15,7 +16,7 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         addUser: (state, action) => {
-            return { ...action.payload, loading: false };
+            return { ...action.payload, loading: false, fetched: true };
         },
         logoutUser: () => {
             return initialState;

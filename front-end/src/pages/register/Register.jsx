@@ -6,7 +6,7 @@ import {
     StyledButton,
     StyledCoordsInputContainer,
 } from "./Register.styles";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "../../components/select/Select";
 import axios from "axios";
 import {
@@ -18,12 +18,14 @@ import {
     FormParam,
     Input,
     LangButton,
+    LoaderWrapper,
     StyledForm,
 } from "../../assets/styles/SharedStyles.styles";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "../../state/user/userSlice";
+import { addUser, checkUserExist } from "../../state/user/userSlice";
 import { setLang, toggleLang } from "../../state/dataLang/dataLangSlice";
 import { fetchCityName } from "../../state/coords/coordsSlice";
+import { BounceLoader } from "react-spinners";
 
 const langPref = {
     eng: {
@@ -71,6 +73,7 @@ const langPref = {
 };
 
 const Register = () => {
+    const user = useSelector((state) => state.user);
     const [stage, setStage] = useState(1);
     const [emailValue, setEmailValue] = useState("");
     const [passwordValue, setPasswordValue] = useState("");
@@ -83,11 +86,23 @@ const Register = () => {
     const [langValue, setLangValue] = useState("Українська");
     const [error, setError] = useState("");
 
+    const [loading, setLoading] = useState(false);
+
     const lang = useSelector((state) => state.dataLang);
 
     const dispatch = useDispatch();
 
     const navigate = useNavigate();
+
+    useEffect(() => { 
+        dispatch(checkUserExist());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (user.id) {
+            navigate('/profile');
+        }
+    }, [user, navigate]);
 
     const handleStageOneSumbit = (event) => {
         event.preventDefault();
@@ -114,6 +129,7 @@ const Register = () => {
         }
 
         try {
+            setLoading(true);
             const serverResponse = await axios.post(
                 "http://localhost:5000/api/auth/register",
                 {
@@ -137,7 +153,8 @@ const Register = () => {
                         lng: serverResponse.data.lng,
                     })
                 );
-                navigate("/climate");
+                setLoading(false);
+                navigate("/profile");
                 setError("");
             } else {
                 throw new Error(langPref[lang].userCreateError);
@@ -168,6 +185,15 @@ const Register = () => {
 
     return (
         <Container>
+            {loading && (
+                <LoaderWrapper>
+                    <BounceLoader
+                        className="loader"
+                        color="#000000"
+                        speedMultiplier={1}
+                    />
+                </LoaderWrapper>
+            )}
             <Sidebar />
             <LangButton onClick={() => dispatch(toggleLang())}>
                 {lang === "eng" ? "Українська" : "English"}
