@@ -15,7 +15,7 @@ router.post(
     getCoords,
     checkSchema(userValidationSchema),
     async (request, response) => {
-        const { email, password, lang, lat, lng } = request.body;
+        const { email, password, lang, lat, lng, city } = request.body;
 
         const validationRes = validationResult(request);
 
@@ -30,6 +30,7 @@ router.post(
                 lang,
                 lat,
                 lng,
+                city
             });
 
             console.log(userObj);
@@ -47,10 +48,12 @@ router.post(
                     signed: true,
                 });
                 request.session.user = {
+                    id: userObj.id,
                     email: userObj.email,
                     lang: userObj.lang,
                     lat: userObj.lat,
                     lng: userObj.lng,
+                    city: userObj.city
                 };
                 request.session.save(() => {
                     response.status(201).send(request.session.user);
@@ -100,10 +103,12 @@ router.post("/login", async (request, response) => {
                 });
 
                 request.session.user = {
+                    id: user.id,
                     email: user.email,
                     lang: user.lang,
                     lat: user.lat,
                     lng: user.lng,
+                    city: user.city
                 };
             } else {
                 console.log("INVALID PASSWORD");
@@ -125,7 +130,7 @@ router.get('/user', (request, response) => {
     if (request.session.user) {
         return response.status(200).send(request.session.user);
     }
-    return response.status(400).send({ message: "Сесія користувача завершена" });
+    return response.status(403).send({ message: "Сесія користувача не існує" });
 });
 
 module.exports = router;

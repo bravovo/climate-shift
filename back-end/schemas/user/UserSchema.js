@@ -18,6 +18,11 @@ const UserSchema = new Schema({
         required: true,
         unique: false
     },
+    city: {
+        type: String,
+        required: true,
+        unique: false
+    },
     lang: {
         type: String,
         unique: false,

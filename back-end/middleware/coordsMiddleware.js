@@ -8,6 +8,38 @@ const getCoords = async (request, response, next) => {
     if (lat && lng) {
         request.body.lat = lat;
         request.body.lng = lng;
+        try {
+            const opencageResponse = await axios.get(
+                `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${OPENCAGE_API}`
+            );
+
+            if (
+                opencageResponse.data.status.code === 200 &&
+                opencageResponse.data.results.length > 0
+            ) {
+                const place = opencageResponse.data.results[0];
+                console.log(
+                    "Requests remaining",
+                    opencageResponse.data.rate.remaining
+                );
+                console.log(place.components.city);
+                request.body.city = place.components.city;
+            } else {
+                console.log("Status", opencageResponse.data.status.message);
+                console.log("total_results", opencageResponse.data.total_results);
+                return response.status(404).send({
+                    message: "Міста із заданими координатами не знайдено",
+                });
+            }
+        } catch (error) {
+            console.log(error.message);
+    
+            if (error.response.status.code === 402) {
+                console.log("hit free trial daily limit");
+                return response.status(402).send({ message: 'Зараз неможливо дізнатись місто за координатами' });
+            }
+            return response.status(500).send({ message: 'Помилка на сервері' });
+        }
         console.log('COORDS HERE...');
         return next();
     }
