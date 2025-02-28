@@ -55,7 +55,10 @@ const Login = () => {
     const navigate = useNavigate();
 
     useEffect(() => { 
-        dispatch(checkUserExist());
+        console.log("LOGIN");
+        if (!user.id) {
+            dispatch(checkUserExist());
+        }
     }, [dispatch]);
 
     useEffect(() => {

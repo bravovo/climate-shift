@@ -69,7 +69,3 @@ export const LocationContainer = styled.div`
     justify-content: center;
     align-items: flex-start;
 `;
-
-export const Coords = styled.div`
-    width: 100%;
-`;

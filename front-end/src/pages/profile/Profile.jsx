@@ -10,7 +10,6 @@ import Sidebar from "../../components/sidebar/Sidebar";
 import {
     Button,
     ButtonContainer,
-    Coords,
     InfoContainer,
     InfoParamContainer,
     InfoParamTitle,
@@ -21,7 +20,7 @@ import {
 } from "./Profile.styles";
 import Select from "../../components/select/Select";
 import axios from "axios";
-import { checkUserExist } from "../../state/user/userSlice";
+import { checkUserExist, logoutUser } from "../../state/user/userSlice";
 import { BounceLoader } from "react-spinners";
 
 const langPref = {
@@ -69,7 +68,10 @@ const Profile = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        dispatch(checkUserExist());
+        console.log("PROFILE")
+        if (!user.id) {
+            dispatch(checkUserExist());
+        }
     }, [dispatch]);
 
     useEffect(() => {
@@ -120,9 +122,14 @@ const Profile = () => {
                 console.log("EMPTY RESPONSE", serverResponse);
             }
         } catch (error) {
-            window.alert(error.response.data.errors[0].msg[lang] || error.message);
             if (error.response && error.response.status === 401) {
-                navigate("/register");
+                window.alert(lang === 'ukr' ? "Вам необхідно авторизуватись спершу" : "You need to log in first");
+                dispatch(logoutUser());
+                navigate("/login");
+            } else {
+                window.alert(
+                    error.response.data.errors[0]?.msg[lang] || error.message
+                );
             }
         }
         setLoading(false);
@@ -163,24 +170,30 @@ const Profile = () => {
             <StyledHr />
             <InfoContainer>
                 <InfoParamContainer>
-                    <InfoParamTitle>{langPref[lang].email}</InfoParamTitle>
-                    <Input
-                        disabled={true}
-                        placeholder={user.email}
-                        style={{ cursor: "not-allowed" }}
-                    />
-                </InfoParamContainer>
-                <InfoParamContainer>
-                    <InfoParamTitle>{langPref[lang].dataLang}</InfoParamTitle>
-                    <Select
-                        onChange={(value) =>
-                            setLangValue(value === "Українська" ? "ukr" : "eng")
-                        }
-                        data={[
-                            lang === "ukr" ? "Українська" : "English",
-                            lang === "ukr" ? "English" : "Українська",
-                        ]}
-                    />
+                    <InfoParamContainer>
+                        <InfoParamTitle>{langPref[lang].email}</InfoParamTitle>
+                        <Input
+                            disabled={true}
+                            placeholder={user.email}
+                            style={{ cursor: "not-allowed" }}
+                        />
+                    </InfoParamContainer>
+                    <InfoParamContainer>
+                        <InfoParamTitle>
+                            {langPref[lang].dataLang}
+                        </InfoParamTitle>
+                        <Select
+                            onChange={(value) =>
+                                setLangValue(
+                                    value === "Українська" ? "ukr" : "eng"
+                                )
+                            }
+                            data={[
+                                lang === "ukr" ? "Українська" : "English",
+                                lang === "ukr" ? "English" : "Українська",
+                            ]}
+                        />
+                    </InfoParamContainer>
                 </InfoParamContainer>
                 <LocationContainer>
                     <UseCoordsButton
@@ -192,7 +205,7 @@ const Profile = () => {
                             : langPref[lang].coordsButton}
                     </UseCoordsButton>
                     {useCoords ? (
-                        <Coords>
+                        <InfoParamContainer>
                             <InfoParamContainer>
                                 <InfoParamTitle>
                                     {langPref[lang].lat}
@@ -215,7 +228,7 @@ const Profile = () => {
                                     }
                                 />
                             </InfoParamContainer>
-                        </Coords>
+                        </InfoParamContainer>
                     ) : (
                         <InfoParamContainer>
                             <InfoParamTitle>

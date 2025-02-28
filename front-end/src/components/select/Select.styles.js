@@ -47,6 +47,7 @@ export const DropDownList = styled.ul`
     width: 100%;
     padding: 10px 0;
     list-style-type: none;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3);
 `;
 
 export const DropDownListValue = styled.button`

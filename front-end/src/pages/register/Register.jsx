@@ -95,7 +95,10 @@ const Register = () => {
     const navigate = useNavigate();
 
     useEffect(() => { 
-        dispatch(checkUserExist());
+        console.log("REGISTER");
+        if (!user.id) {
+            dispatch(checkUserExist());
+        }
     }, [dispatch]);
 
     useEffect(() => {
