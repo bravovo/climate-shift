@@ -63,14 +63,19 @@ const ClimateReport = () => {
     useEffect(() => {
         if (!user.loading && !user.fetched) {
             dispatch(checkUserExist());
-        } else if ((!user.loading && user.fetched && !user.email) || coords.lat) {
+        } else if (
+            (!user.loading && user.fetched && !user.email) ||
+            coords.lat
+        ) {
             if (
                 !monthlyClimateData.fetched &&
                 !yearsClimateData.fetched &&
                 !coords.city
             ) {
                 const cityToFetch =
-                    defaultCities[parseInt(Math.random() * defaultCities.length)];
+                    defaultCities[
+                        parseInt(Math.random() * defaultCities.length)
+                    ];
                 fetchData(cityToFetch);
             } else if (
                 coords.lat &&

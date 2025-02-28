@@ -1,34 +1,83 @@
 import { useSelector } from "react-redux";
 import ClimateChart from "../climateChart/ClimateChart";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
     ComboChartContainer,
     DefaultChartsContainer,
+    MapParamsContainer,
+    StyledH3,
     StyledHorizontal,
     YearStatsContainer,
 } from "./YearsStats.styles";
 import Dashboard from "../dashboard/Dashboard";
 import Select from "../select/Select";
+import LeafletMap from "../leafletMap/LeafletMap";
+// import DatePick from "../datePicker/DatePicker";
+import Slider from "../slider/Slider";
 
 const langPref = {
     eng: {
-        yearsDataTitle: "Data for the period from 2014 to 2023",
+        yearsDataTitle: "Data for the years",
+        mapDataTitle: 'Cartographic data available from 01.01.2020'
     },
     ukr: {
-        yearsDataTitle: "Дані за період з 2014 до 2023 року",
+        yearsDataTitle: "Дані за роки",
+        mapDataTitle: 'Картографічні дані доступні від 01.01.2020',
     },
 };
 
 const YearsStats = () => {
     const yearsClimateData = useSelector((state) => state.yearsClimateData);
     const lang = useSelector((state) => state.dataLang);
+    const coords = useSelector((state) => state.coords);
+    const [leafletCenter, setLeafletCenter] = useState([
+        parseFloat(coords.lat),
+        parseFloat(coords.lng),
+    ]);
     const [comboboxValue, setComboboxValue] = useState(
         yearsClimateData.parameters[lang]["PRECTOTCORR"].longname
     );
     const [climateChartParam, setClimateChartParam] = useState({
         value: yearsClimateData.AVERAGES.PRECTOTCORR,
     });
+
+    const [mapParameter, setMapParameter] = useState("temp_new");
+    // const [mapDate, setMapDate] = useState(new Date().getTime());
+    const [sliderValue, setSliderValue] = useState(
+        new Date(1577882164000).getTime()
+    );
+
+    useEffect(() => {
+        setLeafletCenter([parseFloat(coords.lat), parseFloat(coords.lng)]);
+        console.log("IN YEARS STATS ---", sliderValue);
+    }, [coords]);
+
+    const openWeatherMapLayersOptions = [
+        {
+            parameter: "temp_new",
+            name: { eng: "Temperature", ukr: "Температура" },
+        },
+        { parameter: "wind_new", name: { eng: "Wind", ukr: "Вітер" } },
+        { parameter: "pressure_new", name: { eng: "Pressure", ukr: "Тиск" } },
+        {
+            parameter: "precipitation_new",
+            name: { eng: "Precipitation", ukr: "Кількість опадів" },
+        },
+        { parameter: "clouds_new", name: { eng: "Clouds", ukr: "Хмари" } },
+    ];
+
+    const formatMapData = (takeParams) => {
+        const returnArray = [];
+        for (const element of openWeatherMapLayersOptions) {
+            if (takeParams) {
+                returnArray.push(element.parameter);
+            } else {
+                returnArray.push(element.name[lang]);
+            }
+        }
+        return returnArray;
+    };
 
     const options = [
         {
@@ -79,7 +128,7 @@ const YearsStats = () => {
                     "lng",
                     "city",
                     "parameters",
-                    'loading',
+                    "loading",
                 ].includes(paramName)
             ) {
                 continue;
@@ -122,9 +171,46 @@ const YearsStats = () => {
         }
     };
 
+    const handleMapParamChange = (value) => {
+        for (const element of openWeatherMapLayersOptions) {
+            if (element.name[lang] === value) {
+                setMapParameter(element.parameter);
+                break;
+            }
+        }
+    };
+
+    // const handleDateChange = (value) => {
+    //     console.log(value.getTime());
+    //     setMapDate(value.getTime());
+    //     setSliderValue(value.getTime());
+    // };
+
     return (
         <YearStatsContainer>
             <h2>{langPref[lang].yearsDataTitle}</h2>
+            <MapParamsContainer>
+                <StyledH3>{langPref[lang].mapDataTitle}</StyledH3>
+                {/* <DatePick onChange={handleDateChange} /> */}
+                <div style={{ marginBottom: "20px", zIndex: "99999" }}>
+                    <Select
+                        data={formatMapData(false)}
+                        onChange={handleMapParamChange}
+                    />
+                </div>
+                <Slider
+                    mapDate={1577882164000}
+                    onChange={(value) =>
+                        setSliderValue(new Date(value).getTime())
+                    }
+                />
+                <LeafletMap
+                    parameter={mapParameter}
+                    center={leafletCenter}
+                    isPlain={false}
+                    date={Number(sliderValue / 1000)}
+                />
+            </MapParamsContainer>
             <DefaultChartsContainer>
                 <ClimateChart
                     property={[

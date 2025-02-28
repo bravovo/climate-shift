@@ -128,7 +128,7 @@ const LocationCard = () => {
             </UpperContainer>
             <MapContainer>
                 <MapTitle>{langPref[lang].map}</MapTitle>
-                {coords.lat && <LeafletMap center={leafletCenter} />}
+                {coords.lat && <LeafletMap center={leafletCenter} date="1595688601" />}
             </MapContainer>
         </Container>
     );

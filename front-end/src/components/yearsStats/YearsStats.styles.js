@@ -7,6 +7,17 @@ export const YearStatsContainer = styled.div`
     gap: 20px;
 `;
 
+export const MapParamsContainer = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+`;
+
+export const StyledH3 = styled.h3`
+    margin: 0 0 20px 0;
+    text-align: left;
+`;
+
 export const DefaultChartsContainer = styled.div`
     width: 100%;
     display: flex;
