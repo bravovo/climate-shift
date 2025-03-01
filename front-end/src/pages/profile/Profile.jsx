@@ -126,6 +126,8 @@ const Profile = () => {
                 window.alert(lang === 'ukr' ? "Вам необхідно авторизуватись спершу" : "You need to log in first");
                 dispatch(logoutUser());
                 navigate("/login");
+            } else if (error.response) {
+                window.alert(error.message);
             } else {
                 window.alert(
                     error.response.data.errors[0]?.msg[lang] || error.message

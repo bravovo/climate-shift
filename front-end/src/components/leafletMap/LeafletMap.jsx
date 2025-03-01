@@ -4,6 +4,8 @@ import PropTypes from "prop-types";
 import Legend from "../mapLegend/MapLegend";
 import { useEffect } from "react";
 import { StyledH3 } from "./LeafletMap.styles";
+import { useAtomValue } from "jotai";
+import { legendParametersAtom } from "../../atoms";
 
 const OPENWEATHERMAP_API_KEY = import.meta.env.VITE_OPEN_WEATHER_API_KEY;
 
@@ -14,32 +16,9 @@ function SetView({ coords }) {
     return null;
 }
 
-const legendParameters = {
-    temp_new: {
-        colors: `
-        rgb(159, 85, 181) 0%,
-        rgb(44, 106, 187) 8.75%,
-        rgb(82, 139, 213) 12.5%,
-        rgb(103, 163, 222) 18.75%,
-        rgb(142, 202, 240) 25%,
-        rgb(155, 213, 244) 31.25%,
-        rgb(172, 225, 253) 37.5%,
-        rgb(194, 234, 255) 43.75%,
-        rgb(255, 255, 208) 50%,
-        rgb(254, 248, 174) 56.25%,
-        rgb(254, 232, 146) 62.5%,
-        rgb(254, 226, 112) 68.75%,
-        rgb(253, 212, 97) 75%,
-        rgb(244, 168, 94) 82.5%,
-        rgb(244, 129, 89) 87.5%,
-        rgb(244, 104, 89) 93.75%,
-        rgb(244, 76, 73) 100%
-        `,
-        numbers: [-40, -20, 0, 20, 40],
-    },
-};
-
 const LeafletMap = ({ center, date, parameter, isPlain = true }) => {
+    const legendParameters = useAtomValue(legendParametersAtom);
+
     useEffect(() => {
         console.log("IN LEAFLET ---", isPlain, Number(date));
     });

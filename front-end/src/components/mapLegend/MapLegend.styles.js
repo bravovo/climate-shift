@@ -15,10 +15,8 @@ export const GradientBar = styled.div`
     width: 260px;
     height: 20px;
     background-image: linear-gradient(
-        to right,
-        ${({$variant}) => $variant}
+        ${({ $variant }) => $variant}
     );
-    border: 1px solid transparent;
     margin: 5px 0;
 `;
 

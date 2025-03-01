@@ -100,7 +100,7 @@ const WeatherReport = () => {
             dispatch(setLang(user.lang));
             dispatch(fetchCityName({ lat: user.lat, lng: user.lng }));
         }
-    }, [user, coords]);
+    }, [user, coords, lang]);
 
     const fetchData = (city) => {
         try {

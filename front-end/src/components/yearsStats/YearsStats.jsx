@@ -56,15 +56,15 @@ const YearsStats = () => {
     const openWeatherMapLayersOptions = [
         {
             parameter: "temp_new",
-            name: { eng: "Temperature", ukr: "Температура" },
+            name: { eng: "Temperature (°C)", ukr: "Температура (°C)" },
         },
-        { parameter: "wind_new", name: { eng: "Wind", ukr: "Вітер" } },
-        { parameter: "pressure_new", name: { eng: "Pressure", ukr: "Тиск" } },
+        { parameter: "wind_new", name: { eng: "Wind (m/s)", ukr: "Вітер (м/с)" } },
+        { parameter: "pressure_new", name: { eng: "Pressure (mmHg)", ukr: "Тиск (мм.рт.ст)" } },
         {
             parameter: "precipitation_new",
-            name: { eng: "Precipitation", ukr: "Кількість опадів" },
+            name: { eng: "Precipitation (mm/h)", ukr: "Кількість опадів (мм/год)" },
         },
-        { parameter: "clouds_new", name: { eng: "Clouds", ukr: "Хмари" } },
+        { parameter: "clouds_new", name: { eng: "Clouds (%)", ukr: "Хмари (%)" } },
     ];
 
     const formatMapData = (takeParams) => {
