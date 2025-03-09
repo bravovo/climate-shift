@@ -163,6 +163,7 @@ const Register = () => {
                 throw new Error(langPref[lang].userCreateError);
             }
         } catch (error) {
+            setLoading(false);
             if (error.response) {
                 if (
                     error.response.status === 400 &&

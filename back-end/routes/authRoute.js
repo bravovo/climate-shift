@@ -8,8 +8,6 @@ const bcrypt = require("bcrypt");
 
 const router = Router();
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
 router.post(
     "/register",
     getCoords,
@@ -36,17 +34,6 @@ router.post(
             console.log(userObj);
 
             if (userObj) {
-                const token = jwt.sign(
-                    { id: userObj._id.toString() },
-                    JWT_SECRET
-                );
-                response.cookie("token", token, {
-                    httpOnly: true,
-                    secure: false,
-                    sameSite: "Strict",
-                    maxAge: 60000 * 60 * 24 * 7,
-                    signed: true,
-                });
                 request.session.user = {
                     id: userObj.id,
                     email: userObj.email,
@@ -92,16 +79,6 @@ router.post("/login", async (request, response) => {
             }
 
             if (data) {
-                const token = jwt.sign({ id: user._id.toString() }, JWT_SECRET);
-
-                response.cookie('token', token, {
-                    httpOnly: true,
-                    secure: false,
-                    sameSite: "Strict",
-                    maxAge: 60000 * 60 * 24 * 7,
-                    signed: true,
-                });
-
                 request.session.user = {
                     id: user.id,
                     email: user.email,
@@ -127,6 +104,7 @@ router.post("/login", async (request, response) => {
 });
 
 router.get('/user', (request, response) => { 
+    console.log("USER SESSION ---", request.session.user);
     if (request.session.user) {
         return response.status(200).send(request.session.user);
     }

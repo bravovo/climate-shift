@@ -93,6 +93,7 @@ const Login = () => {
                 throw new Error(langPref[lang].userLoginError);
             }
         } catch (error) {
+            setLoading(false);
             if (error.response) {
                 setError(error.response.data.message[lang] || langPref[lang].serverError);
             } else {
