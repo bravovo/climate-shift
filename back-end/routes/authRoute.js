@@ -73,29 +73,24 @@ router.post("/login", async (request, response) => {
                 .send({ message: { ukr: 'Неправильно введені дані для входу', eng: "Invalid email or password" } });
         }
 
-        bcrypt.compare(password, user.password, (err, data) => {
-            if (err) {
-                throw new Error({ ukr: 'Помилка під час порівняння паролів', eng: "Error while passwords comparison" });
-            }
+        const matchedPasswords = await bcrypt.compare(password, user.password);
 
-            if (data) {
-                request.session.user = {
-                    id: user.id,
-                    email: user.email,
-                    lang: user.lang,
-                    lat: user.lat,
-                    lng: user.lng,
-                    city: user.city
-                };
-            } else {
-                console.log("INVALID PASSWORD");
-                return response.status(400).send({ message: { ukr: 'Неправильно введені дані для входу', eng: "Invalid email or password" } });
-            }
+        if (matchedPasswords) {
+            request.session.user = {
+                id: user.id,
+                email: user.email,
+                lang: user.lang,
+                lat: user.lat,
+                lng: user.lng,
+                city: user.city
+            };
+        } else {
+            console.log("INVALID PASSWORD");
+            return response.status(400).send({ message: { ukr: 'Неправильно введені дані для входу', eng: "Invalid email or password" } });
+        }
 
-            request.session.save(() => {
-                response.status(200).send(request.session.user);
-            });
-            return;
+        request.session.save(() => {
+            return response.status(200).send(request.session.user);
         });
     } catch (error) {
         console.log(error.message);

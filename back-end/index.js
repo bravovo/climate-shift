@@ -7,7 +7,7 @@ const climateRouter = require("./routes/climateRouter");
 const coordsRouter = require("./routes/coordsRouter");
 const forecastRouter = require("./routes/forecastRouter");
 const authRouter = require("./routes/authRoute");
-const userRoute = require('./routes/userRoute');
+const userRoute = require("./routes/userRoute");
 
 const connectDB = require("./config/db.config");
 const cookieParser = require("cookie-parser");
@@ -47,7 +47,15 @@ app.use("/api/coords", coordsRouter);
 app.use("/api/climate", climateRouter);
 app.use("/api/forecast", forecastRouter);
 app.use("/api/auth", authRouter);
-app.use('/api/user', userRoute);
+app.use("/api/user", userRoute);
+
+app.get("/config", (request, response) => {
+    response.json({
+        apiKey: process.env.MAPTILER,
+        lat: request.session.user ? request.session.user.lat : null,
+        lng: request.session.user ? request.session.user.lng : null,
+    });
+});
 
 app.get("/", (request, response) => {
     return response.status(200).send({ message: "API is OK" });

@@ -27,6 +27,7 @@ import ForecastCard from "../../components/forecastCard/ForecastCard";
 import Sidebar from "../../components/sidebar/Sidebar";
 import { checkUserExist } from "../../state/user/userSlice";
 import { setLang } from "../../state/dataLang/dataLangSlice";
+import ClimateMap from "../../components/map/ClimateMap";
 
 const findDatalangPref = {
     eng: {
@@ -150,6 +151,9 @@ const WeatherReport = () => {
                     </p>
                 )}
             </Container>
+            <StyledComponentContainer>
+                <ClimateMap />
+            </StyledComponentContainer>
         </StyledContainer>
     );
 };

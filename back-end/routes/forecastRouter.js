@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const axios = require("axios");
 const { requestPendingTime } = require("../utils/utils");
+const path = require("path");
 
 const OPEN_WEATHER_API_KEY = process.env.OPEN_WEATHER_API_KEY;
 
@@ -190,6 +191,14 @@ router.get("/", async (request, response) => {
                 .send({ message: "Internal server error" });
         }
     }
+});
+
+router.get("/:param", async (request, response) => {
+    const { param } = request.params;
+
+    return response
+        .status(200)
+        .sendFile(path.join(__dirname, "../templates", `${param}.html`));
 });
 
 module.exports = router;
