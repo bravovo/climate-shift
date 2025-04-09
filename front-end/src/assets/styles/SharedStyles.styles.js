@@ -159,3 +159,15 @@ export const LangButton = styled.button`
 `;
 
 /* Register / Login pages styles  end */
+
+/* Profile page styles start */
+
+export const DeleteAccountButton = styled.button`
+    background-color: #7a0a13;
+
+    &:hover {
+        background-color: #9c0c18;
+    }
+`;
+
+/* Profile page styles end */

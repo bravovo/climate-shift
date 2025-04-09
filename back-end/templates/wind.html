@@ -256,6 +256,12 @@
                     map.on("mousemove", (e) => {
                         updatePointerValue(e.lngLat);
                     });
+
+                    if (result.lat) {
+                        new maptilersdk.Marker({ color: "#FF0000" })
+                            .setLngLat(center)
+                            .addTo(map);
+                    }
                 })
                 .catch((error) => {
                     console.log(error);

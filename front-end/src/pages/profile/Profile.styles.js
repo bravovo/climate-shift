@@ -68,6 +68,7 @@ export const LocationContainer = styled.div`
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+    gap: 20px;
 `;
 
 export const AccountManagmentContainer = styled.div`
@@ -76,30 +77,6 @@ export const AccountManagmentContainer = styled.div`
     align-items: center;
     display: flex;
     gap: 20px;
-`;
-
-export const PasswordChangeContainer = styled.div`
-    width: 500px;
-    box-sizing: border-box;
-    padding: 1em 1.2em;
-    background-color: #13404d;
-    border-radius: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-`;
-
-export const PasswordValue = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: flex-start;
-    text-align: left;
-
-    & h3 {
-        margin: 0;
-    }
 `;
 
 export const AccountButtons = styled.div`
@@ -121,43 +98,4 @@ export const LogOutButton = styled.button`
     &:hover {
         background-color: #eb1527;
     }
-`;
-
-export const DeleteAccountButton = styled.button`
-    background-color: #7a0a13;
-
-    &:hover {
-        background-color: #9c0c18;
-    }
-`;
-
-export const DeleteAccountForm = styled.form`
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
-`;
-
-export const PasswordField = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-`;
-
-export const PasswordLabel = styled.div`
-    font-weight: bold;
-    font-size: large;
-`;
-
-export const FormButtonsContainer = styled.div`
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 20px;
 `;
