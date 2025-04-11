@@ -39,10 +39,8 @@ const ChangePassword = ({ setLoading, langPref }) => {
                 { withCredentials: true }
             );
 
-            if (serverResponse && serverResponse.status === 200) {
+            if (serverResponse && serverResponse.status === 204) {
                 window.location.reload();
-            } else {
-                console.log("EMPTY RESPONSE", serverResponse);
             }
         } catch (error) {
             setLoading(false);

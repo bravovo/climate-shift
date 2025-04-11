@@ -13,29 +13,17 @@ const OPENCAGE_API = process.env.OPENCAGE_API_KEY;
 const router = Router();
 
 const checkAuth = (request, response, next) => {
-    if (!request.session.user) {
-        return response.status(401).send({ message: "Unauthorized" });
+    if (!request.user) {
+        return response.status(401).send({ message: {ukr: "Вам необхідно авторизуватись спершу", eng: "You need to authorize first"} });
     }
     return next();
 };
 
 const deleteSession = (request, response) => {
-    request.session.destroy((err) => {
-        if (err) {
-            console.error("Session destroy error:", err);
-            return res.status(500).send("Failed to destroy session");
-        }
-
-        console.log("After destroy:", request.session);
-
-        response.clearCookie("connect.sid", {
-            httpOnly: true,
-            secure: false,
-            sameSite: "Strict",
-        });
-
-        return response.sendStatus(204);
-    });
+    request.logout(function(err) {
+        if (err) { return next(err); }
+        response.sendStatus(201);
+      });
 };
 
 router.patch(
@@ -52,9 +40,9 @@ router.patch(
             return response.status(400).send({ errors: validationRes.array() });
         }
 
-        let newCity = city || request.session.user.city;
-        let newLat = lat || request.session.user.lat;
-        let newLng = lng || request.session.user.lng;
+        let newCity = city || request.user.city;
+        let newLat = lat || request.user.lat;
+        let newLng = lng || request.user.lng;
 
         try {
             if (city && (!lat || !lng)) {
@@ -119,9 +107,9 @@ router.patch(
 
         try {
             const user = await User.findByIdAndUpdate(
-                request.session.user.id,
+                request.user.id,
                 {
-                    lang: lang || request.session.user.lang,
+                    lang: lang || request.user.lang,
                     city: newCity,
                     lat: newLat,
                     lng: newLng,
@@ -133,7 +121,7 @@ router.patch(
                 return response.status(400).send({ message: "User not found" });
             }
 
-            request.session.user = {
+            const updatedUser = {
                 id: user.id,
                 email: user.email,
                 lang: user.lang,
@@ -143,8 +131,8 @@ router.patch(
             };
 
             request.session.save(() => {
-                console.log("Updated session:", request.session.user);
-                response.status(200).send(request.session.user);
+                console.log("Updated session:", updatedUser);
+                response.status(200).send(updatedUser);
             });
         } catch (error) {
             console.error(error);
@@ -167,7 +155,7 @@ router.patch(
         const { oldPassword, newPassword } = request.body;
 
         try {
-            const user = await User.findById(request.session.user.id);
+            const user = request.user;
 
             const matched = await bcrypt.compare(oldPassword, user.password);
 
@@ -190,7 +178,7 @@ router.patch(
                 { new: true }
             );
             if (userObj) {
-                return response.sendStatus(200);
+                return response.sendStatus(204);
             } else {
                 throw new Error("Щось пішло не так");
             }
@@ -207,7 +195,7 @@ router.post("/delete", checkAuth, async (request, response) => {
     const { password } = request.body;
 
     try {
-        const userToDelete = await User.findById(request.session.user.id);
+        const userToDelete = request.user;
 
         if (!userToDelete) {
             return response

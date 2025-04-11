@@ -94,8 +94,8 @@ const Login = () => {
             }
         } catch (error) {
             setLoading(false);
-            if (error.response) {
-                setError(error.response.data.message[lang] || langPref[lang].serverError);
+            if (error.response && error.response.data) {
+                setError(error.response.data.message[lang] ?? langPref[lang].serverError);
             } else {
                 console.log(error.message);
                 setError(error.message);

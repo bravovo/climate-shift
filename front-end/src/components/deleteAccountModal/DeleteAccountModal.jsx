@@ -59,8 +59,10 @@ const DeleteAccountModal = ({langPref, openDeleteAccountModal, deleteAccountModa
                 navigate("/register");
             }
         } catch (error) {
-            if (error.response) {
-                setDeleteAccountError(error.response.data.message[lang]);
+            if (error.response && error.response.data.message) {
+                window.alert(error.response.data.message[lang]);
+                dispatch(logoutUser());
+                navigate("/register");
             } else {
                 setDeleteAccountError(
                     error.message || lang === "ukr"

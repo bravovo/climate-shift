@@ -2,9 +2,8 @@ const { Router } = require("express");
 const User = require("../schemas/user/UserSchema");
 const { userValidationSchema } = require("../validations/registerValidation");
 const { checkSchema, validationResult } = require("express-validator");
-const jwt = require("jsonwebtoken");
 const { getCoords } = require("../middleware/coordsMiddleware");
-const bcrypt = require("bcrypt");
+const passport = require("../passport/strategies/local-strategy");
 
 const router = Router();
 
@@ -28,29 +27,20 @@ router.post(
                 lang,
                 lat,
                 lng,
-                city
+                city,
             });
 
             console.log(userObj);
 
             if (userObj) {
-                request.session.user = {
-                    id: userObj.id,
-                    email: userObj.email,
-                    lang: userObj.lang,
-                    lat: userObj.lat,
-                    lng: userObj.lng,
-                    city: userObj.city
-                };
-                request.session.save(() => {
-                    response.status(201).send(request.session.user);
-                });
-                return;
-            } else {
-                return response
-                    .status(500)
-                    .send({ message: { ukr: 'Акаунт користувача не створенно', eng: "No user created" } });
+                return response.sendStatus(201);
             }
+            return response.status(500).send({
+                message: {
+                    ukr: "Акаунт користувача не створенно",
+                    eng: "No user created",
+                },
+            });
         } catch (error) {
             console.error(error);
             return response.status(400).json({
@@ -60,48 +50,62 @@ router.post(
     }
 );
 
-router.post("/login", async (request, response) => {
-    const { email, password } = request.body;
-
-    try {
-        const user = await User.findOne({ email: email });
-
+router.post("/login", (request, response, next) => {
+    passport.authenticate("local", (err, user, info) => {
         if (!user) {
-            console.log('USER NOT FOUND');
-            return response
-                .status(400)
-                .send({ message: { ukr: 'Неправильно введені дані для входу', eng: "Invalid email or password" } });
+            return response.status(400).send({
+                message: {
+                    ukr: "Невірні облікові дані",
+                    eng: "Invalid credentials",
+                },
+            });
         }
 
-        const matchedPasswords = await bcrypt.compare(password, user.password);
+        if (err) {
+            return response.status(500).send({
+                message: {
+                    ukr: "Помилка сервера при вході",
+                    eng: "Server error during login",
+                },
+            });
+        }
 
-        if (matchedPasswords) {
-            request.session.user = {
+        request.logIn(user, (err) => {
+            if (err) {
+                return response.status(500).send({
+                    message: {
+                        ukr: "Помилка при вході користувача",
+                        eng: "Error logging in user",
+                    },
+                });
+            }
+
+            const returnUser = {
                 id: user.id,
                 email: user.email,
                 lang: user.lang,
                 lat: user.lat,
                 lng: user.lng,
-                city: user.city
+                city: user.city,
             };
-        } else {
-            console.log("INVALID PASSWORD");
-            return response.status(400).send({ message: { ukr: 'Неправильно введені дані для входу', eng: "Invalid email or password" } });
-        }
 
-        request.session.save(() => {
-            return response.status(200).send(request.session.user);
+            return response.status(200).send(returnUser);
         });
-    } catch (error) {
-        console.log(error.message);
-        return response.status(500).send({ message: error.message });
-    }
+    })(request, response, next);
 });
 
-router.get('/user', (request, response) => { 
-    console.log("USER SESSION ---", request.session.user);
-    if (request.session.user) {
-        return response.status(200).send(request.session.user);
+router.get("/user", (request, response) => {
+    console.log("USER SESSION ------------------------------------------");
+    if (request.user) {
+        const returnUser = {
+            id: request.user.id,
+            email: request.user.email,
+            lang: request.user.lang,
+            lat: request.user.lat,
+            lng: request.user.lng,
+            city: request.user.city,
+        };
+        return response.status(200).send(returnUser);
     }
     return response.status(403).send({ message: "Сесія користувача не існує" });
 });

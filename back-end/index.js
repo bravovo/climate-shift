@@ -3,6 +3,8 @@ dotenv.config();
 const express = require("express");
 const session = require("express-session");
 const cors = require("cors");
+const passport = require("passport");
+
 const climateRouter = require("./routes/climateRouter");
 const coordsRouter = require("./routes/coordsRouter");
 const forecastRouter = require("./routes/forecastRouter");
@@ -43,6 +45,9 @@ app.use(
 
 connectDB();
 
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use("/api/coords", coordsRouter);
 app.use("/api/climate", climateRouter);
 app.use("/api/forecast", forecastRouter);
@@ -52,8 +57,8 @@ app.use("/api/user", userRoute);
 app.get("/config", (request, response) => {
     response.json({
         apiKey: process.env.MAPTILER,
-        lat: request.session.user ? request.session.user.lat : null,
-        lng: request.session.user ? request.session.user.lng : null,
+        lat: request.user ? request.user.lat : null,
+        lng: request.user ? request.user.lng : null,
     });
 });
 

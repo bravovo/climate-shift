@@ -22,9 +22,8 @@ import {
     StyledForm,
 } from "../../assets/styles/SharedStyles.styles";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser, checkUserExist } from "../../state/user/userSlice";
-import { setLang, toggleLang } from "../../state/dataLang/dataLangSlice";
-import { fetchCityName } from "../../state/coords/coordsSlice";
+import { checkUserExist } from "../../state/user/userSlice";
+import { toggleLang } from "../../state/dataLang/dataLangSlice";
 import { BounceLoader } from "react-spinners";
 
 const langPref = {
@@ -147,18 +146,9 @@ const Register = () => {
             );
 
             if (serverResponse.data) {
-                console.log("Success", serverResponse.data);
-                dispatch(addUser(serverResponse.data));
-                dispatch(setLang(serverResponse.data.lang));
-                dispatch(
-                    fetchCityName({
-                        lat: serverResponse.data.lat,
-                        lng: serverResponse.data.lng,
-                    })
-                );
                 setLoading(false);
-                navigate("/profile");
                 setError("");
+                navigate("/login");
             } else {
                 throw new Error(langPref[lang].userCreateError);
             }
