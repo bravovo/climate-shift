@@ -22,7 +22,7 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
 
 app.use(express.json());
 app.use(
-    cors({ credentials: true, origin: CLIENT_ORIGIN, withCredentials: true })
+    cors({ credentials: true, origin: CLIENT_ORIGIN })
 );
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
