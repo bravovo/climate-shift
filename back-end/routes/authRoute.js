@@ -53,6 +53,10 @@ router.post(
 router.post("/login", (request, response, next) => {
     passport.authenticate("local", (err, user, info) => {
         if (!user) {
+            request.logout(function(err) {
+                if (err) { return next(err); }
+                response.sendStatus(201);
+              });
             return response.status(400).send({
                 message: {
                     ukr: "Невірні облікові дані",

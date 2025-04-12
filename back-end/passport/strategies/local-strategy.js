@@ -20,7 +20,7 @@ passport.deserializeUser(async (userId, done) => {
 
         if (!user) {
             console.log('USER NOT FOUND');
-            throw new Error("User is not found");
+            return done(null, false);
         }
         done(null, user);
     } catch (error) {
@@ -36,7 +36,7 @@ passport.use(new LocalStrategy({ usernameField: "email" }, async (username, pass
 
         if (!user) {
             console.log('USER NOT FOUND');
-            throw new Error("User is not found");
+            return done(null, false);
         }
 
         const matchedPasswords = await bcrypt.compare(password, user.password);

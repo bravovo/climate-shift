@@ -10,9 +10,11 @@ const coordsRouter = require("./routes/coordsRouter");
 const forecastRouter = require("./routes/forecastRouter");
 const authRouter = require("./routes/authRoute");
 const userRoute = require("./routes/userRoute");
+const MongoStore = require('connect-mongo');
 
 const connectDB = require("./config/db.config");
 const cookieParser = require("cookie-parser");
+const { default: mongoose } = require("mongoose");
 
 const app = express();
 
@@ -29,6 +31,8 @@ const PORT = process.env.PORT || 5000;
 
 app.use(cookieParser(COOKIE_SECRET));
 
+connectDB();
+
 app.use(
     session({
         secret: SESSION_SECRET,
@@ -40,10 +44,12 @@ app.use(
             httpOnly: true,
             sameSite: "Strict",
         },
+        store: MongoStore.create({
+            client: mongoose.connection.getClient()
+        })
     })
 );
 
-connectDB();
 
 app.use(passport.initialize());
 app.use(passport.session());

@@ -157,6 +157,11 @@ router.patch(
         try {
             const user = request.user;
 
+            if (!user) {
+                return response
+                    .sendStatus(401)
+            }
+
             const matched = await bcrypt.compare(oldPassword, user.password);
 
             if (!matched) {
