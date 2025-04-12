@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const initialState = { lat: "", lng: "", city: "", country: '' };
 
 const coordsSlice = createSlice({
@@ -38,7 +40,7 @@ export const fetchCoords = createAsyncThunk(
         const { city, depth } = params;
         try {
             const response = await axios.get(
-                "http://localhost:5000/api/coords/coords",
+                `${SERVER_BASE_URL}/api/coords/coords`,
                 {
                     params: {
                         city: city,
@@ -80,7 +82,7 @@ export const fetchCityName = createAsyncThunk(
         const { lat, lng } = coords;
         try {
             const response = await axios.get(
-                "http://localhost:5000/api/coords/city",
+                `${SERVER_BASE_URL}/api/coords/city`,
                 {
                     params: {
                         lat: lat,

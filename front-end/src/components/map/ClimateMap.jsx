@@ -4,6 +4,8 @@ import Select from "../select/Select";
 import { useSelector } from "react-redux";
 import { Container } from "./ClimateMap.styles";
 
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const langPref = {
     ukr: {temp: "Температура", wind: "Вітер"},
     eng: {temp: "Temperature", wind: "Wind"}
@@ -22,7 +24,7 @@ const ClimateMap = () => {
         const fetchMap = async () => {
             try {
                 const serverResponse = await axios.get(
-                    `http://localhost:5000/api/forecast/${chosenParameter}`,
+                    `${SERVER_BASE_URL}/api/forecast/${chosenParameter}`,
                     {
                         withCredentials: true,
                     }

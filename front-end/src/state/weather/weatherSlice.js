@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const OPEN_WEATHER_API_KEY = import.meta.env.VITE_OPEN_WEATHER_API_KEY;
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
 
 const initialState = {
     current: {
@@ -128,7 +129,7 @@ export const fetchForecast = createAsyncThunk(
 
         try {
             const serverResponse = await axios.get(
-                "http://localhost:5000/api/forecast",
+                `${SERVER_BASE_URL}/api/forecast`,
                 {
                     params: {
                         lat: lat,

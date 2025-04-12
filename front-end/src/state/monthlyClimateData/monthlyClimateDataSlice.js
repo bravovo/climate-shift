@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const initialState = {
     fetched: false,
     PRECTOTCORR: {},
@@ -52,7 +54,7 @@ export const fetchMonthlyClimateData = createAsyncThunk(
         try {
             console.log("in monthlySlice", lat, lng);
             const response = await axios.get(
-                "http://localhost:5000/api/climate/daily",
+                `${SERVER_BASE_URL}/api/climate/daily`,
                 {
                     params: {
                         lat: lat,

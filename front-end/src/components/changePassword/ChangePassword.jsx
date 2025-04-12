@@ -10,6 +10,8 @@ import { logoutUser } from '../../state/user/userSlice';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const ChangePassword = ({ setLoading, langPref }) => {
     const lang = useSelector((state) => state.dataLang);
     const [oldPassword, setOldPassword] = useState("");
@@ -31,7 +33,7 @@ const ChangePassword = ({ setLoading, langPref }) => {
         try {
             setLoading(true);
             const serverResponse = await axios.patch(
-                "http://localhost:5000/api/user/change-pass",
+                `${SERVER_BASE_URL}/api/user/change-pass`,
                 {
                     oldPassword,
                     newPassword,

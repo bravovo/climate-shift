@@ -29,6 +29,8 @@ import Loader from "../../components/loader/Loader";
 import Info from "../../components/info/Info";
 import DeleteAccountModal from "../../components/deleteAccountModal/DeleteAccountModal";
 
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const langPref = {
     eng: {
         title: "Profile",
@@ -142,7 +144,7 @@ const Profile = () => {
 
         try {
             const serverResponse = await axios.patch(
-                "http://localhost:5000/api/user/modify",
+                `${SERVER_BASE_URL}/api/user/modify`,
                 updatedData,
                 { withCredentials: true }
             );
@@ -177,7 +179,7 @@ const Profile = () => {
         setLoading(true);
         try {
             const serverResponse = await axios.post(
-                "http://localhost:5000/api/user/logout",
+                `${SERVER_BASE_URL}/api/user/logout`,
                 {},
                 { withCredentials: true }
             );

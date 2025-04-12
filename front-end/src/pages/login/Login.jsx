@@ -21,6 +21,8 @@ import { setLang, toggleLang } from "../../state/dataLang/dataLangSlice";
 import { fetchCityName } from "../../state/coords/coordsSlice";
 import { BounceLoader } from "react-spinners";
 
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const langPref = {
     eng: {
         formTitle: "Log in",
@@ -73,7 +75,7 @@ const Login = () => {
         try {
             setLoading(true);
             const serverResponse = await axios.post(
-                "http://localhost:5000/api/auth/login",
+                `${SERVER_BASE_URL}/api/auth/login`,
                 {
                     email: emailValue,
                     password: passwordValue,
