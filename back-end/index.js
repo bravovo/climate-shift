@@ -25,6 +25,8 @@ app.use(
     cors({ credentials: true, origin: CLIENT_ORIGIN })
 );
 
+app.set('trust proxy', 1);
+
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
 const SESSION_SECRET = process.env.SESSION_SECRET.split(",") || [];
