@@ -6,8 +6,15 @@ import { useEffect } from "react";
 import { StyledH3 } from "./LeafletMap.styles";
 import { useAtomValue } from "jotai";
 import { legendParametersAtom } from "../../atoms";
+import leaflet from "leaflet";
+import mapMarker from "../../assets/icons/marker.png";
 
 const OPENWEATHERMAP_API_KEY = import.meta.env.VITE_OPEN_WEATHER_API_KEY;
+
+const markerIcon = leaflet.icon({
+    iconUrl: mapMarker,
+    iconSize: [54, 54]
+})
 
 function SetView({ coords }) {
     const map = useMap();
@@ -42,7 +49,7 @@ const LeafletMap = ({ center, date, parameter, isPlain = true }) => {
                     />
                 )}
 
-                <Marker position={center}>
+                <Marker position={center} icon={markerIcon}>
                     <Popup>
                         {center[0]}, {center[1]}
                     </Popup>

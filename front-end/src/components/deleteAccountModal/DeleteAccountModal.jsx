@@ -9,6 +9,8 @@ import { logoutUser } from "../../state/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const styleModal = {
     color: "white",
     position: "absolute",
@@ -47,7 +49,7 @@ const DeleteAccountModal = ({langPref, openDeleteAccountModal, deleteAccountModa
 
         try {
             const serverResponse = await axios.post(
-                "http://localhost:5000/api/user/delete",
+                `${SERVER_BASE_URL}/api/user/delete`,
                 {
                     password: passwordToDeleteAccount,
                 },

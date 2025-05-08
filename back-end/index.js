@@ -22,9 +22,12 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
 
 app.use(express.json());
 app.use(
-    cors({ credentials: true, origin: CLIENT_ORIGIN, withCredentials: true })
+    cors({ credentials: true, origin: [CLIENT_ORIGIN, "http://localhost:5173"] })
 );
 
+app.set('trust proxy', 1);
+
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const COOKIE_SECRET = process.env.COOKIE_SECRET;
 const SESSION_SECRET = process.env.SESSION_SECRET.split(",") || [];
 const PORT = process.env.PORT || 5000;
@@ -40,9 +43,9 @@ app.use(
         resave: false,
         cookie: {
             maxAge: 60000 * 60 * 24 * 7,
-            secure: false,
+            secure: IS_PRODUCTION,
             httpOnly: true,
-            sameSite: "Strict",
+            sameSite: IS_PRODUCTION ? "None" : "Strict",
         },
         store: MongoStore.create({
             client: mongoose.connection.getClient()

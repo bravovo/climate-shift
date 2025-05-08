@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const initialState = {
     email: "",
     lat: null,
@@ -45,7 +47,7 @@ const userSlice = createSlice({
 export const checkUserExist = createAsyncThunk("user/getUser", async () => {
     try {
         const serverResponse = await axios.get(
-            "http://localhost:5000/api/auth/user",
+            `${SERVER_BASE_URL}/api/auth/user`,
             { withCredentials: true }
         );
 

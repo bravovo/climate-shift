@@ -26,6 +26,8 @@ import { checkUserExist } from "../../state/user/userSlice";
 import { toggleLang } from "../../state/dataLang/dataLangSlice";
 import { BounceLoader } from "react-spinners";
 
+const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
+
 const langPref = {
     eng: {
         formTitle: "Account creating",
@@ -133,7 +135,7 @@ const Register = () => {
         try {
             setLoading(true);
             const serverResponse = await axios.post(
-                "http://localhost:5000/api/auth/register",
+                `${SERVER_BASE_URL}/api/auth/register`,
                 {
                     email: emailValue,
                     password: passwordValue,

@@ -141,7 +141,7 @@
             </div>
         </div>
         <script>
-            fetch("http://localhost:5000/config", {credentials: 'include'})
+            fetch("https://climate-shift.onrender.com/config", {credentials: 'include'})
                 .then((response) => response.json())
                 .then((result) => {
                     if (!result.apiKey) {
