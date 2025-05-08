@@ -22,7 +22,7 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
 
 app.use(express.json());
 app.use(
-    cors({ credentials: true, origin: CLIENT_ORIGIN })
+    cors({ credentials: true, origin: [CLIENT_ORIGIN, "http://localhost:5173"] })
 );
 
 app.set('trust proxy', 1);
