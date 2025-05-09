@@ -2,17 +2,17 @@ import { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Container } from "./DatePicker.styles";
-import { uk } from "date-fns/locale";
+import { enGB, uk } from "date-fns/locale";
 import PropTypes from "prop-types";
 import { useSelector } from "react-redux";
 
-const DatePick = ({ onChange }) => {
+const DatePick = ({ onChange, minDate }) => {
     const [selectedDate, setSelectedDate] = useState(new Date());
     const lang = useSelector((state) => state.dataLang);
 
     return (
         <Container>
-            <h3>{lang === 'ukr' ? 'Виберіть початкову дату' : "Choose start date"}</h3>
+            <h3>{lang === 'ukr' ? 'Виберіть дату' : "Choose date"}</h3>
             <DatePicker
                 selected={selectedDate}
                 onChange={(date) => {
@@ -21,7 +21,8 @@ const DatePick = ({ onChange }) => {
                 }}
                 className="my-datepicker"
                 dateFormat="dd.MM.yyyy"
-                locale={uk}
+                minDate={minDate}
+                locale={lang === 'ukr' ? uk : enGB}
             />
         </Container>
     );
@@ -29,6 +30,7 @@ const DatePick = ({ onChange }) => {
 
 DatePick.propTypes = {
     onChange: PropTypes.func.isRequired,
+    minDate: PropTypes.any,
 };
 
 export default DatePick;

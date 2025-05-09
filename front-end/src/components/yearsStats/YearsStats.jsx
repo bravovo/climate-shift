@@ -13,17 +13,16 @@ import {
 import Dashboard from "../dashboard/Dashboard";
 import Select from "../select/Select";
 import LeafletMap from "../leafletMap/LeafletMap";
-// import DatePick from "../datePicker/DatePicker";
-import Slider from "../slider/Slider";
+import DatePick from "../datePicker/DatePicker";
 
 const langPref = {
     eng: {
         yearsDataTitle: "Data for the years",
-        mapDataTitle: 'Cartographic data available from 01.01.2020'
+        mapDataTitle: "Cartographic data available from 01.01.2020",
     },
     ukr: {
         yearsDataTitle: "Дані за роки",
-        mapDataTitle: 'Картографічні дані доступні від 01.01.2020',
+        mapDataTitle: "Картографічні дані доступні від 01.01.2020",
     },
 };
 
@@ -43,14 +42,10 @@ const YearsStats = () => {
     });
 
     const [mapParameter, setMapParameter] = useState("temp_new");
-    // const [mapDate, setMapDate] = useState(new Date().getTime());
-    const [sliderValue, setSliderValue] = useState(
-        new Date(1577882164000).getTime()
-    );
+    const [mapDate, setMapDate] = useState(new Date().getTime());
 
     useEffect(() => {
         setLeafletCenter([parseFloat(coords.lat), parseFloat(coords.lng)]);
-        console.log("IN YEARS STATS ---", sliderValue);
     }, [coords]);
 
     const openWeatherMapLayersOptions = [
@@ -58,13 +53,25 @@ const YearsStats = () => {
             parameter: "temp_new",
             name: { eng: "Temperature (°C)", ukr: "Температура (°C)" },
         },
-        { parameter: "wind_new", name: { eng: "Wind (m/s)", ukr: "Вітер (м/с)" } },
-        { parameter: "pressure_new", name: { eng: "Pressure (mmHg)", ukr: "Тиск (мм.рт.ст)" } },
+        {
+            parameter: "wind_new",
+            name: { eng: "Wind (m/s)", ukr: "Вітер (м/с)" },
+        },
+        {
+            parameter: "pressure_new",
+            name: { eng: "Pressure (mmHg)", ukr: "Тиск (мм.рт.ст)" },
+        },
         {
             parameter: "precipitation_new",
-            name: { eng: "Precipitation (mm/h)", ukr: "Кількість опадів (мм/год)" },
+            name: {
+                eng: "Precipitation (mm/h)",
+                ukr: "Кількість опадів (мм/год)",
+            },
         },
-        { parameter: "clouds_new", name: { eng: "Clouds (%)", ukr: "Хмари (%)" } },
+        {
+            parameter: "clouds_new",
+            name: { eng: "Clouds (%)", ukr: "Хмари (%)" },
+        },
     ];
 
     const formatMapData = (takeParams) => {
@@ -180,35 +187,30 @@ const YearsStats = () => {
         }
     };
 
-    // const handleDateChange = (value) => {
-    //     console.log(value.getTime());
-    //     setMapDate(value.getTime());
-    //     setSliderValue(value.getTime());
-    // };
+    const handleDateChange = (value) => {
+        setMapDate(value.getTime());
+    };
 
     return (
         <YearStatsContainer>
             <h2>{langPref[lang].yearsDataTitle}</h2>
             <MapParamsContainer>
                 <StyledH3>{langPref[lang].mapDataTitle}</StyledH3>
-                {/* <DatePick onChange={handleDateChange} /> */}
+                <DatePick
+                    onChange={handleDateChange}
+                    minDate={new Date(2020, 0, 1).getTime()}
+                />
                 <div style={{ marginBottom: "20px", zIndex: "99999" }}>
                     <Select
                         data={formatMapData(false)}
                         onChange={handleMapParamChange}
                     />
                 </div>
-                <Slider
-                    mapDate={1577882164000}
-                    onChange={(value) =>
-                        setSliderValue(new Date(value).getTime())
-                    }
-                />
                 <LeafletMap
                     parameter={mapParameter}
                     center={leafletCenter}
                     isPlain={false}
-                    date={Number(sliderValue / 1000)}
+                    date={Number(mapDate / 1000)}
                 />
             </MapParamsContainer>
             <DefaultChartsContainer>

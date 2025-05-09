@@ -6,12 +6,14 @@ export const Container = styled.div`
     justify-content: flex-start;
     align-items: center;
     gap: 20px;
+    font-family: inherit;
     z-index: 999999;
 
     .my-datepicker {
         padding: 10px;
         font-size: 16px;
         border-radius: 10px;
+        font-family: inherit;
         background-color: #2f7a78;
         border: 1px solid #2f7a78;
 

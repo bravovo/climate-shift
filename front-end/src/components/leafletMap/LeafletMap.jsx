@@ -2,7 +2,6 @@ import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import PropTypes from "prop-types";
 import Legend from "../mapLegend/MapLegend";
-import { useEffect } from "react";
 import { StyledH3 } from "./LeafletMap.styles";
 import { useAtomValue } from "jotai";
 import { legendParametersAtom } from "../../atoms";
@@ -26,9 +25,6 @@ function SetView({ coords }) {
 const LeafletMap = ({ center, date, parameter, isPlain = true }) => {
     const legendParameters = useAtomValue(legendParametersAtom);
 
-    useEffect(() => {
-        console.log("IN LEAFLET ---", isPlain, Number(date));
-    });
     return (
         <div>
             <MapContainer
