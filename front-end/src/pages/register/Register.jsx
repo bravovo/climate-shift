@@ -96,7 +96,6 @@ const Register = () => {
     const navigate = useNavigate();
 
     useEffect(() => { 
-        console.log("REGISTER");
         if (!user.id) {
             dispatch(checkUserExist());
         }
@@ -161,19 +160,18 @@ const Register = () => {
                     error.response.status === 400 &&
                     error.response.data.errors
                 ) {
-                    console.log(error.response.data.errors[0]);
                     setError(error.response.data.errors[0].msg[lang]);
                 } else if (
                     error.response.status === 400 &&
                     error.response.data.message
                 ) {
                     setError(error.response.data.message);
+                } else if (error.response.status === 404 && error.response.data.message) {
+                    setError(error.response.data.message);
                 } else if (error.response.status === 500) {
-                    console.log("Internal server error");
                     setError(langPref[lang].serverError);
                 }
             } else {
-                console.log(error.message);
                 setError(error.message);
             }
         }

@@ -10,9 +10,6 @@ const coordsSlice = createSlice({
     initialState,
     extraReducers: (builder) => {
         builder
-            .addCase(fetchCoords.pending, () => {
-                console.log("Request is pending...");
-            })
             .addCase(fetchCoords.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
             })
@@ -21,9 +18,6 @@ const coordsSlice = createSlice({
                     "Failed to get coordinates:",
                     action.error.message
                 );
-            })
-            .addCase(fetchCityName.pending, () => {
-                console.log("Fetching city from coordinates");
             })
             .addCase(fetchCityName.fulfilled, (state, action) => {
                 return { ...action.payload };

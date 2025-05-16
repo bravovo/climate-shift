@@ -1,9 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
-
 const OPEN_WEATHER_API_KEY = import.meta.env.VITE_OPEN_WEATHER_API_KEY;
 const SERVER_BASE_URL = import.meta.env.VITE_SERVER_BASE_URL;
-
 const initialState = {
     current: {
         coord: {},
@@ -33,7 +31,6 @@ const initialState = {
     lng: null,
     lang: "ukr",
 };
-
 const weatherSlice = createSlice({
     name: "weather",
     initialState,
@@ -50,39 +47,23 @@ const weatherSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchCurrentWeather.pending, (state) => {
-                console.log("current is pending...");
                 state.current.loading = true;
             })
             .addCase(fetchCurrentWeather.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
             })
-            .addCase(fetchCurrentWeather.rejected, (state, action) => {
-                console.error(
-                    "Failed to fetch weather data:",
-                    action.error.message
-                );
-            })
             .addCase(fetchForecast.pending, (state) => {
-                console.log("forecast is pending...");
                 state.forecast.loading = true;
             })
             .addCase(fetchForecast.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
             })
-            .addCase(fetchForecast.rejected, (state, action) => {
-                console.error(
-                    "Failed to fetch forecast data:",
-                    action.error.message
-                );
-            });
     },
 });
-
 export const fetchCurrentWeather = createAsyncThunk(
     "weather/current",
     async ({ coordinates, lang }) => {
         const { lat, lng, city } = coordinates;
-
         try {
             const openWeatherResponse = await axios.get(
                 "https://api.openweathermap.org/data/2.5/weather",
@@ -96,7 +77,6 @@ export const fetchCurrentWeather = createAsyncThunk(
                     },
                 }
             );
-
             if (openWeatherResponse) {
                 const current = {
                     ...openWeatherResponse.data,
@@ -112,7 +92,6 @@ export const fetchCurrentWeather = createAsyncThunk(
                 };
             }
         } catch (error) {
-            console.log(error.message);
             if (error.response) {
                 return { message: error.response.message };
             } else {
@@ -121,12 +100,10 @@ export const fetchCurrentWeather = createAsyncThunk(
         }
     }
 );
-
 export const fetchForecast = createAsyncThunk(
     "weather/forecast",
     async ({ coordinates, lang }) => {
         const { lat, lng, city } = coordinates;
-
         try {
             const serverResponse = await axios.get(
                 `${SERVER_BASE_URL}/api/forecast`,
@@ -138,7 +115,6 @@ export const fetchForecast = createAsyncThunk(
                     },
                 }
             );
-
             if (serverResponse && serverResponse.status !== 204) {
                 const forecast = {
                     data: serverResponse.data.forecast,
@@ -154,7 +130,6 @@ export const fetchForecast = createAsyncThunk(
                 };
             }
         } catch (error) {
-            console.log(error.message);
             if (error.response) {
                 return { message: error.response.message };
             } else {
@@ -163,7 +138,5 @@ export const fetchForecast = createAsyncThunk(
         }
     }
 );
-
 export const { clearWeather, setFetchedFalse } = weatherSlice.actions;
-
 export default weatherSlice.reducer;

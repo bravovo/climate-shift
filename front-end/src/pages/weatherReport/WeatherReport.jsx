@@ -104,12 +104,8 @@ const WeatherReport = () => {
     }, [user, coords, lang]);
 
     const fetchData = (city) => {
-        try {
-            if (!(city === coords.city) || !weather.forecast.fetched) {
-                dispatch(fetchCoords({ city: city, depth: 0 }));
-            }
-        } catch (error) {
-            console.log(error.message);
+        if (!(city === coords.city) || !weather.forecast.fetched) {
+            dispatch(fetchCoords({ city: city, depth: 0 }));
         }
     };
 

@@ -57,7 +57,6 @@ const Login = () => {
     const navigate = useNavigate();
 
     useEffect(() => { 
-        console.log("LOGIN");
         if (!user.id) {
             dispatch(checkUserExist());
         }
@@ -84,13 +83,12 @@ const Login = () => {
             );
 
             if (serverResponse) {
-                console.log(serverResponse.data);
                 dispatch(addUser(serverResponse.data));
                 dispatch(setLang(serverResponse.data.lang));
                 dispatch(fetchCityName({ lat: serverResponse.data.lat, lng: serverResponse.data.lng }));
                 setLoading(false);
-                navigate("/profile");
                 setError("");
+                navigate("/profile");
             } else {
                 throw new Error(langPref[lang].userLoginError);
             }
@@ -99,7 +97,6 @@ const Login = () => {
             if (error.response && error.response.data) {
                 setError(error.response.data.message[lang] ?? langPref[lang].serverError);
             } else {
-                console.log(error.message);
                 setError(error.message);
             }
         }

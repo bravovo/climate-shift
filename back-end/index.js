@@ -22,7 +22,7 @@ const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN;
 
 app.use(express.json());
 app.use(
-    cors({ credentials: true, origin: [CLIENT_ORIGIN] })
+    cors({ credentials: true, origin: CLIENT_ORIGIN })
 );
 
 app.set('trust proxy', 1);

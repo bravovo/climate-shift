@@ -149,12 +149,8 @@
                         return;
                     }
 
-                    console.log(result.lat);
-
                     const center = [result.lng || 0, result.lat || 40];
                     const zoom = result.lat ? 10 : 2;
-
-                    console.log(center, zoom);
 
                     maptilersdk.config.apiKey = result.apiKey;
                     const map = (window.map = new maptilersdk.Map({

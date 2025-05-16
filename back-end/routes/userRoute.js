@@ -1,4 +1,4 @@
-const { Router, response, request } = require("express");
+const { Router } = require("express");
 const User = require("../schemas/user/UserSchema");
 const { checkSchema, validationResult } = require("express-validator");
 const { modifyValidationSchema } = require("../validations/modifyValidation");
@@ -31,7 +31,6 @@ router.patch(
     checkAuth,
     checkSchema(modifyValidationSchema),
     async (request, response) => {
-        console.log(request.body);
 
         const { lang, city, lat, lng } = request.body;
         const validationRes = validationResult(request);
@@ -55,16 +54,10 @@ router.patch(
                     opencageResponse.data.results.length > 0
                 ) {
                     const place = opencageResponse.data.results[0];
-                    console.log(
-                        "Requests remaining:",
-                        opencageResponse.data.rate.remaining
-                    );
-                    console.log("City Coordinates:", place.geometry);
 
                     newLat = place.geometry.lat;
                     newLng = place.geometry.lng;
                 } else {
-                    console.log("Status", opencageResponse.data.status.message);
                     return response.status(404).send({
                         message: "City not found",
                     });
@@ -79,25 +72,16 @@ router.patch(
                     opencageResponse.data.results.length > 0
                 ) {
                     const place = opencageResponse.data.results[0];
-                    console.log(
-                        "Requests remaining:",
-                        opencageResponse.data.rate.remaining
-                    );
-                    console.log("City:", place.components.city);
 
                     newCity = place.components.city || "";
                 } else {
-                    console.log("Status", opencageResponse.data.status.message);
                     return response.status(404).send({
                         message: "City not found for given coordinates",
                     });
                 }
             }
         } catch (error) {
-            console.error(error.message);
-
             if (error.response?.status === 402) {
-                console.log("Hit OpenCage free trial daily limit");
                 return response.status(402).send({
                     message: "Cannot retrieve location data at the moment",
                 });
@@ -131,11 +115,9 @@ router.patch(
             };
 
             request.session.save(() => {
-                console.log("Updated session:", updatedUser);
                 response.status(200).send(updatedUser);
             });
         } catch (error) {
-            console.error(error);
             return response
                 .status(500)
                 .send({ message: "Internal server error" });
@@ -188,7 +170,6 @@ router.patch(
                 throw new Error("Щось пішло не так");
             }
         } catch (error) {
-            console.log(error.message);
             return response.status(500).send(error.message);
         }
     }
@@ -241,7 +222,6 @@ router.post("/delete", checkAuth, async (request, response) => {
             }
         });
     } catch (error) {
-        console.log(error);
         return response
             .status(500)
             .send({

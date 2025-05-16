@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
         path: "*",
         element: (
             <h1>
-                404 | Ви завітали на сторінку, якої не існує. Будь ласка виберіть іншу.
+                404 | Page not found
             </h1>
         ),
     },

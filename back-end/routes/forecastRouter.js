@@ -2,68 +2,12 @@ const { Router } = require("express");
 const axios = require("axios");
 const { requestPendingTime } = require("../utils/utils");
 const path = require("path");
-
 const OPEN_WEATHER_API_KEY = process.env.OPEN_WEATHER_API_KEY;
-
 const router = Router();
-
-const datesAndMonths = {
-    en: {
-        dates: {
-            sun: "Sunday",
-            mon: "Monday",
-            tue: "Tuesday",
-            wed: "Wednesday",
-            thu: "Thursday",
-            fri: "Friday",
-            sat: "Saturday",
-        },
-        months: {
-            jan: "January",
-            feb: "February",
-            mar: "March",
-            apr: "April",
-            may: "May",
-            jun: "June",
-            jul: "July",
-            aug: "August",
-            sep: "September",
-            oct: "October",
-            nov: "November",
-            dec: "December",
-        },
-    },
-    uk: {
-        dates: {
-            sun: "Неділя",
-            mon: "Понеділок",
-            tue: "Вівторок",
-            wed: "Середа",
-            thu: "Четвер",
-            fri: "П'ятниця",
-            sat: "Субота",
-        },
-        months: {
-            jan: "Січня",
-            feb: "Лютого",
-            mar: "Березня",
-            apr: "Квітня",
-            may: "Травня",
-            jun: "Червня",
-            jul: "Липня",
-            aug: "Серпня",
-            sep: "Вересня",
-            oct: "Жовтня",
-            nov: "Листопада",
-            dec: "Грудня",
-        },
-    },
-};
-
+const { datesAndMonths } = require('../assets/variables');
 router.get("/", async (request, response) => {
     const startTime = Date.now();
     const { lat, lng, lang } = request.query;
-
     try {
         const openWeatherResponse = await axios.get(
             "https://api.openweathermap.org/data/2.5/forecast",
@@ -180,7 +124,6 @@ router.get("/", async (request, response) => {
             time: { type: "seconds", value: pendingTime },
         });
     } catch (error) {
-        console.log(error.message);
         if (error.response) {
             return response
                 .status(400)
@@ -192,13 +135,10 @@ router.get("/", async (request, response) => {
         }
     }
 });
-
 router.get("/:param", async (request, response) => {
     const { param } = request.params;
-
     return response
         .status(200)
         .sendFile(path.join(__dirname, "../templates", `${param}.html`));
 });
-
 module.exports = router;

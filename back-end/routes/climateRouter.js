@@ -19,8 +19,6 @@ router.get("/daily", async (request, response) => {
     const startTime = Date.now();
     const { lat, lng } = request.query;
 
-    console.log(lat, lng);
-
     const today = new Date();
 
     const lastMonthStart = new Date(
@@ -175,8 +173,6 @@ router.get("/daily", async (request, response) => {
             });
         }
     } catch (error) {
-        console.error("Error fetching climate data:", error.message);
-
         const pendingTime = requestPendingTime(startTime);
 
         return response.status(500).send({
@@ -190,21 +186,11 @@ router.get("/years", async (request, response) => {
     const startTime = Date.now();
     const { lat, lng } = request.query;
 
-    // Кліматичні дані доступні лише до 31 грудня 2023 року станом на 16.02.2025
-    // const today = new Date();
-    // const currentYear = new Date(today.getFullYear(), today.getMonth());
-
-    // const startYear = new Date(currentYear.getFullYear() - 7, currentYear.getMonth());
-    // const endYear = new Date(currentYear.getFullYear() - 2, currentYear.getMonth());
-
-    // const start = startYear.toISOString().split('-')[0];
-    // const end = endYear.toISOString().split('-')[0];
-
     try {
         const monthlyResult = await axios.get(`${BASE_URL}/monthly/point`, {
             params: {
-                start: 2014,
-                end: 2023,
+                start: 2015,
+                end: 2024,
                 latitude: lat,
                 longitude: lng,
                 parameters: `${PARAMETERS}`,
@@ -252,8 +238,6 @@ router.get("/years", async (request, response) => {
             });
         }
     } catch (error) {
-        console.error("Error fetching climate data:", error.message);
-
         const pendingTime = requestPendingTime(startTime);
 
         return response.status(500).send({

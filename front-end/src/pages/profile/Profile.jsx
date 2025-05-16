@@ -101,7 +101,6 @@ const Profile = () => {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        console.log("PROFILE");
         if (!user.id) {
             dispatch(checkUserExist());
         }
@@ -151,8 +150,6 @@ const Profile = () => {
 
             if (serverResponse.data) {
                 window.location.reload();
-            } else {
-                console.log("EMPTY RESPONSE", serverResponse);
             }
         } catch (error) {
             setLoading(false);
@@ -184,7 +181,6 @@ const Profile = () => {
                 { withCredentials: true }
             );
 
-            console.log(serverResponse);
             if (serverResponse) {
                 dispatch(logoutUser());
                 navigate("/register");
@@ -193,14 +189,9 @@ const Profile = () => {
             setLoading(false);
             window.alert(
                 lang === "ukr"
-                    ? "Виникла помилка під час виходу з акаунта"
-                    : "Problem happened while logging out"
+                    ? `Виникла помилка ${error.message} під час виходу з акаунта`
+                    : `Problem ${error.message} happened while logging out`
             );
-            if (error.response) {
-                console.log(error.response);
-            } else {
-                console.log(error.message);
-            }
         }
     };
 

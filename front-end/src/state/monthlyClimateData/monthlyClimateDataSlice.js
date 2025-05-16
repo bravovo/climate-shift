@@ -32,9 +32,6 @@ const monthlyClimateDataSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchMonthlyClimateData.pending, () => {
-                console.log("Request is pending...");
-            })
             .addCase(fetchMonthlyClimateData.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
             })
@@ -52,7 +49,6 @@ export const fetchMonthlyClimateData = createAsyncThunk(
     async (coordinates) => {
         const { lat, lng, city } = coordinates;
         try {
-            console.log("in monthlySlice", lat, lng);
             const response = await axios.get(
                 `${SERVER_BASE_URL}/api/climate/daily`,
                 {

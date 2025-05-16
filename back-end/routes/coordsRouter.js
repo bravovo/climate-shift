@@ -30,11 +30,6 @@ router.get("/coords", async (request, response) => {
             } else {
                 place = opencageResponse.data.results[depth];
             }
-            console.log(
-                "Requests remaining",
-                opencageResponse.data.rate.remaining
-            );
-            console.log(place.formatted);
             const pendingTime = requestPendingTime(startTime);
             return response.status(200).send({
                 geometry: place.geometry,
@@ -44,8 +39,6 @@ router.get("/coords", async (request, response) => {
                 time: { type: "seconds", value: pendingTime },
             });
         } else {
-            console.log("Status", opencageResponse.data.status.message);
-            console.log("total_results", opencageResponse.data.total_results);
             const pendingTime = requestPendingTime(startTime);
             return response.status(404).send({
                 message: "Міста із заданою назвою не знайдено",
@@ -53,15 +46,7 @@ router.get("/coords", async (request, response) => {
             });
         }
     } catch (error) {
-        console.log(error.message);
-
-        const endTime = Date.now();
-        console.log(
-            `Request duration: ${(endTime - startTime) / 1000} seconds`
-        );
-
         if (error.response && error.response.status.code === 402) {
-            console.log("hit free trial daily limit");
             return response.status(402).send({
                 message: "Зараз неможливо дізнатись координати за назвою міста",
             });
@@ -84,11 +69,6 @@ router.get("/city", async (request, response) => {
             opencageResponse.data.results.length > 0
         ) {
             const place = opencageResponse.data.results[0];
-            console.log(
-                "Requests remaining",
-                opencageResponse.data.rate.remaining
-            );
-            console.log(place.components.city);
             const pendingTime = requestPendingTime(startTime);
             return response.status(200).send({
                 city: place.components.city,
@@ -97,8 +77,6 @@ router.get("/city", async (request, response) => {
                 time: { type: "seconds", value: pendingTime },
             });
         } else {
-            console.log("Status", opencageResponse.data.status.message);
-            console.log("total_results", opencageResponse.data.total_results);
             const pendingTime = requestPendingTime(startTime);
             return response.status(404).send({
                 message: "Міста із заданими координатами не знайдено",
@@ -106,15 +84,7 @@ router.get("/city", async (request, response) => {
             });
         }
     } catch (error) {
-        console.log(error.message);
-
-        const endTime = Date.now();
-        console.log(
-            `Request duration: ${(endTime - startTime) / 1000} seconds`
-        );
-
         if (error.response.status.code === 402) {
-            console.log("hit free trial daily limit");
             return response.status(402).send({
                 message: "Зараз неможливо дізнатись координати за назвою міста",
             });

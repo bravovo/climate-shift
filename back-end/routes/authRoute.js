@@ -30,8 +30,6 @@ router.post(
                 city,
             });
 
-            console.log(userObj);
-
             if (userObj) {
                 return response.sendStatus(201);
             }
@@ -42,7 +40,6 @@ router.post(
                 },
             });
         } catch (error) {
-            console.error(error);
             return response.status(400).json({
                 message: error.message,
             });
@@ -99,7 +96,6 @@ router.post("/login", (request, response, next) => {
 });
 
 router.get("/user", (request, response) => {
-    console.log("USER SESSION ------------------------------------------");
     if (request.user) {
         const returnUser = {
             id: request.user.id,

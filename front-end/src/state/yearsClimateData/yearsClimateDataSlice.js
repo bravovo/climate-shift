@@ -34,18 +34,11 @@ const yearsClimateDataSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(fetchYearsClimateData.pending, (state) => {
-                console.log("Request is pending...");
                 state.loading = true;
             })
             .addCase(fetchYearsClimateData.fulfilled, (state, action) => {
                 return { ...state, ...action.payload };
             })
-            .addCase(fetchYearsClimateData.rejected, (state, action) => {
-                console.error(
-                    "Failed to fetch climate data:",
-                    action.error.message
-                );
-            });
     },
 });
 

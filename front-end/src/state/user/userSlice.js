@@ -29,7 +29,6 @@ const userSlice = createSlice({
             .addCase(checkUserExist.pending, (state) => {
                 state.loading = true;
                 state.fetched = false;
-                console.log("User session is pending");
             })
             .addCase(checkUserExist.fulfilled, (state, action) => {
                 return action.payload;
@@ -56,14 +55,12 @@ export const checkUserExist = createAsyncThunk("user/getUser", async () => {
         }
     } catch (error) {
         if (error.response) {
-            console.log(error.response.data.message);
             return {
                 message: error.response.data.message,
                 loading: false,
                 fetched: true,
             };
         } else {
-            console.log(error.message);
             return { message: error.message, loading: false, fetched: true };
         }
     }

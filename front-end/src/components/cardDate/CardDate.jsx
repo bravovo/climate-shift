@@ -3,7 +3,6 @@ import {
     Titleh3,
 } from "../../assets/styles/SharedStyles.styles";
 import { Coloredh3, Styledh3 } from "./CardDate.styles";
-
 const CardDate = ({ date, icon, desc, small = false, addValue }) => {
     return small ? (
         <>
@@ -21,7 +20,6 @@ const CardDate = ({ date, icon, desc, small = false, addValue }) => {
         </>
     );
 };
-
 CardDate.propTypes = {
     date: PropTypes.string.isRequired,
     icon: PropTypes.node.isRequired,
@@ -29,5 +27,4 @@ CardDate.propTypes = {
     small: PropTypes.bool,
     addValue: PropTypes.node,
 };
-
 export default CardDate;

@@ -61,7 +61,6 @@ const ChangePassword = ({ setLoading, langPref }) => {
                 dispatch(logoutUser());
                 navigate("/register");
             } else {
-                console.log(error);
                 setChangePasswordError(langPref[lang].defaultError);
             }
         }
